@@ -20,33 +20,41 @@ namespace DtoGenerator
         private List<TypeDescription.TypeDescriptor> Types;
         private int CountOfTasks;
 
+        private readonly static object locker = new object();
+
         public struct ThreadConrtex
         {
             public Dictionary<string, CodeCompileUnit> result;
             public ClassDescriptor classDescription;
+            public ManualResetEvent doneEvent;
         }
 
         public DTOGenerator(DescriptionsOfClass classes, List<TypeDescription.TypeDescriptor> types,int tasksCount)
         {
             Classes = classes;
             Types = types;
-            CountOfTasks = tasksCount; 
+            CountOfTasks = tasksCount;
         }
 
         public Dictionary<string,CodeCompileUnit> GetUnitsOfDtoClasses()
         {
             Dictionary<string, CodeCompileUnit> result = new Dictionary<string, CodeCompileUnit>();
+            ManualResetEvent[] doneEvents = new ManualResetEvent[Classes.classDescriptions.Count];
+            int i = 0;
             ThreadPool.SetMaxThreads(CountOfTasks, Int32.MaxValue);
+
             foreach (var dtoClass in Classes.classDescriptions)
             {
-
-                //ThreadPool.QueueUserWorkItem
+                doneEvents[i] = new ManualResetEvent(false);
                 ThreadConrtex tempContext = new ThreadConrtex();
                 tempContext.result = result;
                 tempContext.classDescription = dtoClass;
-                ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadPoolCallback),new ThreadConrtex());
+                tempContext.doneEvent = doneEvents[i];
+                ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadPoolCallback),tempContext);
+                i++;
             }
 
+            WaitHandle.WaitAll(doneEvents);
             return result;
         }
 
@@ -54,9 +62,14 @@ namespace DtoGenerator
         {
             ThreadConrtex data = (ThreadConrtex)threadContext;
             Dictionary<string, CodeCompileUnit> result = (Dictionary<string, CodeCompileUnit>)data.result;
-            result.Add(data.classDescription.className, GenerateCode(data.classDescription));
-            
+            CodeCompileUnit unit = GenerateCode(data.classDescription);
+            lock (locker)
+            {
+                result.Add(data.classDescription.className, unit);
+            }    
+            data.doneEvent.Set();
         }
+
         private CodeCompileUnit GenerateCode(ClassDescriptor classDescription)
         {
             CodeCompileUnit compileUnit = new CodeCompileUnit();
