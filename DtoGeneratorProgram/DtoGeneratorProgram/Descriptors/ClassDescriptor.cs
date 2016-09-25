@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace DtoGeneratorProgram.Descriptors
 {
-    public class ClassDescriptor
+    internal class ClassDescriptor
     {
-        public string ClassName { get; set; }
-        public List<PropertyDescriptor> properties;
+        public string className { get; set; }
+        public List<PropertyDescriptor> properties { get; set; }    
 
         public ClassDescriptor()
         {
