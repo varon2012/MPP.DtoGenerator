@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace TypeDescription
 {
-    public class Class1
+    public abstract class TypeDescriptor
     {
+        public string Type;
+        public string Format;
+        public string NETType;
     }
 }
