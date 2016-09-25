@@ -1,4 +1,4 @@
-﻿namespace DtoGeneratorProgram.Descriptors
+﻿namespace DtoGenerator.Descriptors
 {
     public class PropertyDescriptor
     {

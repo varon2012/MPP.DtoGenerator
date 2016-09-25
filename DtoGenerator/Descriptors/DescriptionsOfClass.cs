@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DtoGeneratorProgram.Descriptors
+namespace DtoGenerator.Descriptors
 {
     public class DescriptionsOfClass
     {
