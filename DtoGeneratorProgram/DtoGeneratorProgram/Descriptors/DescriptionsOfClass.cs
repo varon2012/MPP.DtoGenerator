@@ -2,7 +2,7 @@
 
 namespace DtoGeneratorProgram.Descriptors
 {
-    internal class DescriptionsOfClass
+    public class DescriptionsOfClass
     {
         public List<ClassDescriptor> classDescriptions { get; set; }
 
