@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DtoGenerator.Generator
 {
-    public sealed class DtoClassDeclaration
+    public struct DtoClassDeclaration
     {
         public string ClassName { get; }
         public IEnumerable<DtoClassProperty> Properties { get; }

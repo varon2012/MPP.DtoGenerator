@@ -2,7 +2,7 @@
 
 namespace DtoGenerator.Generator
 {
-    public sealed class DtoClassProperty
+    public struct DtoClassProperty
     {
         public string Name { get; }
         public string Type { get; }
