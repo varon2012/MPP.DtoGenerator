@@ -13,8 +13,8 @@ namespace DTOGeneratorLibrary
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class DTOGenerator
     {
-        private int _runningTasks;
-        private readonly int _maxRunningTasks;
+        private int _runningTasksCount;
+        private readonly int _maxRunningTasksCount;
         private readonly Queue<TaskInfo> _tasksQueue = new Queue<TaskInfo>();
         private readonly object _syncRoot = new object();
         private CountdownEvent _countdownEvent;
@@ -33,14 +33,14 @@ namespace DTOGeneratorLibrary
             }
         }
 
-        public DTOGenerator(int maxRunningTasks)
+        public DTOGenerator(int maxRunningTasksCount)
         {
-            _maxRunningTasks = maxRunningTasks;                      
+            _maxRunningTasksCount = maxRunningTasksCount;                      
         }
 
         public string[] GenerateDTOClasses(DTOClassInfo[] dtoClassesInfo)
         {
-            _countdownEvent = new CountdownEvent(dtoClassesInfo.Length);
+            _countdownEvent = new CountdownEvent(dtoClassesInfo.Length);            
             _tasksResult = new string[dtoClassesInfo.Length];
 
             for (int i = 0; i < dtoClassesInfo.Length; i++)            
@@ -75,8 +75,7 @@ namespace DTOGeneratorLibrary
             _countdownEvent.Wait();
         }
 
-        private bool CanAddToPool => _runningTasks < _maxRunningTasks;
-        private bool HasTasks => _tasksQueue.Count > 0;
+        private bool CanAddToPool => _runningTasksCount < _maxRunningTasksCount;
 
         private void AddToPool(TaskInfo taskInfo)
         {
@@ -85,14 +84,14 @@ namespace DTOGeneratorLibrary
                 _tasksResult[taskInfo.TaskNumber] = GenerateDTOClassDeclaration(taskInfo.DTOClassInfo);
                 OnTaskFinish();
             });
-            _runningTasks++;
+            _runningTasksCount++;
         }
 
         private void OnTaskFinish()
         {
             lock (_syncRoot)
             {
-                _runningTasks--;
+                _runningTasksCount--;
 
                 if (HasTasks)
                 {
@@ -101,6 +100,8 @@ namespace DTOGeneratorLibrary
             }
             _countdownEvent.Signal();
         }
+
+        private bool HasTasks => _tasksQueue.Count > 0;
 
         private string GenerateDTOClassDeclaration(DTOClassInfo dtoClassInfo)
         {
@@ -120,13 +121,14 @@ namespace DTOGeneratorLibrary
             propertyDeclaration = propertyDeclaration.WithAccessorList(
                 AccessorList(
                     List(
-                        new[] {
-                            AccessorDeclaration(
-                                SyntaxKind.GetAccessorDeclaration)
-                            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
-                            AccessorDeclaration(
-                                SyntaxKind.SetAccessorDeclaration)
-                            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))})));
+                        new[] 
+                        {
+                            AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
+                            AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
+                        }
+                    )
+                )
+            );
             return propertyDeclaration;
         }
     }
