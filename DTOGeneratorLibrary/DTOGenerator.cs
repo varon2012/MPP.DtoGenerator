@@ -13,8 +13,7 @@ namespace DTOGeneratorLibrary
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class DTOGenerator
     {
-        private int _runningTasksCount;
-        private readonly int _maxRunningTasksCount;
+        private int _runningTasksCount;        
         private readonly Queue<TaskInfo> _tasksQueue = new Queue<TaskInfo>();
         private readonly object _syncRoot = new object();
         private CountdownEvent _countdownEvent;
@@ -33,9 +32,13 @@ namespace DTOGeneratorLibrary
             }
         }
 
+        // Public
+
+        public int MaxRunningTasksCount { get; set; }
+
         public DTOGenerator(int maxRunningTasksCount)
         {
-            _maxRunningTasksCount = maxRunningTasksCount;                      
+            MaxRunningTasksCount = maxRunningTasksCount;                      
         }
 
         public string[] GenerateDTOClasses(DTOClassInfo[] dtoClassesInfo)
@@ -54,6 +57,9 @@ namespace DTOGeneratorLibrary
         }
 
         // Internals
+
+        private bool HasTasks => _tasksQueue.Count > 0;
+        private bool CanAddToPool => _runningTasksCount < MaxRunningTasksCount;
 
         private void QueueGenerationTask(TaskInfo taskInfo)
         {
@@ -74,8 +80,6 @@ namespace DTOGeneratorLibrary
         {
             _countdownEvent.Wait();
         }
-
-        private bool CanAddToPool => _runningTasksCount < _maxRunningTasksCount;
 
         private void AddToPool(TaskInfo taskInfo)
         {
@@ -100,8 +104,6 @@ namespace DTOGeneratorLibrary
             }
             _countdownEvent.Signal();
         }
-
-        private bool HasTasks => _tasksQueue.Count > 0;
 
         private string GenerateDTOClassDeclaration(DTOClassInfo dtoClassInfo)
         {
