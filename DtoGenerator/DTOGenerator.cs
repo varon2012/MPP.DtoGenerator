@@ -22,11 +22,12 @@ namespace DtoGenerator
 
         private readonly static object locker = new object();
 
-        public struct ThreadConrtex
+        public struct ThreadContex
         {
             public Dictionary<string, CodeCompileUnit> result;
             public ClassDescriptor classDescription;
             public ManualResetEvent doneEvent;
+            public string Namespace;
         }
 
         public DTOGenerator(DescriptionsOfClass classes, List<TypeDescription.TypeDescriptor> types,int tasksCount)
@@ -46,10 +47,12 @@ namespace DtoGenerator
             foreach (var dtoClass in Classes.classDescriptions)
             {
                 doneEvents[i] = new ManualResetEvent(false);
-                ThreadConrtex tempContext = new ThreadConrtex();
+
+                ThreadContex tempContext = new ThreadContex();
                 tempContext.result = result;
                 tempContext.classDescription = dtoClass;
                 tempContext.doneEvent = doneEvents[i];
+                tempContext.Namespace = Classes.Namespace;
                 ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadPoolCallback),tempContext);
                 i++;
             }
@@ -60,9 +63,9 @@ namespace DtoGenerator
 
         private void ThreadPoolCallback(Object threadContext)
         {
-            ThreadConrtex data = (ThreadConrtex)threadContext;
+            ThreadContex data = (ThreadContex)threadContext;
             Dictionary<string, CodeCompileUnit> result = (Dictionary<string, CodeCompileUnit>)data.result;
-            CodeCompileUnit unit = GenerateCode(data.classDescription);
+            CodeCompileUnit unit = GenerateCode(data.classDescription, data.Namespace);
             lock (locker)
             {
                 result.Add(data.classDescription.className, unit);
@@ -70,13 +73,11 @@ namespace DtoGenerator
             data.doneEvent.Set();
         }
 
-        private CodeCompileUnit GenerateCode(ClassDescriptor classDescription)
+        private CodeCompileUnit GenerateCode(ClassDescriptor classDescription, String NameSpace)
         {
             CodeCompileUnit compileUnit = new CodeCompileUnit();
 
-            // Declare a new namespace called Samples.
-            CodeNamespace classNameSpace = new CodeNamespace(classDescription.className+"Namespace");
-            // Add the new namespace to the compile unit.
+            CodeNamespace classNameSpace = new CodeNamespace(NameSpace);
             compileUnit.Namespaces.Add(classNameSpace);
 
             CodeTypeDeclaration className = new CodeTypeDeclaration(classDescription.className);
