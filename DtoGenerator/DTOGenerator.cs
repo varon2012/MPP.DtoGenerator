@@ -1,11 +1,5 @@
 ﻿using System;
 using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.Collections;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -53,6 +47,7 @@ namespace DtoGenerator
                 tempContext.classDescription = dtoClass;
                 tempContext.doneEvent = doneEvents[i];
                 tempContext.Namespace = Classes.Namespace;
+
                 ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadPoolCallback),tempContext);
                 i++;
             }
