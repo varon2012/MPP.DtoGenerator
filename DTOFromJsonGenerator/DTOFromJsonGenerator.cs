@@ -8,7 +8,6 @@ using static DTOFromJsonGenerator.Properties.Settings;
 
 namespace DTOFromJsonGenerator
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     class DtoFromJsonGenerator
     {
         private const int ArgumentsCount = 2;
