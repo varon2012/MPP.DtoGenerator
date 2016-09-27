@@ -6,7 +6,7 @@
       <Value Profile="(Default)">DTOClasses</Value>
     </Setting>
     <Setting Name="MaxRunningTasksCount" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">4</Value>
     </Setting>
   </Settings>
 </SettingsFile>
