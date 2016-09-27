@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Newtonsoft.Json;
 using System.IO;
-using DTOGeneratorLibrary;
+using DtoGenerationLibrary;
 
 namespace DTOFromJsonGenerator
 {
@@ -10,12 +10,12 @@ namespace DTOFromJsonGenerator
         public string ClassName { get; set; }
         public JsonPropertyDescription[] Properties { get; set; }
 
-        internal DTOClassInfo ToDTOClassInfo()
+        internal DtoClassInfo ToDtoClassInfo()
         {
-            return new DTOClassInfo
+            return new DtoClassInfo
             {
                 Name = ClassName,
-                Properties = Properties.Select(x => x.ToDTOPropertyInfo()).ToArray()
+                Properties = Properties.Select(x => x.ToDtoPropertyInfo()).ToArray()
             };
         }
     }
@@ -26,9 +26,9 @@ namespace DTOFromJsonGenerator
         public TypeKind Type { get; set; }
         public string Format { get; set; }
 
-        internal DTOPropertyInfo ToDTOPropertyInfo()
+        internal DtoPropertyInfo ToDtoPropertyInfo()
         {
-            return new DTOPropertyInfo
+            return new DtoPropertyInfo
             {
                 Name = Name,
                 PropertyType = SupportedTypesTable.Instance.GetNetType(Type, Format)
@@ -41,24 +41,24 @@ namespace DTOFromJsonGenerator
         public JsonClassDescription[] ClassDescriptions { get; set; }
     }
 
-    internal class JsonToDTOInfoConverter
+    internal class JsonToDtoInfoConverter
     {
-        internal DTOClassInfo[] ParseJsonFileToDtoClassInfo(string path)
+        internal DtoClassInfo[] ParseJsonFileToDtoClassInfo(string path)
         {
             return JsonStringToDtoClassInfo(File.ReadAllText(path));
         }
 
         // Internals
 
-        private DTOClassInfo[] JsonStringToDtoClassInfo(string jsonString)
+        private DtoClassInfo[] JsonStringToDtoClassInfo(string jsonString)
         {
             JsonClassDescriptions jsonClassDescriptions = JsonConvert.DeserializeObject<JsonClassDescriptions>(jsonString);
-            var result = new DTOClassInfo[jsonClassDescriptions.ClassDescriptions.Length];
+            var result = new DtoClassInfo[jsonClassDescriptions.ClassDescriptions.Length];
 
             for (int i = 0; i < result.Length; i++)
             {
                 JsonClassDescription classDescription = jsonClassDescriptions.ClassDescriptions[i];
-                result[i] = classDescription.ToDTOClassInfo();
+                result[i] = classDescription.ToDtoClassInfo();
             }
 
             return result;

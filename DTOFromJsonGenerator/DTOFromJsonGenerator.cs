@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using DTOGeneratorLibrary;
+using DtoGenerationLibrary;
 using Newtonsoft.Json;
 using static DTOFromJsonGenerator.Properties.Settings;
 
 namespace DTOFromJsonGenerator
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    class DTOFromJsonGenerator
+    class DtoFromJsonGenerator
     {
         private const int ArgumentsCount = 2;
         private const string PluginsDirectoryPath = "plugins";
@@ -25,11 +25,11 @@ namespace DTOFromJsonGenerator
                 {
                     SupportedTypesTable.Instance.LoadExternalTypes(PluginsDirectoryPath);
 
-                    var jsonToDtoParser = new JsonToDTOInfoConverter();
-                    DTOClassInfo[] dtoClassesInfo = jsonToDtoParser.ParseJsonFileToDtoClassInfo(jsonFilePath);
+                    var jsonToDtoParser = new JsonToDtoInfoConverter();
+                    DtoClassInfo[] dtoClassesInfo = jsonToDtoParser.ParseJsonFileToDtoClassInfo(jsonFilePath);
 
-                    var generator = new DTOGenerator(Default.MaxRunningTasksCount, Default.NamespaceName);
-                    DTOClassDeclaration[] dtoClasses = generator.GenerateDTOClasses(dtoClassesInfo);
+                    var generator = new DtoGenerator(Default.MaxRunningTasksCount, Default.NamespaceName);
+                    DtoClassDeclaration[] dtoClasses = generator.GenerateDtoClasses(dtoClassesInfo);
 
                     WriteResults(dtoClasses, outputDirectoryPath);
                 }
@@ -54,11 +54,11 @@ namespace DTOFromJsonGenerator
 
         // Static internals
 
-        private static void WriteResults(IEnumerable<DTOClassDeclaration> dtoClassesDeclaration, string outputDirectoryPath)
+        private static void WriteResults(IEnumerable<DtoClassDeclaration> dtoClassesDeclaration, string outputDirectoryPath)
         {
             Directory.CreateDirectory(outputDirectoryPath);
 
-            foreach (DTOClassDeclaration dtoClassDeclaration in dtoClassesDeclaration)
+            foreach (DtoClassDeclaration dtoClassDeclaration in dtoClassesDeclaration)
             {
                 string outputFileName = $"{dtoClassDeclaration.ClassName}.cs";
                 string outputFilePath = Path.Combine(outputDirectoryPath, outputFileName);

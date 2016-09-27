@@ -1,14 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace DTOGeneratorLibrary
+namespace DtoGenerationLibrary
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public struct DTOClassDeclaration
+    public struct DtoClassDeclaration
     {
         public readonly string ClassName;
         public readonly string ClassDeclaration;
 
-        public DTOClassDeclaration(string className, string classDeclaration)
+        public DtoClassDeclaration(string className, string classDeclaration)
         {
             ClassName = className;
             ClassDeclaration = classDeclaration;

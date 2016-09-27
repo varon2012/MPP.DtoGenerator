@@ -1,4 +1,4 @@
-﻿using DTOGeneratorLibrary;
+﻿using DtoGenerationLibrary;
 
 namespace UnsignedTypesDescriptions
 {

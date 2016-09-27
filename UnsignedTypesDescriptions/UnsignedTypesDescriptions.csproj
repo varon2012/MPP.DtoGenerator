@@ -38,9 +38,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DTOGeneratorLibrary\DTOGeneratorLibrary.csproj">
+    <ProjectReference Include="..\DTOGeneratorLibrary\DtoGeneratorLibrary.csproj">
       <Project>{99186eb5-796d-41dd-a06e-e099bed5789f}</Project>
-      <Name>DTOGeneratorLibrary</Name>
+      <Name>DtoGeneratorLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

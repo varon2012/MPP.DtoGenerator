@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DTOGeneratorLibrary
+namespace DtoGenerationLibrary
 {
     public class TypeDescription
     {

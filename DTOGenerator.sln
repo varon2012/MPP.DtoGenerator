@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOGeneratorLibrary", "DTOGeneratorLibrary\DTOGeneratorLibrary.csproj", "{99186EB5-796D-41DD-A06E-E099BED5789F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DtoGeneratorLibrary", "DTOGeneratorLibrary\DtoGeneratorLibrary.csproj", "{99186EB5-796D-41DD-A06E-E099BED5789F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOFromJsonGenerator", "DTOFromJsonGenerator\DTOFromJsonGenerator.csproj", "{52A76123-0434-4CB0-BEAC-41547BDD9EFE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DtoFromJsonGenerator", "DTOFromJsonGenerator\DtoFromJsonGenerator.csproj", "{52A76123-0434-4CB0-BEAC-41547BDD9EFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnsignedTypesDescriptions", "UnsignedTypesDescriptions\UnsignedTypesDescriptions.csproj", "{76B1F0D7-BBE9-4F52-A354-A0AF97BA2583}"
 EndProject

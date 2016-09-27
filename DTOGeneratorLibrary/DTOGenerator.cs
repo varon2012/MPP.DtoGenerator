@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
@@ -8,27 +7,26 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace DTOGeneratorLibrary
+namespace DtoGenerationLibrary
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class DTOGenerator
+    public class DtoGenerator
     {
         private int _runningTasksCount;        
         private readonly Queue<TaskInfo> _tasksQueue = new Queue<TaskInfo>();
         private readonly object _syncRoot = new object();
         private CountdownEvent _countdownEvent;
-        private DTOClassDeclaration[] _tasksResult;
+        private DtoClassDeclaration[] _tasksResult;
         private readonly Workspace _workspace = new AdhocWorkspace();
 
         private struct TaskInfo
         {
             public readonly int TaskNumber;
-            public readonly DTOClassInfo DTOClassInfo;
+            public readonly DtoClassInfo DtoClassInfo;
 
-            public TaskInfo(int taskNumber, DTOClassInfo dtoClassInfo)
+            public TaskInfo(int taskNumber, DtoClassInfo dtoClassInfo)
             {
                 TaskNumber = taskNumber;
-                DTOClassInfo = dtoClassInfo;
+                DtoClassInfo = dtoClassInfo;
             }
         }
 
@@ -37,16 +35,16 @@ namespace DTOGeneratorLibrary
         public int MaxRunningTasksCount { get; set; }
         public string NamespaceName { get; set; }
 
-        public DTOGenerator(int maxRunningTasksCount, string namespaceName)
+        public DtoGenerator(int maxRunningTasksCount, string namespaceName)
         {
             NamespaceName = namespaceName;
             MaxRunningTasksCount = maxRunningTasksCount;
         }
 
-        public DTOClassDeclaration[] GenerateDTOClasses(DTOClassInfo[] dtoClassesInfo)
+        public DtoClassDeclaration[] GenerateDtoClasses(DtoClassInfo[] dtoClassesInfo)
         {
             _countdownEvent = new CountdownEvent(dtoClassesInfo.Length);            
-            _tasksResult = new DTOClassDeclaration[dtoClassesInfo.Length];
+            _tasksResult = new DtoClassDeclaration[dtoClassesInfo.Length];
 
             for (int i = 0; i < dtoClassesInfo.Length; i++)            
             {
@@ -87,7 +85,7 @@ namespace DTOGeneratorLibrary
         {
             ThreadPool.QueueUserWorkItem(delegate 
             {
-                _tasksResult[taskInfo.TaskNumber] = GenerateDTOClassDeclaration(taskInfo.DTOClassInfo);
+                _tasksResult[taskInfo.TaskNumber] = GenerateDtoClassDeclaration(taskInfo.DtoClassInfo);
                 OnTaskFinish();
             });
             _runningTasksCount++;
@@ -107,18 +105,18 @@ namespace DTOGeneratorLibrary
             _countdownEvent.Signal();
         }
 
-        private DTOClassDeclaration GenerateDTOClassDeclaration(DTOClassInfo dtoClassInfo)
+        private DtoClassDeclaration GenerateDtoClassDeclaration(DtoClassInfo dtoClassInfo)
         {
             NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(NamespaceName));
             ClassDeclarationSyntax classDeclaration = ClassDeclaration(dtoClassInfo.Name);
             classDeclaration = classDeclaration.WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.SealedKeyword)));
-            classDeclaration = classDeclaration.WithMembers(List(dtoClassInfo.Properties.Select(GenerateDTOPropertyDeclaration)));
+            classDeclaration = classDeclaration.WithMembers(List(dtoClassInfo.Properties.Select(GenerateDtoPropertyDeclaration)));
 
             namespaceDeclaration = namespaceDeclaration.AddMembers(classDeclaration);
-            return new DTOClassDeclaration(dtoClassInfo.Name, Formatter.Format(namespaceDeclaration, _workspace).ToFullString());
+            return new DtoClassDeclaration(dtoClassInfo.Name, Formatter.Format(namespaceDeclaration, _workspace).ToFullString());
         }
 
-        private MemberDeclarationSyntax GenerateDTOPropertyDeclaration(DTOPropertyInfo dtoPropertyInfo)
+        private MemberDeclarationSyntax GenerateDtoPropertyDeclaration(DtoPropertyInfo dtoPropertyInfo)
         {
             PropertyDeclarationSyntax propertyDeclaration = PropertyDeclaration(IdentifierName(dtoPropertyInfo.PropertyType.FullName), dtoPropertyInfo.Name);
             propertyDeclaration = propertyDeclaration.WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));

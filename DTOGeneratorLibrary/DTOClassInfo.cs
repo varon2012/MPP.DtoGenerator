@@ -1,11 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace DTOGeneratorLibrary
+﻿namespace DtoGenerationLibrary
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class DTOClassInfo
+    public class DtoClassInfo
     {
         public string Name { get; set; }
-        public DTOPropertyInfo[] Properties { get; set; }
+        public DtoPropertyInfo[] Properties { get; set; }
     }
 }
