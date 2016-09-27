@@ -89,7 +89,7 @@ namespace DTOGeneratorLibrary
             RegisterTypes(builtinTypes);
         }
 
-        private void RegisterTypes(TypeDescription[] typeDescriptions)
+        private void RegisterTypes(IEnumerable<TypeDescription> typeDescriptions)
         {
             foreach (TypeDescription typeDescription in typeDescriptions)
             {

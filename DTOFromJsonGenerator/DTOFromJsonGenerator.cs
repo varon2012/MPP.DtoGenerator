@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using DTOGeneratorLibrary;
@@ -53,7 +54,7 @@ namespace DTOFromJsonGenerator
 
         // Static internals
 
-        private static void WriteResults(DTOClassDeclaration[] dtoClassesDeclaration, string outputDirectoryPath)
+        private static void WriteResults(IEnumerable<DTOClassDeclaration> dtoClassesDeclaration, string outputDirectoryPath)
         {
             Directory.CreateDirectory(outputDirectoryPath);
 
