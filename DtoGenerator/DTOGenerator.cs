@@ -11,7 +11,7 @@ namespace DtoGenerator
     public class DTOGenerator
     {
         private DescriptionsOfClass Classes;
-        private List<TypeDescription.TypeDescriptor> Types;
+        private List<TypeDescriptor> Types;
         private int CountOfTasks;
 
         private readonly static object locker = new object();
@@ -24,7 +24,7 @@ namespace DtoGenerator
             public string Namespace;
         }
 
-        public DTOGenerator(DescriptionsOfClass classes, List<TypeDescription.TypeDescriptor> types,int tasksCount)
+        public DTOGenerator(DescriptionsOfClass classes, List<TypeDescriptor> types,int tasksCount)
         {
             Classes = classes;
             Types = types;
@@ -84,13 +84,25 @@ namespace DtoGenerator
             {
                 CodeMemberProperty tempProperty = new CodeMemberProperty();
                 tempProperty.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-                tempProperty.Type = new CodeTypeReference("String");
+                tempProperty.Type = new CodeTypeReference(GetType(property.format,property.type));
                 tempProperty.Name = property.name;
                 tempProperty.HasGet = true;
                 tempProperty.HasSet = true;
                 className.Members.Add(tempProperty);
             }
             return compileUnit;
+        }
+
+        private string GetType(string format, string type)
+        {
+            foreach(var description in Types)
+            {
+                if((description.Format == format)&&(description.Type == type))
+                {
+                    return description.NETType;
+                }
+            }
+            return "UnknownType";
         }
     }
 
