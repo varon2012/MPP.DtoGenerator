@@ -89,6 +89,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DtoClassesWriter.cs" />
     <Compile Include="JsonToDtoInfo.cs" />
     <Compile Include="DtoFromJsonGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

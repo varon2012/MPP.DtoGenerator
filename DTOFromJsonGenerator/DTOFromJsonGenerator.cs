@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using DtoGenerationLibrary;
 using Newtonsoft.Json;
 using static DTOFromJsonGenerator.Properties.Settings;
@@ -30,7 +27,8 @@ namespace DTOFromJsonGenerator
                     var generator = new DtoGenerator(Default.MaxRunningTasksCount, Default.NamespaceName);
                     DtoClassDeclaration[] dtoClasses = generator.GenerateDtoClasses(dtoClassesInfo);
 
-                    WriteResults(dtoClasses, outputDirectoryPath);
+                    var dtoClassesWriter = new DtoClassesWriter();
+                    dtoClassesWriter.WriteDtoClasses(dtoClasses, outputDirectoryPath);
                 }
                 catch (PluginLoadingException)
                 {
@@ -52,18 +50,6 @@ namespace DTOFromJsonGenerator
         }
 
         // Static internals
-
-        private static void WriteResults(IEnumerable<DtoClassDeclaration> dtoClassesDeclaration, string outputDirectoryPath)
-        {
-            Directory.CreateDirectory(outputDirectoryPath);
-
-            foreach (DtoClassDeclaration dtoClassDeclaration in dtoClassesDeclaration)
-            {
-                string outputFileName = $"{dtoClassDeclaration.ClassName}.cs";
-                string outputFilePath = Path.Combine(outputDirectoryPath, outputFileName);
-                File.WriteAllText(outputFilePath, dtoClassDeclaration.ClassDeclaration);
-            }
-        }
 
         private static void PrintErrorMessage(string errorMessage)
         {
