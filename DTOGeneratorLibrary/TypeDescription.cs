@@ -2,11 +2,11 @@
 
 namespace DTOGeneratorLibrary
 {
-    public struct TypeDescription
+    public class TypeDescription
     {
-        public readonly TypeKind TypeKind;
-        public readonly string FormatName;
-        public readonly Type NetType;
+        public TypeKind TypeKind { get; }
+        public string FormatName { get; }
+        public Type NetType { get; }
 
         public TypeDescription(TypeKind typeKind, string formatName, Type netType)
         {
