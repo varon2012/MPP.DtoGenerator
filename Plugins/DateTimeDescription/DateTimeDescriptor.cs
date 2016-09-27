@@ -1,7 +1,11 @@
-﻿using TypeDescription;
+﻿using System.ComponentModel.Composition;
+
+using TypeDescription;
 
 namespace DateTimeDescription
 {
+    [Export(typeof(TypeDescriptor))]
+
     public class DateTimeDescriptor : TypeDescriptor
     {
         public DateTimeDescriptor()

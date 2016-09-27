@@ -1,7 +1,10 @@
-﻿using TypeDescription;
+﻿using System.ComponentModel.Composition;
+
+using TypeDescription;
 
 namespace StringDescription
 {
+    [Export(typeof(TypeDescriptor))]
     public class StringDescriptor : TypeDescriptor
     {
         public StringDescriptor()

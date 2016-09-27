@@ -1,7 +1,10 @@
-﻿using TypeDescription;
+﻿using System.ComponentModel.Composition;
+
+using TypeDescription;
 
 namespace BooleanDescription
 {
+    [Export(typeof(TypeDescriptor))]
     public class BooleanDescriptor : TypeDescriptor
     {
         public BooleanDescriptor()
