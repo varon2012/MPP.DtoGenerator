@@ -23,21 +23,27 @@ namespace DTOFromJsonGenerator.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("DTOClasses")]
         public string NamespaceName {
             get {
                 return ((string)(this["NamespaceName"]));
             }
+            set {
+                this["NamespaceName"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int MaxRunningTasksCount {
             get {
                 return ((int)(this["MaxRunningTasksCount"]));
+            }
+            set {
+                this["MaxRunningTasksCount"] = value;
             }
         }
     }

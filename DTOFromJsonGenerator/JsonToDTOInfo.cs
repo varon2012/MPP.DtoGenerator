@@ -41,9 +41,9 @@ namespace DTOFromJsonGenerator
         public JsonClassDescription[] ClassDescriptions { get; set; }
     }
 
-    internal class JsonToDTOParser
+    internal class JsonToDTOInfoConverter
     {
-        public DTOClassInfo[] ParseJsonFileToDtoClassInfo(string path)
+        internal DTOClassInfo[] ParseJsonFileToDtoClassInfo(string path)
         {
             return JsonStringToDtoClassInfo(File.ReadAllText(path));
         }
@@ -53,7 +53,7 @@ namespace DTOFromJsonGenerator
         private DTOClassInfo[] JsonStringToDtoClassInfo(string jsonString)
         {
             JsonClassDescriptions jsonClassDescriptions = JsonConvert.DeserializeObject<JsonClassDescriptions>(jsonString);
-            DTOClassInfo[] result = new DTOClassInfo[jsonClassDescriptions.ClassDescriptions.Length];
+            var result = new DTOClassInfo[jsonClassDescriptions.ClassDescriptions.Length];
 
             for (int i = 0; i < result.Length; i++)
             {

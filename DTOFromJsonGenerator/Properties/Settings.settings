@@ -2,10 +2,10 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DTOFromJsonGenerator.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="NamespaceName" Type="System.String" Scope="Application">
+    <Setting Name="NamespaceName" Type="System.String" Scope="User">
       <Value Profile="(Default)">DTOClasses</Value>
     </Setting>
-    <Setting Name="MaxRunningTasksCount" Type="System.Int32" Scope="Application">
+    <Setting Name="MaxRunningTasksCount" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
   </Settings>

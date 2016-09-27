@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DTOGeneratorLibrary
 {
-    interface ITypeDescriptionsProvider
+    public interface ITypeDescriptionsProvider
     {
         TypeDescription[] TypeDescriptions { get; }
     }

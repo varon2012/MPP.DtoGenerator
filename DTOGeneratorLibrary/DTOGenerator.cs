@@ -17,7 +17,7 @@ namespace DTOGeneratorLibrary
         private readonly Queue<TaskInfo> _tasksQueue = new Queue<TaskInfo>();
         private readonly object _syncRoot = new object();
         private CountdownEvent _countdownEvent;
-        private string[] _tasksResult;
+        private DTOClassDeclaration[] _tasksResult;
         private readonly Workspace _workspace = new AdhocWorkspace();
 
         private struct TaskInfo
@@ -43,10 +43,10 @@ namespace DTOGeneratorLibrary
             MaxRunningTasksCount = maxRunningTasksCount;
         }
 
-        public string[] GenerateDTOClasses(DTOClassInfo[] dtoClassesInfo)
+        public DTOClassDeclaration[] GenerateDTOClasses(DTOClassInfo[] dtoClassesInfo)
         {
             _countdownEvent = new CountdownEvent(dtoClassesInfo.Length);            
-            _tasksResult = new string[dtoClassesInfo.Length];
+            _tasksResult = new DTOClassDeclaration[dtoClassesInfo.Length];
 
             for (int i = 0; i < dtoClassesInfo.Length; i++)            
             {
@@ -107,7 +107,7 @@ namespace DTOGeneratorLibrary
             _countdownEvent.Signal();
         }
 
-        private string GenerateDTOClassDeclaration(DTOClassInfo dtoClassInfo)
+        private DTOClassDeclaration GenerateDTOClassDeclaration(DTOClassInfo dtoClassInfo)
         {
             NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(NamespaceName));
             ClassDeclarationSyntax classDeclaration = ClassDeclaration(dtoClassInfo.Name);
@@ -115,12 +115,10 @@ namespace DTOGeneratorLibrary
             classDeclaration = classDeclaration.WithMembers(List(dtoClassInfo.Properties.Select(GenerateDTOPropertyDeclaration)));
 
             namespaceDeclaration = namespaceDeclaration.AddMembers(classDeclaration);
-            return Formatter.Format(namespaceDeclaration, _workspace).ToFullString();
+            return new DTOClassDeclaration(dtoClassInfo.Name, Formatter.Format(namespaceDeclaration, _workspace).ToFullString());
         }
 
-        // Static internals
-        
-        private static MemberDeclarationSyntax GenerateDTOPropertyDeclaration(DTOPropertyInfo dtoPropertyInfo)
+        private MemberDeclarationSyntax GenerateDTOPropertyDeclaration(DTOPropertyInfo dtoPropertyInfo)
         {
             PropertyDeclarationSyntax propertyDeclaration = PropertyDeclaration(IdentifierName(dtoPropertyInfo.PropertyType.FullName), dtoPropertyInfo.Name);
             propertyDeclaration = propertyDeclaration.WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
 namespace DTOGeneratorLibrary
 {
@@ -18,6 +20,8 @@ namespace DTOGeneratorLibrary
             : base($"Type '{typeKind}' with format '{format}' not registered")
         { }
     }
+
+    public class PluginLoadingException : Exception { }
 
     public class SupportedTypesTable
     {
@@ -41,6 +45,31 @@ namespace DTOGeneratorLibrary
             throw new TypeNotRegisteredException(typeKind, format);
         }
 
+        public void LoadExternalTypes(string lookupDirectoryPath)
+        {
+            foreach (string file in Directory.EnumerateFiles(lookupDirectoryPath))
+            {
+                try
+                {
+                    Assembly assembly = Assembly.LoadFrom(file);
+                    Type[] exportedTypes = assembly.GetExportedTypes();
+
+                    Type[] typeDescriptionsProvidersTypes = Array.FindAll(exportedTypes,
+                        type => typeof(ITypeDescriptionsProvider).IsAssignableFrom(type) && !type.IsAbstract);
+                    foreach (Type typeDescriptionsProviderType in typeDescriptionsProvidersTypes)
+                    {
+                        ITypeDescriptionsProvider typeDescriptionsProvider =
+                            (ITypeDescriptionsProvider) Activator.CreateInstance(typeDescriptionsProviderType);
+                        RegisterTypes(typeDescriptionsProvider.TypeDescriptions);
+                    }
+                }
+                catch (Exception)
+                {
+                    throw new PluginLoadingException();
+                }
+            }
+        }
+
         // Internals
 
         private void RegisterBuiltinTypes()
@@ -57,7 +86,12 @@ namespace DTOGeneratorLibrary
                 new TypeDescription(TypeKind.String, "string", typeof(string)), 
             };
 
-            foreach (TypeDescription typeDescription in builtinTypes)
+            RegisterTypes(builtinTypes);
+        }
+
+        private void RegisterTypes(TypeDescription[] typeDescriptions)
+        {
+            foreach (TypeDescription typeDescription in typeDescriptions)
             {
                 RegisterType(typeDescription);
             }
