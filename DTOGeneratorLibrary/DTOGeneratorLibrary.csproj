@@ -91,9 +91,11 @@
     <Compile Include="DtoGenerator.cs" />
     <Compile Include="DtoPropertyInfo.cs" />
     <Compile Include="ITypeDescriptionsProvider.cs" />
+    <Compile Include="PluginLoadingException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SupportedTypesTable.cs" />
     <Compile Include="TypeDescription.cs" />
+    <Compile Include="TypeNotRegisteredException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

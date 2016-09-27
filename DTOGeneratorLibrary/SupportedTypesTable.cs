@@ -14,15 +14,6 @@ namespace DtoGenerationLibrary
         Object
     }
 
-    public class TypeNotRegisteredException : Exception
-    {
-        public TypeNotRegisteredException(TypeKind typeKind, string format) 
-            : base($"Type '{typeKind}' with format '{format}' not registered")
-        { }
-    }
-
-    public class PluginLoadingException : Exception { }
-
     public class SupportedTypesTable
     {
         private readonly List<TypeDescription> _registeredTypes = new List<TypeDescription>();
