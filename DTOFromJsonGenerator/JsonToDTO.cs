@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.IO;
 using DTOGeneratorLibrary;
 
@@ -46,12 +41,14 @@ namespace DTOFromJsonGenerator
         public JsonClassDescription[] ClassDescriptions { get; set; }
     }
 
-    class JsonToDTOParser
+    internal class JsonToDTOParser
     {
         public DTOClassInfo[] ParseJsonFileToDtoClassInfo(string path)
         {
             return JsonStringToDtoClassInfo(File.ReadAllText(path));
         }
+
+        // Internals
 
         private DTOClassInfo[] JsonStringToDtoClassInfo(string jsonString)
         {
