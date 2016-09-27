@@ -35,10 +35,12 @@ namespace DTOGeneratorLibrary
         // Public
 
         public int MaxRunningTasksCount { get; set; }
+        public string NamespaceName { get; set; }
 
-        public DTOGenerator(int maxRunningTasksCount)
+        public DTOGenerator(int maxRunningTasksCount, string namespaceName)
         {
-            MaxRunningTasksCount = maxRunningTasksCount;                      
+            NamespaceName = namespaceName;
+            MaxRunningTasksCount = maxRunningTasksCount;
         }
 
         public string[] GenerateDTOClasses(DTOClassInfo[] dtoClassesInfo)
@@ -107,11 +109,13 @@ namespace DTOGeneratorLibrary
 
         private string GenerateDTOClassDeclaration(DTOClassInfo dtoClassInfo)
         {
+            NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(NamespaceName));
             ClassDeclarationSyntax classDeclaration = ClassDeclaration(dtoClassInfo.Name);
             classDeclaration = classDeclaration.WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.SealedKeyword)));
             classDeclaration = classDeclaration.WithMembers(List(dtoClassInfo.Properties.Select(GenerateDTOPropertyDeclaration)));
 
-            return Formatter.Format(classDeclaration, _workspace).ToFullString();
+            namespaceDeclaration = namespaceDeclaration.AddMembers(classDeclaration);
+            return Formatter.Format(namespaceDeclaration, _workspace).ToFullString();
         }
 
         // Static internals
