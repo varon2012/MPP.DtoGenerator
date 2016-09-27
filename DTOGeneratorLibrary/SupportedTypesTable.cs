@@ -12,19 +12,36 @@ namespace DTOGeneratorLibrary
         Object
     }
 
-    internal class SupportedTypesTable
+    public class TypeNotRegisteredException : Exception
+    {
+        public TypeNotRegisteredException(TypeKind typeKind, string format) 
+            : base($"Type '{typeKind}' with format '{format}' not registered")
+        { }
+    }
+
+    public class SupportedTypesTable
     {
         private readonly List<TypeDescription> _registeredTypes = new List<TypeDescription>();
 
-        internal SupportedTypesTable()
+        private SupportedTypesTable()
         {
             RegisterBuiltinTypes();
         }
 
-        internal Type GetNetType(TypeKind typeKind, string format)
+        // Public 
+
+        public static SupportedTypesTable Instance { get; } = new SupportedTypesTable();
+
+        public Type GetNetType(TypeKind typeKind, string format)
         {
-            return _registeredTypes.Find(x => (x.TypeKind == typeKind) && (x.FormatName == format)).NetType;
+            Type result = _registeredTypes.Find(x => (x.TypeKind == typeKind) && (x.FormatName == format)).NetType;
+            if (result != null)
+                return result;
+
+            throw new TypeNotRegisteredException(typeKind, format);
         }
+
+        // Internals
 
         private void RegisterBuiltinTypes()
         {
