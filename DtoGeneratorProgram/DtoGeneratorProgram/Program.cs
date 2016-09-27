@@ -9,6 +9,7 @@ using System.Xml.Linq;
 
 using DtoGenerator;
 using DtoGenerator.Descriptors;
+using TypeDescription;
 
 namespace DtoGeneratorProgram
 {
@@ -19,12 +20,16 @@ namespace DtoGeneratorProgram
             string path = "samples.json";
             string taskCountPath = "ConfigurationFile.xml";
             string directory = "./MadeClasses/";
+            string plugins = "./TypePlugins/";
 
             int threadCount;
             string Namespace;
          
             if ( (File.Exists(path)) && (File.Exists(taskCountPath)) )
             {
+                FinderTypes dog = new FinderTypes(plugins);
+                List<TypeDescriptor> pluginTypes = dog.FindPlugins();
+
                 var document = XDocument.Load(taskCountPath);
                 threadCount = Int32.Parse(document.Root.Element("thread_count").Value);
                 Namespace = document.Root.Element("namespace").Value;
@@ -36,7 +41,7 @@ namespace DtoGeneratorProgram
 
                 Console.WriteLine(classes.classDescriptions.Count);
 
-                DTOGenerator tempDto = new DTOGenerator(classes, new List<TypeDescription.TypeDescriptor>(), threadCount);
+                DTOGenerator tempDto = new DTOGenerator(classes, pluginTypes, threadCount);
                 Dictionary<string, CodeCompileUnit> temp = tempDto.GetUnitsOfDtoClasses();
 
                 foreach(var unit in temp)
