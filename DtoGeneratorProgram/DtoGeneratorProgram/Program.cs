@@ -39,7 +39,7 @@ namespace DtoGeneratorProgram
                 DescriptionsOfClass classes = ser.Deserialize<DescriptionsOfClass>(json);
                 classes.Namespace = Namespace;
 
-                Console.WriteLine(classes.classDescriptions.Count);
+                Console.WriteLine("Find classes = " + classes.classDescriptions.Count);
 
                 DTOGenerator tempDto = new DTOGenerator(classes, pluginTypes, threadCount);
                 Dictionary<string, CodeCompileUnit> temp = tempDto.GetUnitsOfDtoClasses();
@@ -50,7 +50,7 @@ namespace DtoGeneratorProgram
                 }
             }
 
-            
+            Console.WriteLine("Work done");
             Console.ReadLine();
         }
 
