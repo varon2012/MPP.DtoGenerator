@@ -43,15 +43,17 @@ namespace DtoGenerationLibrary
 
         public DtoClassDeclaration[] GenerateDtoClasses(DtoClassInfo[] dtoClassesInfo)
         {
-            _countdownEvent = new CountdownEvent(dtoClassesInfo.Length);            
-            _tasksResult = new DtoClassDeclaration[dtoClassesInfo.Length];
-
-            for (int i = 0; i < dtoClassesInfo.Length; i++)            
+            using (_countdownEvent = new CountdownEvent(dtoClassesInfo.Length))
             {
-                QueueGenerationTask(new TaskInfo(i, dtoClassesInfo[i]));
-            }
+                _tasksResult = new DtoClassDeclaration[dtoClassesInfo.Length];
 
-            WaitAllTasks();
+                for (int i = 0; i < dtoClassesInfo.Length; i++)
+                {
+                    QueueGenerationTask(new TaskInfo(i, dtoClassesInfo[i]));
+                }
+
+                WaitAllTasks();
+            }
 
             return _tasksResult;
         }
