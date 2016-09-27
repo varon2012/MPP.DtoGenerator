@@ -90,8 +90,6 @@ namespace DtoGenerator
                 tempProperty.HasSet = true;
                 className.Members.Add(tempProperty);
             }
-
-
             return compileUnit;
         }
     }
