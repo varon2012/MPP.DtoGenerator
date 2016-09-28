@@ -13,10 +13,11 @@ namespace DtoGenerator
     {
         private DescriptionsOfClass Classes;
         private List<TypeDescriptor> Types;
+        private int TaskCount;
 
-        ManualResetEvent[] doneEvents;
+        private ManualResetEvent[] doneEvents;
         static SemaphoreSlim SemaphoreLocker;
-        Exception SavedException = null;
+        private Exception SavedException = null;
 
         private readonly static object locker = new object();
 
@@ -32,26 +33,21 @@ namespace DtoGenerator
         {
             Classes = classes;
             Types = types;
-            SemaphoreLocker = new SemaphoreSlim( tasksCount);
+            TaskCount = tasksCount;
         }
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
+            if (doneEvents != null)
             {
-                if (doneEvents != null)
+                foreach (var element in doneEvents)
                 {
-                    foreach(var element in doneEvents)
-                    {
-                        element.Dispose();
-                    }
+                    element.Dispose();
                 }
+            }
+            if(SemaphoreLocker != null)
+            {
+                SemaphoreLocker.Dispose();
             }
         }
 
@@ -60,6 +56,7 @@ namespace DtoGenerator
             Dictionary<string, CodeCompileUnit> result = new Dictionary<string, CodeCompileUnit>();
             doneEvents = new ManualResetEvent[Classes.classDescriptions.Count];
             int i = 0;
+            SemaphoreLocker = new SemaphoreSlim(TaskCount);
 
             foreach (var dtoClass in Classes.classDescriptions)
             {
@@ -71,7 +68,9 @@ namespace DtoGenerator
                 tempContext.doneEvent = doneEvents[i];
                 tempContext.Namespace = Classes.Namespace;
 
-                ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadPoolCallback),tempContext);
+                Thread newThread = new Thread(new ParameterizedThreadStart(ThreadPoolCallback));
+                newThread.Start(tempContext);
+                //ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadPoolCallback),tempContext);
                 i++;
             }
 
@@ -86,10 +85,8 @@ namespace DtoGenerator
         }
 
         private void ThreadPoolCallback(Object threadContext)
-        {
-            //Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " wants to enter");
+        {         
             SemaphoreLocker.Wait();
-            //Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " is in!");
             ThreadContex data = (ThreadContex)threadContext;
             Dictionary<string, CodeCompileUnit> result = (Dictionary<string, CodeCompileUnit>)data.result;
             CodeCompileUnit unit;
@@ -111,7 +108,6 @@ namespace DtoGenerator
             }
             finally
             {
-                //Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " is leaving");
                 SemaphoreLocker.Release();
                 data.doneEvent.Set();
             }
