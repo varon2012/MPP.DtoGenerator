@@ -22,34 +22,42 @@ namespace DtoGeneratorProgram
 
             int threadCount;
             string Namespace;
-         
-            if ( (File.Exists(path)) && (File.Exists(taskCountPath)) )
+            try
             {
-                FinderTypes dog = new FinderTypes(plugins);
-                List<TypeDescriptor> pluginTypes = dog.FindPlugins();
-
-                var document = XDocument.Load(taskCountPath);
-                threadCount = Int32.Parse(document.Root.Element("thread_count").Value);
-                Namespace = document.Root.Element("namespace").Value;
-                string json = File.ReadAllText(path);
-
-                JavaScriptSerializer ser = new JavaScriptSerializer();
-                DescriptionsOfClass classes = ser.Deserialize<DescriptionsOfClass>(json);
-                classes.Namespace = Namespace;
-
-                Console.WriteLine("Find classes = " + classes.classDescriptions.Count);
-
-                DtoGenerator.DtoGenerator tempDto = new DtoGenerator.DtoGenerator(classes, pluginTypes, threadCount);
-                Dictionary<string, CodeCompileUnit> temp = tempDto.GetUnitsOfDtoClasses();
-
-                foreach(var unit in temp)
+                if ((File.Exists(path)) && (File.Exists(taskCountPath)))
                 {
-                    ClassDescriptioSaver.SaveCode(directory + unit.Key + ".cs", unit.Value);
+                    FinderTypes dog = new FinderTypes(plugins);
+                    List<TypeDescriptor> pluginTypes = dog.FindPlugins();
+
+                    var document = XDocument.Load(taskCountPath);
+                    threadCount = Int32.Parse(document.Root.Element("thread_count").Value);
+                    Namespace = document.Root.Element("namespace").Value;
+                    string json = File.ReadAllText(path);
+
+                    JavaScriptSerializer ser = new JavaScriptSerializer();
+                    DescriptionsOfClass classes = ser.Deserialize<DescriptionsOfClass>(json);
+                    classes.Namespace = Namespace;
+
+                    Console.WriteLine("Find classes = " + classes.classDescriptions.Count);
+
+                    DtoGenerator.DtoGenerator tempDto = new DtoGenerator.DtoGenerator(classes, pluginTypes, threadCount);
+                    Dictionary<string, CodeCompileUnit> temp = tempDto.GetUnitsOfDtoClasses();
+
+                    foreach (var unit in temp)
+                    {
+                        ClassDescriptioSaver.SaveCode(directory + unit.Key + ".cs", unit.Value);
+                    }
                 }
+                Console.WriteLine("Work done");
+                Console.ReadLine();
+            }
+            catch(Exception error)
+            {
+                Console.WriteLine(error.Message);
+                Console.ReadLine();
             }
 
-            Console.WriteLine("Work done");
-            Console.ReadLine();
+            
         }
     }
 }

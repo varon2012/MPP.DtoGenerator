@@ -14,6 +14,8 @@ namespace DtoGenerator
         private List<TypeDescriptor> Types;
         private int CountOfTasks;
 
+        Exception SavedException = null;
+
         private readonly static object locker = new object();
 
         private class ThreadContex
@@ -36,7 +38,6 @@ namespace DtoGenerator
             Dictionary<string, CodeCompileUnit> result = new Dictionary<string, CodeCompileUnit>();
             ManualResetEvent[] doneEvents = new ManualResetEvent[Classes.classDescriptions.Count];
             int i = 0;
-            ThreadPool.SetMaxThreads(CountOfTasks, Int32.MaxValue);
 
             foreach (var dtoClass in Classes.classDescriptions)
             {
@@ -53,6 +54,12 @@ namespace DtoGenerator
             }
 
             WaitHandle.WaitAll(doneEvents);
+
+            if (SavedException != null)
+            {
+                throw SavedException;
+            }
+
             return result;
         }
 
@@ -60,12 +67,27 @@ namespace DtoGenerator
         {
             ThreadContex data = (ThreadContex)threadContext;
             Dictionary<string, CodeCompileUnit> result = (Dictionary<string, CodeCompileUnit>)data.result;
-            CodeCompileUnit unit = GenerateCode(data.classDescription, data.Namespace);
-            lock (locker)
+            CodeCompileUnit unit;
+            try
             {
-                result.Add(data.classDescription.ClassName, unit);
-            }    
-            data.doneEvent.Set();
+                unit = GenerateCode(data.classDescription, data.Namespace);
+                lock (locker)
+                {
+                    result.Add(data.classDescription.ClassName, unit);
+                }
+               
+            }
+            catch(Exception error)
+            {
+                lock (locker)
+                {
+                    SavedException = error;
+                }               
+            }
+            finally
+            {
+                data.doneEvent.Set();
+            }
         }
 
         private CodeCompileUnit GenerateCode(ClassDescriptor classDescription, String NameSpace)
@@ -84,6 +106,12 @@ namespace DtoGenerator
             {
                 CodeMemberProperty tempProperty = new CodeMemberProperty();
                 tempProperty.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+
+                string propertyType = GetType(property.Format, property.Type);
+                if(propertyType == String.Empty)
+                {
+                    throw new Exception("Unknown type in class " + classDescription.ClassName + " in property " + property.Name);
+                }
                 tempProperty.Type = new CodeTypeReference(GetType(property.Format,property.Type));
                 tempProperty.Name = property.Name;
                 tempProperty.HasGet = true;
@@ -102,7 +130,7 @@ namespace DtoGenerator
                     return description.NETType;
                 }
             }
-            return "UnknownType";
+            return String.Empty;
         }
     }
 
