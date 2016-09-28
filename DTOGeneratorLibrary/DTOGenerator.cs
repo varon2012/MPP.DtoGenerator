@@ -45,6 +45,8 @@ namespace DtoGenerationLibrary
             using (var countdownEvent = new CountdownEvent(dtoClassesInfo.Length))
             {
                 _tasksResult = new DtoClassDeclaration[dtoClassesInfo.Length];
+                _runningTasksCount = 0;
+                _tasksQueue.Clear();
 
                 for (int i = 0; i < dtoClassesInfo.Length; i++)
                 {
