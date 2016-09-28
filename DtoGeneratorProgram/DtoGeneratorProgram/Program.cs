@@ -17,7 +17,6 @@ namespace DtoGeneratorProgram
         static void Main(string[] args)
         {
             string path = "samples.json";
-            string taskCountPath = "ConfigurationFile.xml";
             string directory = "./MadeClasses/";
             string plugins = "./TypePlugins/";
 
@@ -26,7 +25,7 @@ namespace DtoGeneratorProgram
 
             try
             {
-                if ((File.Exists(path)) && (File.Exists(taskCountPath)))
+                if (File.Exists(path))
                 {
                     FinderTypes dog = new FinderTypes(plugins);
                     List<TypeDescriptor> pluginTypes = dog.FindPlugins();

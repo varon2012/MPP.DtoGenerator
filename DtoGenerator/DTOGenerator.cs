@@ -2,17 +2,19 @@
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Threading;
+using System.Runtime.InteropServices;
 
 using DtoGenerator.Descriptors;
 using TypeDescription;
 
 namespace DtoGenerator
 {
-    public class DtoGenerator
+    public class DtoGenerator : IDisposable
     {
         private DescriptionsOfClass Classes;
         private List<TypeDescriptor> Types;
 
+        ManualResetEvent[] doneEvents;
         static SemaphoreSlim SemaphoreLocker;
         Exception SavedException = null;
 
@@ -33,10 +35,30 @@ namespace DtoGenerator
             SemaphoreLocker = new SemaphoreSlim( tasksCount);
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (doneEvents != null)
+                {
+                    foreach(var element in doneEvents)
+                    {
+                        element.Dispose();
+                    }
+                }
+            }
+        }
+
         public Dictionary<string,CodeCompileUnit> GetUnitsOfDtoClasses()
         {
             Dictionary<string, CodeCompileUnit> result = new Dictionary<string, CodeCompileUnit>();
-            ManualResetEvent[] doneEvents = new ManualResetEvent[Classes.classDescriptions.Count];
+            doneEvents = new ManualResetEvent[Classes.classDescriptions.Count];
             int i = 0;
 
             foreach (var dtoClass in Classes.classDescriptions)
