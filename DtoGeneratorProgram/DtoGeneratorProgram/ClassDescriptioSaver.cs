@@ -15,6 +15,7 @@ namespace DtoGeneratorProgram
             provider.GenerateCodeFromCompileUnit(compileunit, codeWriter, new CodeGeneratorOptions());
 
             codeWriter.Close();
+            codeWriter.Dispose();
         }
     }
 }
