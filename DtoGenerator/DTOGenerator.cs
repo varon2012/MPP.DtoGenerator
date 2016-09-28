@@ -16,7 +16,7 @@ namespace DtoGenerator
 
         private readonly static object locker = new object();
 
-        public struct ThreadContex
+        private class ThreadContex
         {
             public Dictionary<string, CodeCompileUnit> result;
             public ClassDescriptor classDescription;
@@ -63,7 +63,7 @@ namespace DtoGenerator
             CodeCompileUnit unit = GenerateCode(data.classDescription, data.Namespace);
             lock (locker)
             {
-                result.Add(data.classDescription.className, unit);
+                result.Add(data.classDescription.ClassName, unit);
             }    
             data.doneEvent.Set();
         }
@@ -75,17 +75,17 @@ namespace DtoGenerator
             CodeNamespace classNameSpace = new CodeNamespace(NameSpace);
             compileUnit.Namespaces.Add(classNameSpace);
 
-            CodeTypeDeclaration className = new CodeTypeDeclaration(classDescription.className);
+            CodeTypeDeclaration className = new CodeTypeDeclaration(classDescription.ClassName);
             className.IsClass = true;
             className.TypeAttributes = System.Reflection.TypeAttributes.Public | System.Reflection.TypeAttributes.Sealed;
             classNameSpace.Types.Add(className);
 
-            foreach(var property in classDescription.properties)
+            foreach(var property in classDescription.Properties)
             {
                 CodeMemberProperty tempProperty = new CodeMemberProperty();
                 tempProperty.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-                tempProperty.Type = new CodeTypeReference(GetType(property.format,property.type));
-                tempProperty.Name = property.name;
+                tempProperty.Type = new CodeTypeReference(GetType(property.Format,property.Type));
+                tempProperty.Name = property.Name;
                 tempProperty.HasGet = true;
                 tempProperty.HasSet = true;
                 className.Members.Add(tempProperty);
