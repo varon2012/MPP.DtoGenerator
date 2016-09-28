@@ -4,10 +4,8 @@ using System.Web.Script.Serialization;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Linq;
 
-using DtoGenerator;
 using DtoGenerator.Descriptors;
 using TypeDescription;
 
@@ -46,23 +44,12 @@ namespace DtoGeneratorProgram
 
                 foreach(var unit in temp)
                 {
-                    SaveCode(directory + unit.Key + ".cs", unit.Value);
+                    ClassDescriptioSaver.SaveCode(directory + unit.Key + ".cs", unit.Value);
                 }
             }
 
             Console.WriteLine("Work done");
             Console.ReadLine();
-        }
-
-        public static void SaveCode(string path, CodeCompileUnit compileunit)
-        {
-
-            CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
-
-            IndentedTextWriter codeWriter = new IndentedTextWriter(new StreamWriter(path, false), "    ");
-            provider.GenerateCodeFromCompileUnit(compileunit, codeWriter, new CodeGeneratorOptions());
-
-            codeWriter.Close();
         }
     }
 }
