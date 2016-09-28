@@ -14,9 +14,9 @@ namespace DtoGenerator
         private DescriptionsOfClass Classes;
         private List<TypeDescriptor> Types;
         private int TaskCount;
+        private int WorkingThreads = 0;
 
         private ManualResetEvent[] doneEvents;
-        static SemaphoreSlim SemaphoreLocker;
         private List<Exception> SavedException = new List<Exception>();
 
         private readonly static object locker = new object();
@@ -45,10 +45,6 @@ namespace DtoGenerator
                     element.Dispose();
                 }
             }
-            if(SemaphoreLocker != null)
-            {
-                SemaphoreLocker.Dispose();
-            }
         }
 
         public Dictionary<string,CodeCompileUnit> GetUnitsOfDtoClasses(out List<Exception> exceptions)
@@ -56,7 +52,6 @@ namespace DtoGenerator
             Dictionary<string, CodeCompileUnit> result = new Dictionary<string, CodeCompileUnit>();
             doneEvents = new ManualResetEvent[Classes.classDescriptions.Count];
             int i = 0;
-            SemaphoreLocker = new SemaphoreSlim(TaskCount);
 
             foreach (var dtoClass in Classes.classDescriptions)
             {
@@ -68,9 +63,13 @@ namespace DtoGenerator
                 tempContext.doneEvent = doneEvents[i];
                 tempContext.Namespace = Classes.Namespace;
 
-                Thread newThread = new Thread(new ParameterizedThreadStart(ThreadPoolCallback));
-                newThread.Start(tempContext);
-                //ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadPoolCallback),tempContext);
+                WorkingThreads++;
+                while (WorkingThreads > TaskCount)
+                {
+                    
+                }
+
+                ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadPoolCallback),tempContext);
                 i++;
             }
 
@@ -82,8 +81,8 @@ namespace DtoGenerator
         }
 
         private void ThreadPoolCallback(Object threadContext)
-        {         
-            SemaphoreLocker.Wait();
+        {
+            Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " in");
             ThreadContex data = (ThreadContex)threadContext;
             Dictionary<string, CodeCompileUnit> result = (Dictionary<string, CodeCompileUnit>)data.result;
             CodeCompileUnit unit;
@@ -105,7 +104,11 @@ namespace DtoGenerator
             }
             finally
             {
-                SemaphoreLocker.Release();
+                lock(locker)
+                {
+                    WorkingThreads--;
+                }
+                Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " out");
                 data.doneEvent.Set();
             }
         }
