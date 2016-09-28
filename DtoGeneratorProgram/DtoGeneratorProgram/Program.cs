@@ -5,6 +5,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using System.Configuration;
 
 using DtoGenerator.Descriptors;
 using TypeDescription;
@@ -22,6 +23,7 @@ namespace DtoGeneratorProgram
 
             int threadCount;
             string Namespace;
+
             try
             {
                 if ((File.Exists(path)) && (File.Exists(taskCountPath)))
@@ -29,11 +31,10 @@ namespace DtoGeneratorProgram
                     FinderTypes dog = new FinderTypes(plugins);
                     List<TypeDescriptor> pluginTypes = dog.FindPlugins();
 
-                    var document = XDocument.Load(taskCountPath);
-                    threadCount = Int32.Parse(document.Root.Element("thread_count").Value);
-                    Namespace = document.Root.Element("namespace").Value;
-                    string json = File.ReadAllText(path);
+                    threadCount = Int32.Parse(ConfigurationManager.AppSettings["thread_count"]);
+                    Namespace = ConfigurationManager.AppSettings["namespace"];
 
+                    string json = File.ReadAllText(path);
                     JavaScriptSerializer ser = new JavaScriptSerializer();
                     DescriptionsOfClass classes = ser.Deserialize<DescriptionsOfClass>(json);
                     classes.Namespace = Namespace;
