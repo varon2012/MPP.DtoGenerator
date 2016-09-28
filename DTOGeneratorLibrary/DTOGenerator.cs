@@ -14,7 +14,6 @@ namespace DtoGenerationLibrary
         private int _runningTasksCount;        
         private readonly Queue<TaskInfo> _tasksQueue = new Queue<TaskInfo>();
         private readonly object _syncRoot = new object();
-        private CountdownEvent _countdownEvent;
         private DtoClassDeclaration[] _tasksResult;
         private readonly Workspace _workspace = new AdhocWorkspace();
 
@@ -43,16 +42,16 @@ namespace DtoGenerationLibrary
 
         public DtoClassDeclaration[] GenerateDtoClasses(DtoClassInfo[] dtoClassesInfo)
         {
-            using (_countdownEvent = new CountdownEvent(dtoClassesInfo.Length))
+            using (var countdownEvent = new CountdownEvent(dtoClassesInfo.Length))
             {
                 _tasksResult = new DtoClassDeclaration[dtoClassesInfo.Length];
 
                 for (int i = 0; i < dtoClassesInfo.Length; i++)
                 {
-                    QueueGenerationTask(new TaskInfo(i, dtoClassesInfo[i]));
+                    QueueGenerationTask(new TaskInfo(i, dtoClassesInfo[i]), countdownEvent);
                 }
 
-                WaitAllTasks();
+                WaitAllTasks(countdownEvent);
             }
 
             return _tasksResult;
@@ -63,13 +62,13 @@ namespace DtoGenerationLibrary
         private bool HasTasks => _tasksQueue.Count > 0;
         private bool CanAddToPool => _runningTasksCount < MaxRunningTasksCount;
 
-        private void QueueGenerationTask(TaskInfo taskInfo)
+        private void QueueGenerationTask(TaskInfo taskInfo, CountdownEvent countdownEvent)
         {
             lock (_syncRoot)
             {
                 if (CanAddToPool)
                 {
-                    AddToPool(taskInfo);
+                    AddToPool(taskInfo, countdownEvent);
                 }
                 else
                 {
@@ -78,33 +77,32 @@ namespace DtoGenerationLibrary
             }
         }
 
-        private void WaitAllTasks()
+        private void WaitAllTasks(CountdownEvent countdownEvent)
         {
-            _countdownEvent.Wait();
+            countdownEvent.Wait();
         }
 
-        private void AddToPool(TaskInfo taskInfo)
+        private void AddToPool(TaskInfo taskInfo, CountdownEvent countdownEvent)
         {
             ThreadPool.QueueUserWorkItem(delegate 
             {
                 _tasksResult[taskInfo.TaskNumber] = GenerateDtoClassDeclaration(taskInfo.DtoClassInfo);
-                OnTaskFinish();
+                OnTaskFinish(countdownEvent);
             });
             _runningTasksCount++;
         }
 
-        private void OnTaskFinish()
+        private void OnTaskFinish(CountdownEvent countdownEvent)
         {
             lock (_syncRoot)
             {
                 _runningTasksCount--;
 
-                if (HasTasks)
-                {
-                    AddToPool(_tasksQueue.Dequeue());
+                if (HasTasks){
+                    AddToPool(_tasksQueue.Dequeue(), countdownEvent);
                 }
             }
-            _countdownEvent.Signal();
+            countdownEvent.Signal();
         }
 
         private DtoClassDeclaration GenerateDtoClassDeclaration(DtoClassInfo dtoClassInfo)
