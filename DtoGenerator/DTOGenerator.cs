@@ -65,9 +65,9 @@ namespace DtoGenerator
 
         private void ThreadPoolCallback(Object threadContext)
         {
-            Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " wants to enter");
+            //Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " wants to enter");
             SemaphoreLocker.Wait();
-            Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " is in!");
+            //Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " is in!");
             ThreadContex data = (ThreadContex)threadContext;
             Dictionary<string, CodeCompileUnit> result = (Dictionary<string, CodeCompileUnit>)data.result;
             CodeCompileUnit unit;
@@ -89,7 +89,7 @@ namespace DtoGenerator
             }
             finally
             {
-                Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " is leaving");
+                //Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " is leaving");
                 SemaphoreLocker.Release();
                 data.doneEvent.Set();
             }
