@@ -17,7 +17,7 @@ namespace DtoGenerator
 
         private ManualResetEvent[] doneEvents;
         static SemaphoreSlim SemaphoreLocker;
-        private Exception SavedException = null;
+        private List<Exception> SavedException = new List<Exception>();
 
         private readonly static object locker = new object();
 
@@ -51,7 +51,7 @@ namespace DtoGenerator
             }
         }
 
-        public Dictionary<string,CodeCompileUnit> GetUnitsOfDtoClasses()
+        public Dictionary<string,CodeCompileUnit> GetUnitsOfDtoClasses(out List<Exception> exceptions)
         {
             Dictionary<string, CodeCompileUnit> result = new Dictionary<string, CodeCompileUnit>();
             doneEvents = new ManualResetEvent[Classes.classDescriptions.Count];
@@ -76,10 +76,7 @@ namespace DtoGenerator
 
             WaitHandle.WaitAll(doneEvents);
 
-            if (SavedException != null)
-            {
-                throw SavedException;
-            }
+            exceptions = (SavedException.Count == 0) ? null : SavedException;
 
             return result;
         }
@@ -103,7 +100,7 @@ namespace DtoGenerator
             {
                 lock (locker)
                 {
-                    SavedException = error;
+                    SavedException.Add(error);
                 }               
             }
             finally
