@@ -4,12 +4,12 @@ namespace DtoGenerator.Descriptors
 {
     public class ClassDescriptor
     {
-        public string className { get; set; }
-        public List<PropertyDescriptor> properties { get; set; }    
+        public string ClassName { get; set; }
+        public List<PropertyDescriptor> Properties { get; set; }    
 
         public ClassDescriptor()
         {
-            properties = new List<PropertyDescriptor>();
+            Properties = new List<PropertyDescriptor>();
         }
     }
 }

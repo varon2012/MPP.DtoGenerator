@@ -2,9 +2,9 @@
 {
     public class PropertyDescriptor
     {
-        public string name { get;  set; }
-        public string type { get;  set; }
-        public string format { get;  set; }
+        public string Name { get;  set; }
+        public string Type { get;  set; }
+        public string Format { get;  set; }
     }
 }
     
