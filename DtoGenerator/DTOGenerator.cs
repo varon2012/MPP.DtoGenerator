@@ -12,8 +12,8 @@ namespace DtoGenerator
     {
         private DescriptionsOfClass Classes;
         private List<TypeDescriptor> Types;
-        private int CountOfTasks;
 
+        static SemaphoreSlim SemaphoreLocker;
         Exception SavedException = null;
 
         private readonly static object locker = new object();
@@ -30,7 +30,7 @@ namespace DtoGenerator
         {
             Classes = classes;
             Types = types;
-            CountOfTasks = tasksCount;
+            SemaphoreLocker = new SemaphoreSlim( tasksCount);
         }
 
         public Dictionary<string,CodeCompileUnit> GetUnitsOfDtoClasses()
@@ -65,6 +65,9 @@ namespace DtoGenerator
 
         private void ThreadPoolCallback(Object threadContext)
         {
+            Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " wants to enter");
+            SemaphoreLocker.Wait();
+            Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " is in!");
             ThreadContex data = (ThreadContex)threadContext;
             Dictionary<string, CodeCompileUnit> result = (Dictionary<string, CodeCompileUnit>)data.result;
             CodeCompileUnit unit;
@@ -86,6 +89,8 @@ namespace DtoGenerator
             }
             finally
             {
+                Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " is leaving");
+                SemaphoreLocker.Release();
                 data.doneEvent.Set();
             }
         }
