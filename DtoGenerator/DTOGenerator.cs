@@ -8,7 +8,7 @@ using TypeDescription;
 
 namespace DtoGenerator
 {
-    public class DTOGenerator
+    public class DtoGenerator
     {
         private DescriptionsOfClass Classes;
         private List<TypeDescriptor> Types;
@@ -24,7 +24,7 @@ namespace DtoGenerator
             public string Namespace;
         }
 
-        public DTOGenerator(DescriptionsOfClass classes, List<TypeDescriptor> types,int tasksCount)
+        public DtoGenerator(DescriptionsOfClass classes, List<TypeDescriptor> types,int tasksCount)
         {
             Classes = classes;
             Types = types;

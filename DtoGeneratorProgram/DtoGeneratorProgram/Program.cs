@@ -41,7 +41,7 @@ namespace DtoGeneratorProgram
 
                 Console.WriteLine("Find classes = " + classes.classDescriptions.Count);
 
-                DTOGenerator tempDto = new DTOGenerator(classes, pluginTypes, threadCount);
+                DtoGenerator.DtoGenerator tempDto = new DtoGenerator.DtoGenerator(classes, pluginTypes, threadCount);
                 Dictionary<string, CodeCompileUnit> temp = tempDto.GetUnitsOfDtoClasses();
 
                 foreach(var unit in temp)

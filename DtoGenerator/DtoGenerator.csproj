@@ -43,7 +43,7 @@
     <Compile Include="Descriptors\ClassDescriptor.cs" />
     <Compile Include="Descriptors\DescriptionsOfClass.cs" />
     <Compile Include="Descriptors\PropertyDescriptor.cs" />
-    <Compile Include="DTOGenerator.cs" />
+    <Compile Include="DtoGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
