@@ -10,7 +10,7 @@ namespace BooleanDescription
         public BooleanDescriptor()
         {
             Type = "boolean";
-            Format = "";
+            Format = System.String.Empty;
             NETType = "System.Boolean";
         }
     }
