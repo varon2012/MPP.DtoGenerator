@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Threading;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 using DtoGenerator.Descriptors;
@@ -15,6 +16,7 @@ namespace DtoGenerator
         private List<TypeDescriptor> Types;
         private int TaskCount;
         private int WorkingThreads = 0;
+        private Queue<ClassDescriptor> ThreadQueue = new Queue<ClassDescriptor>();
 
         private ManualResetEvent[] doneEvents;
         private List<Exception> SavedException = new List<Exception>();
@@ -33,7 +35,7 @@ namespace DtoGenerator
         {
             Classes = classes;
             Types = types;
-            TaskCount = tasksCount;
+            TaskCount = tasksCount;            
         }
 
         public void Dispose()
@@ -47,41 +49,52 @@ namespace DtoGenerator
             }
         }
 
-        public Dictionary<string,CodeCompileUnit> GetUnitsOfDtoClasses(out List<Exception> exceptions)
+        public Dictionary<string,CodeCompileUnit> GetUnitsOfDtoClasses()
         {
             Dictionary<string, CodeCompileUnit> result = new Dictionary<string, CodeCompileUnit>();
             doneEvents = new ManualResetEvent[Classes.classDescriptions.Count];
             int i = 0;
 
-            foreach (var dtoClass in Classes.classDescriptions)
+            foreach (var dto in Classes.classDescriptions)
             {
-                doneEvents[i] = new ManualResetEvent(false);
+                ThreadQueue.Enqueue(dto);
+            }
 
-                ThreadContex tempContext = new ThreadContex();
-                tempContext.result = result;
-                tempContext.classDescription = dtoClass;
-                tempContext.doneEvent = doneEvents[i];
-                tempContext.Namespace = Classes.Namespace;
-
-                WorkingThreads++;
-                while (WorkingThreads > TaskCount)
+            while(ThreadQueue.Count != 0)
+            {               
+                lock (locker)
                 {
-                    
-                }
+                    if (WorkingThreads < TaskCount)
+                    {
+                        doneEvents[i] = new ManualResetEvent(false);
+                        ClassDescriptor tempClassDescription = ThreadQueue.Dequeue();
+                        ThreadContex tempContext = new ThreadContex();
+                        tempContext.result = result;
+                        tempContext.classDescription = tempClassDescription;
+                        tempContext.doneEvent = doneEvents[i];
+                        tempContext.Namespace = Classes.Namespace;
+                        i++;
 
-                ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadPoolCallback),tempContext);
-                i++;
+                        ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadPoolCallback), tempContext);
+                        WorkingThreads++;
+                    }
+                }
             }
 
             WaitHandle.WaitAll(doneEvents);
 
-            exceptions = (SavedException.Count == 0) ? null : SavedException;
+            if(SavedException.Count != 0)
+            {
+                throw new AggregateException(SavedException);
+            }
 
             return result;
         }
 
         private void ThreadPoolCallback(Object threadContext)
         {
+            Console.WriteLine(Thread.CurrentThread.ManagedThreadId + "  in  ");
+
             ThreadContex data = (ThreadContex)threadContext;
             Dictionary<string, CodeCompileUnit> result = (Dictionary<string, CodeCompileUnit>)data.result;
             CodeCompileUnit unit;
@@ -105,8 +118,9 @@ namespace DtoGenerator
             {
                 lock(locker)
                 {
-                    WorkingThreads--;
+                    WorkingThreads--;                 
                 }
+                Console.WriteLine(Thread.CurrentThread.ManagedThreadId + "  out  ");
                 data.doneEvent.Set();
             }
         }
@@ -135,8 +149,8 @@ namespace DtoGenerator
                 }
                 tempProperty.Type = new CodeTypeReference(GetType(property.Format,property.Type));
                 tempProperty.Name = property.Name;
-                tempProperty.HasGet = true;
-                tempProperty.HasSet = true;
+                tempProperty.GetStatements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), tempProperty.Name)));
+                tempProperty.SetStatements.Add(new CodeAssignStatement(new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), tempProperty.Name), new CodePropertySetValueReferenceExpression()));
                 className.Members.Add(tempProperty);
             }
             return compileUnit;

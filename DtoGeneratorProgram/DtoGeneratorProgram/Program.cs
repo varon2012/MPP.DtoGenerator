@@ -22,7 +22,6 @@ namespace DtoGeneratorProgram
 
             int threadCount;
             string Namespace;
-            List<Exception> Errors = null;
 
             try
             {
@@ -42,12 +41,8 @@ namespace DtoGeneratorProgram
                     Console.WriteLine("Find classes = " + classes.classDescriptions.Count);
 
                     DtoGenerator.DtoGenerator tempDto = new DtoGenerator.DtoGenerator(classes, pluginTypes, threadCount);
-                    Dictionary<string, CodeCompileUnit> temp = tempDto.GetUnitsOfDtoClasses(out Errors);
+                    Dictionary<string, CodeCompileUnit> temp = tempDto.GetUnitsOfDtoClasses();
 
-                    if (Errors != null)
-                    {
-                        throw new InvalidDataException();
-                    }
                     foreach (var unit in temp)
                     {
                         ClassDescriptioSaver.SaveCode(directory + unit.Key + ".cs", unit.Value);
@@ -56,9 +51,9 @@ namespace DtoGeneratorProgram
                 Console.WriteLine("Work done");
                 Console.ReadLine();
             }
-            catch(InvalidDataException error)
+            catch(AggregateException error)
             {
-                foreach(var exception in Errors)
+                foreach(var exception in error.InnerExceptions)
                 {
                     Console.WriteLine(exception.Message);
                 }
