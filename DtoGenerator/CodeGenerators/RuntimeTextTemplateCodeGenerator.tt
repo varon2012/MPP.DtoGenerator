@@ -1,0 +1,23 @@
+﻿<#@ template language="C#" #>
+<#@ parameter type="DtoGenerator.DeserializedData.ClassDescription" name="ClassDescription"  #>
+<#@ parameter type="System.String" name="NamespaceName"  #>
+<#@ parameter type="DtoGenerator.Plugins.TypeTable" name="TypeTable"  #>
+
+<# if(NamespaceName != System.String.Empty) { #>
+namespace <#= NamespaceName #> {
+<# } #>
+
+	public sealed class <#= ClassDescription.ClassName #>
+	{
+		<# foreach (var property in ClassDescription.Properties)
+           {
+		#>
+		public <#= TypeTable.GetCSharpTypeByFormatAndType(property.Type, property.Format).FullName #> <#= property.Name #> {get; set;}
+		<#
+			}
+		#>
+	}
+
+<# if(NamespaceName != System.String.Empty) { #>
+}
+<# } #>
