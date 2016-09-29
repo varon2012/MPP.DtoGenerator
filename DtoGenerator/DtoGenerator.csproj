@@ -169,12 +169,13 @@
       <DependentUpon>RuntimeTextTemplateCodeGenerator.tt</DependentUpon>
     </Compile>
     <Compile Include="CodeGenerators\T4TemplateCodeGenerator.cs" />
-    <Compile Include="Config\ConfigData.cs" />
+    <Compile Include="Config\IConfig.cs" />
     <Compile Include="DtoGenerator.cs" />
     <Compile Include="DeserializedData\ClassDescription.cs" />
     <Compile Include="DeserializedData\ClassList.cs" />
     <Compile Include="DeserializedData\PropertyDescription.cs" />
-    <Compile Include="GeneratingClassUnit.cs" />
+    <Compile Include="GenerationClassUnit.cs" />
+    <Compile Include="GenerationResult.cs" />
     <Compile Include="Parsers\IParser.cs" />
     <Compile Include="Parsers\JsonParser.cs" />
     <Compile Include="Plugins\PluginLoader.cs" />

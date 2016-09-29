@@ -4,16 +4,16 @@ using DtoPlugin;
 
 namespace DtoGenerator.Plugins
 {
-    public class TypeTable
+    internal class TypeTable
     {
         private readonly Dictionary<string, Dictionary<string, Type>> typeTable;
 
-        public TypeTable()
+        internal TypeTable()
         {
             typeTable = new Dictionary<string, Dictionary<string, Type>>();
         }
 
-        public void AddType(IDtoPlugin plugin)
+        internal void AddType(IDtoPlugin plugin)
         {
             string type = plugin.Type;
             string format = plugin.Format;
@@ -29,7 +29,7 @@ namespace DtoGenerator.Plugins
             formatDictionary.Add(format, typeObj);
         }
 
-        public Type GetCSharpTypeByFormatAndType(string type, string format)
+        internal Type GetCSharpTypeByFormatAndType(string type, string format)
         {
             Dictionary<string, Type> formatDictionary;
             if (!typeTable.TryGetValue(type, out formatDictionary))

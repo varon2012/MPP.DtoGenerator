@@ -8,44 +8,39 @@ using DtoGenerator.Plugins;
 
 namespace DtoGenerator.CodeGenerators
 {
-    public class CodeDomGenerator : ICodeGenerator
+    public sealed class CodeDomGenerator : ICodeGenerator
     {
         public void GenerateCode(object obj)
         {
-            GeneratingClassUnit generatingClassUnit = (GeneratingClassUnit)obj;
+            GenerationClassUnit generationClassUnit = (GenerationClassUnit)obj;
+
+            CodeCompileUnit compileUnit = CreateComplileUnit(generationClassUnit);
+             
+            generationClassUnit.Code = GetGeneratedClassCode(compileUnit);
+        }
+
+        private CodeCompileUnit CreateComplileUnit(GenerationClassUnit generationClassUnit)
+        {
             CodeCompileUnit compileUnit = new CodeCompileUnit();
-            CodeNamespace codeNamespace = new CodeNamespace(generatingClassUnit.NamespaceName);
-            CodeTypeDeclaration generatingClass = new CodeTypeDeclaration(generatingClassUnit.ClassDescription.ClassName);
-            
+            CodeNamespace codeNamespace = new CodeNamespace(generationClassUnit.NamespaceName);
+            CodeTypeDeclaration generatingClass = new CodeTypeDeclaration(generationClassUnit.ClassDescription.ClassName);
+
             compileUnit.Namespaces.Add(codeNamespace);
             codeNamespace.Types.Add(generatingClass);
 
-            foreach (PropertyDescription property in generatingClassUnit.ClassDescription.Properties)
+            foreach (PropertyDescription property in generationClassUnit.ClassDescription.Properties)
             {
                 string privateFieldName = "_" + property.Name;
 
-                Type type = GetCSharpType(generatingClassUnit.TypeTable, property.Type, property.Format);
+                Type type = GetCSharpType(generationClassUnit.TypeTable, property.Type, property.Format);
 
                 generatingClass.Members.Add(CreatePrivateFieldForProperty(property, privateFieldName, type));
                 generatingClass.Members.Add(CreatePublicPropertyByField(property, privateFieldName, type));
             }
-            generatingClassUnit.Code = GetGeneratedClass(compileUnit);
+
+            return compileUnit;
         }
-
-        private string GetGeneratedClass(CodeCompileUnit compileUnit)
-        {
-            CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
-            CodeGeneratorOptions options = new CodeGeneratorOptions();
-            options.BracingStyle = "C";
-            StringBuilder stringBuilder = new StringBuilder();
-            using (StringWriter sw = new StringWriter(stringBuilder))
-            {
-                provider.GenerateCodeFromCompileUnit(compileUnit, sw, options);
-            }
-
-            return stringBuilder.ToString();
-        }
-
+        
         private CodeMemberField CreatePrivateFieldForProperty(PropertyDescription property, string fieldName, Type type)
         {
             CodeMemberField field = new CodeMemberField()
@@ -82,6 +77,20 @@ namespace DtoGenerator.CodeGenerators
         private Type GetCSharpType(TypeTable typeTable, string type, string format)
         {
             return typeTable.GetCSharpTypeByFormatAndType(type, format);
+        }
+
+        private string GetGeneratedClassCode(CodeCompileUnit compileUnit)
+        {
+            CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
+            CodeGeneratorOptions options = new CodeGeneratorOptions();
+            options.BracingStyle = "C";
+            StringBuilder stringBuilder = new StringBuilder();
+            using (StringWriter sw = new StringWriter(stringBuilder))
+            {
+                provider.GenerateCodeFromCompileUnit(compileUnit, sw, options);
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

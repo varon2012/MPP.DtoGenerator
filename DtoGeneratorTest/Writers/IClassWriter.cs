@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace DtoGeneratorTest.Writers
 {
     public interface IClassWriter
     {
-        void Write(List<DtoGenerator.GeneratingClassUnit> classes, string directory);
+        void Write(List<DtoGenerator.GenerationResult> classes, string directory);
     }
 }

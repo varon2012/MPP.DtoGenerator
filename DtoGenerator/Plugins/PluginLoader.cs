@@ -5,17 +5,17 @@ using DtoPlugin;
 
 namespace DtoGenerator.Plugins
 {
-    public class PluginLoader
+    internal class PluginLoader
     {
         private readonly TypeTable typeTable;
-        public PluginLoader()
+        internal PluginLoader()
         {
             typeTable = new TypeTable();
         }
 
-        public TypeTable TypeTable => typeTable;
+        internal TypeTable TypeTable => typeTable;
 
-        public void LoadExternalTypes(string pluginsDirectory)
+        internal void LoadExternalTypes(string pluginsDirectory)
         {
             foreach (string file in Directory.EnumerateFiles(pluginsDirectory))
             {
@@ -29,9 +29,9 @@ namespace DtoGenerator.Plugins
 
                     CreatePluginsInstaces(plugins);
                 }
-                catch
+                catch (Exception)
                 {
-                    throw new InvalidOperationException("Plugin loading exception");
+                    throw new InvalidOperationException("Plugin loading error");
                 }
             }
         }

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+
 using DtoGenerator.CodeGenerators;
 using DtoGenerator.DeserializedData;
 using DtoGenerator.Parsers;
+using DtoGeneratorTest.Readers;
 using DtoGeneratorTest.Writers;
 
 
@@ -15,17 +14,34 @@ namespace DtoGeneratorTest
     {
         static void Main(string[] args)
         {
-            string json = File.ReadAllText("test.json");
-            ClassList classList = new JsonParser().ParseClassList(json);
+            if (args.Length != 2)
+            {
+                Console.WriteLine("Please, enter name of output directory and the file with input data");
+                return;
+            }
 
+            GenerateClasses(args[0], args[1]);
+        }
 
-            List<DtoGenerator.GeneratingClassUnit> classes =  
-                new DtoGenerator.DtoGenerator(classList, new RoslynCodeGenerator()).GenerateClasses();
+        static void GenerateClasses(string filename, string outputDir)
+        {
+            try
+            {
+                string json = new FileReader(filename).Read();
 
+                ClassList classList = new JsonParser().ParseClassList(json);
 
-            new FileWriter().Write(classes, "./GeneratedClasses");
+                using (var generator = new DtoGenerator.DtoGenerator(classList, new RoslynCodeGenerator(), new ConfigData()))
+                {
+                    List<DtoGenerator.GenerationResult> classes = generator.GenerateClasses();
+                    new FileWriter().Write(classes, outputDir);
+                }
 
-            Console.ReadLine();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 }

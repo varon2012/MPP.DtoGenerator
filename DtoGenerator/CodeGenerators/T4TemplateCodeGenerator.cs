@@ -1,23 +1,22 @@
 ﻿using System.Collections.Generic;
-using DtoGenerator.DeserializedData;
 
 namespace DtoGenerator.CodeGenerators
 {
-    public class T4TemplateCodeGenerator : ICodeGenerator
+    public sealed class T4TemplateCodeGenerator : ICodeGenerator
     {
         public void GenerateCode(object obj)
         {
             RuntimeTextTemplateCodeGenerator template = new RuntimeTextTemplateCodeGenerator();
-            GeneratingClassUnit generatingClassUnit = (GeneratingClassUnit)obj;
+            GenerationClassUnit generationClassUnit = (GenerationClassUnit)obj;
             template.Session = new Dictionary<string, object>()
             {
-                {"ClassDescription", generatingClassUnit.ClassDescription},
-                {"NamespaceName" , generatingClassUnit.NamespaceName},
-                {"TypeTable", generatingClassUnit.TypeTable }
+                {"ClassDescription", generationClassUnit.ClassDescription},
+                {"NamespaceName" , generationClassUnit.NamespaceName},
+                {"TypeTable", generationClassUnit.TypeTable }
             };
             template.Initialize();
             string resultCode = template.TransformText();
-            generatingClassUnit.Code = resultCode;
+            generationClassUnit.Code = resultCode;
         }
     }
 }

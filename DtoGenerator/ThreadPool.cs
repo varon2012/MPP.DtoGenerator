@@ -16,19 +16,19 @@ namespace DtoGenerator
 
         public delegate void OnThreadFinishCallback();
 
-        public ThreadPool() : this(Environment.ProcessorCount, true)
+        internal ThreadPool() : this(Environment.ProcessorCount, true)
         {
         }
 
-        public ThreadPool(int concurrencyLevel) : this(concurrencyLevel, true)
+        internal ThreadPool(int concurrencyLevel) : this(concurrencyLevel, true)
         {
         }
 
-        public ThreadPool(bool flowExecutionContext) : this(Environment.ProcessorCount, flowExecutionContext)
+        internal ThreadPool(bool flowExecutionContext) : this(Environment.ProcessorCount, flowExecutionContext)
         {
         }
 
-        public ThreadPool(int concurrencyLevel, bool flowExecutionContext)
+        internal ThreadPool(int concurrencyLevel, bool flowExecutionContext)
         {
             if (concurrencyLevel <= 0)
                 throw new ArgumentOutOfRangeException("ConcurrencyLevel should be > 0");
@@ -98,34 +98,15 @@ namespace DtoGenerator
         }
 
 
-        public void QueueUserWorkItem(WaitCallback worker)
-        {
-            QueueUserWorkItem(worker, null, null);
-        }
-
-        public void QueueUserWorkItem(WaitCallback worker, OnThreadFinishCallback onFinishCallback)
-        {
-            QueueUserWorkItem(worker, null, onFinishCallback);
-        }
-
-        public void QueueUserWorkItem(WaitCallback worker, object obj)
-        {
-            QueueUserWorkItem(worker, obj, null);
-        }
-
-        // Methods to queue worker.
-
-        public void QueueUserWorkItem(WaitCallback worker, object obj, OnThreadFinishCallback onFinishCallback)
+        internal void QueueUserWorkItem(WaitCallback worker, object obj, OnThreadFinishCallback onFinishCallback)
         {
 
             ExecutionContext executionContext = null;
             if (flowExecutionContext)
                 executionContext = ExecutionContext.Capture();
+
             WorkItem workItem = new WorkItem(worker, obj, onFinishCallback, executionContext);
 
-            // If execution context flowing is on, capture the caller's context.
-            
-            
             // Make sure the pool is started (threads created, etc).
             EnsureStarted();
 
@@ -137,9 +118,24 @@ namespace DtoGenerator
                     Monitor.Pulse(workingQueue);
             }
         }
-    
 
-    // Ensures that threads have begun executing.
+        // Disposing will signal shutdown, and then wait for all threads to finish.
+        public void Dispose()
+        {
+            isNeedShutdown = true;
+            lock (workingQueue)
+            {
+                Monitor.PulseAll(workingQueue);
+            }
+
+            foreach (Thread thread in threads)
+            {
+                thread.Join();
+            }
+
+        }
+
+        // Ensures that threads have begun executing.
         private void EnsureStarted()
         {
             if (threads == null)
@@ -192,16 +188,10 @@ namespace DtoGenerator
                     // We found a worker item! Grab it ...
                     workItem = workingQueue.Dequeue();
                 }
-
-
-                // ...and Invoke it. Note: exceptions will go unhandled (and crash).
+                
                 try
                 {
                     workItem.Invoke();
-                }
-                catch (Exception ex)
-                {
-                   Console.WriteLine(ex);
                 }
                 finally
                 {
@@ -209,22 +199,6 @@ namespace DtoGenerator
                 }
                 
             }
-        }
-
-        // Disposing will signal shutdown, and then wait for all threads to finish.
-        public void Dispose()
-        {
-            isNeedShutdown = true;
-            lock (workingQueue)
-            {
-                Monitor.PulseAll(workingQueue);
-            }
-
-            foreach (Thread thread in threads)
-            {
-                thread.Join();
-            }
-
         }
     }
 }

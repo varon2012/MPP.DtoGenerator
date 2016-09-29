@@ -1,10 +1,11 @@
-﻿using System.Configuration;
+﻿using DtoGenerator.Config;
+using System.Configuration;
 
-namespace DtoGenerator.Config
+namespace DtoGeneratorTest
 {
-    public class ConfigData
+    public class ConfigData: IConfig
     {
-        public int ThreadCount => int.Parse(GetConfig("threadCount"));
+        public int MaxTaskCount => int.Parse(GetConfig("maxTaskCount"));
         public string NamespaceName => GetConfig("namespace");
         public string PluginsDirectory => GetConfig("pluginsDirectory");
 

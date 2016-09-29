@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DtoGenerator.CodeGenerators;
@@ -8,52 +10,102 @@ using DtoGenerator.Plugins;
 
 namespace DtoGenerator
 {
-    public class DtoGenerator
+    public sealed class DtoGenerator : IDisposable
     {
         private readonly ClassList sourceClassList;
-        private readonly ConfigData configData;
+        private readonly IConfig configData;
+        private readonly ICodeGenerator codeGenerator;
 
         private readonly Task<TypeTable> asyncLoadingPlugins;
         private TypeTable TypeTable => asyncLoadingPlugins.Result;
-        
 
-        private readonly ICodeGenerator codeGenerator;
 
-        public DtoGenerator(ClassList classList, ICodeGenerator codeGenerator)
+        private readonly ThreadPool threadPool;
+        private readonly Queue<GenerationClassUnit> pendingGenerationUnits;
+        private readonly int maxWorkingTasksCount;
+        private int currentWorkingTasksCount;
+        private readonly CountdownEvent countdownEvent;
+
+        public DtoGenerator(ClassList classList, ICodeGenerator codeGenerator, IConfig configData)
         {
             this.sourceClassList = classList;
             this.codeGenerator = codeGenerator;
-            configData = new ConfigData();
+            this.configData = configData;
+
+            threadPool = new ThreadPool();
+            countdownEvent = new CountdownEvent(sourceClassList.ClassDescriptions.Length);
+            pendingGenerationUnits = new Queue<GenerationClassUnit>();
             asyncLoadingPlugins = new Task<TypeTable>(LoadPlugins);
             asyncLoadingPlugins.Start();
+            maxWorkingTasksCount = configData.MaxTaskCount;
         }
 
-        public List<GeneratingClassUnit> GenerateClasses()
+        public List<GenerationResult> GenerateClasses()
         {
-            List<GeneratingClassUnit> generatedClassUnits = new List<GeneratingClassUnit>();
+            List<GenerationClassUnit> generatedClassUnits = new List<GenerationClassUnit>();
+            countdownEvent.Reset();
+            currentWorkingTasksCount = 0;
+            pendingGenerationUnits.Clear();
 
-            using(ThreadPool threadPool = new ThreadPool(configData.ThreadCount, true))
-            using (CountdownEvent countdownEvent = new CountdownEvent(sourceClassList.ClassDescriptions.Length))
+            foreach (ClassDescription classDescription in sourceClassList.ClassDescriptions)
             {
+                GenerationClassUnit generationClassUnit =
+                    new GenerationClassUnit(classDescription, configData.NamespaceName, TypeTable);
+                generatedClassUnits.Add(generationClassUnit);
 
-                foreach (ClassDescription classDescription in sourceClassList.ClassDescriptions)
-                {
-                    GeneratingClassUnit generatingClassUnit =
-                        new GeneratingClassUnit(classDescription, configData.NamespaceName, TypeTable);
-                    generatedClassUnits.Add(generatingClassUnit);
-                    threadPool.QueueUserWorkItem(
-                            codeGenerator.GenerateCode,
-                            generatingClassUnit,
-                            () => countdownEvent.Signal()
-                        );
-
-                }
-                countdownEvent.Wait();
-
+                AddToGenerationQueue(generationClassUnit);
             }
+            
+            countdownEvent.Wait();
+            
+            return GetGenerationResult(generatedClassUnits);
+        }
 
+        private void AddToGenerationQueue(GenerationClassUnit generationClassUnit)
+        {
+            lock (pendingGenerationUnits)
+            {
+                if (currentWorkingTasksCount < maxWorkingTasksCount)
+                {
+                    AddToWorkingPool(generationClassUnit);
+                }
+                else
+                {
+                    pendingGenerationUnits.Enqueue(generationClassUnit);
+                }
+            }
+        }
 
-            return generatedClassUnits;
+        private List<GenerationResult> GetGenerationResult(List<GenerationClassUnit> generatedClassUnits)
+        {
+            List<GenerationResult> result = generatedClassUnits.Select(
+                elem => new GenerationResult()
+                    {
+                        ClassName = elem.ClassDescription.ClassName,
+                        Code = elem.Code
+                }).ToList();
+            return result;
+        }
+
+        private void AddToWorkingPool(GenerationClassUnit generationClassUnit)
+        {
+            currentWorkingTasksCount++;
+            threadPool.QueueUserWorkItem(
+                    codeGenerator.GenerateCode,
+                    generationClassUnit,
+                    () =>
+                    {
+                        lock (pendingGenerationUnits)
+                        {
+                            currentWorkingTasksCount--;
+                            if (pendingGenerationUnits.Count > 0)
+                            {
+                                AddToWorkingPool(pendingGenerationUnits.Dequeue());
+                            }
+                            countdownEvent.Signal();
+                        }
+                    }
+                );
         }
 
         private TypeTable LoadPlugins()
@@ -61,6 +113,12 @@ namespace DtoGenerator
             PluginLoader pluginLoader  = new PluginLoader();
             pluginLoader.LoadExternalTypes(configData.PluginsDirectory);
             return pluginLoader.TypeTable;
+        }
+
+        public void Dispose()
+        {
+            countdownEvent.Dispose();
+            threadPool.Dispose();
         }
     }
 }

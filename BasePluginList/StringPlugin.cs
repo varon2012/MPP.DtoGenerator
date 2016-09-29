@@ -3,7 +3,7 @@ using DtoPlugin;
 
 namespace BasePluginList
 {
-    class StringPlugin : IDtoPlugin
+    public class StringPlugin : IDtoPlugin
     {
         public string Type => "string";
 

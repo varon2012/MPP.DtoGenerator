@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DtoGenerator.DeserializedData;
 using DtoGenerator.Plugins;
 using Microsoft.CodeAnalysis;
@@ -13,18 +10,18 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace DtoGenerator.CodeGenerators
 {
-    public class RoslynCodeGenerator : ICodeGenerator
+    public sealed class RoslynCodeGenerator : ICodeGenerator
     {
         public void GenerateCode(object obj)
         {
-            GeneratingClassUnit generatingClassUnit = (GeneratingClassUnit)obj;
-            GenerateDtoClassDeclaration(generatingClassUnit);
+            GenerationClassUnit generationClassUnit = (GenerationClassUnit)obj;
+            GenerateDtoClassDeclaration(generationClassUnit);
         }
 
-        private void GenerateDtoClassDeclaration(GeneratingClassUnit generatingClassUnit)
+        private void GenerateDtoClassDeclaration(GenerationClassUnit generationClassUnit)
         {
-            NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(generatingClassUnit.NamespaceName));
-            ClassDeclarationSyntax classDeclaration = ClassDeclaration(generatingClassUnit.ClassDescription.ClassName);
+            NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(generationClassUnit.NamespaceName));
+            ClassDeclarationSyntax classDeclaration = ClassDeclaration(generationClassUnit.ClassDescription.ClassName);
 
 
             classDeclaration = classDeclaration.WithModifiers(
@@ -32,24 +29,24 @@ namespace DtoGenerator.CodeGenerators
                 );
             classDeclaration = classDeclaration.WithMembers(
                 List(
-                    GenerateDtoPropertiesDeclaration(generatingClassUnit)
+                    GenerateDtoPropertiesDeclaration(generationClassUnit)
                     )
                 );
 
             namespaceDeclaration = namespaceDeclaration.AddMembers(classDeclaration);
-            SyntaxNode rootNode = (generatingClassUnit.NamespaceName == string.Empty)
+            SyntaxNode rootNode = (generationClassUnit.NamespaceName == string.Empty)
                 ? (SyntaxNode)classDeclaration
                 : (SyntaxNode)namespaceDeclaration;
 
-            generatingClassUnit.Code = Formatter.Format(rootNode, new AdhocWorkspace()).ToFullString();
+            generationClassUnit.Code = Formatter.Format(rootNode, new AdhocWorkspace()).ToFullString();
         }
 
-        private List<MemberDeclarationSyntax> GenerateDtoPropertiesDeclaration(GeneratingClassUnit generatingClassUnit)
+        private List<MemberDeclarationSyntax> GenerateDtoPropertiesDeclaration(GenerationClassUnit generationClassUnit)
         {
             List<MemberDeclarationSyntax> propertiesList = new List<MemberDeclarationSyntax>();
-            foreach (PropertyDescription property in generatingClassUnit.ClassDescription.Properties)
+            foreach (PropertyDescription property in generationClassUnit.ClassDescription.Properties)
             {
-                Type propertyType = GetCSharpType(generatingClassUnit.TypeTable, property.Type, property.Format);
+                Type propertyType = GetCSharpType(generationClassUnit.TypeTable, property.Type, property.Format);
                 PropertyDeclarationSyntax propertyDeclaration = PropertyDeclaration(IdentifierName(propertyType.FullName), property.Name);
                 propertyDeclaration = propertyDeclaration.WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
                 propertyDeclaration = propertyDeclaration.WithAccessorList(

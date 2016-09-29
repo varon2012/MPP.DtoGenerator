@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DtoGenerator;
 
 namespace DtoGeneratorTest.Writers
 {
-    class FileWriter : IClassWriter
+    internal sealed class FileWriter : IClassWriter
     {
-        public void Write(List<GeneratingClassUnit> classes, string directory)
+        public void Write(List<GenerationResult> classes, string directory)
         {
             CreateDirectoryIfNotExist(directory);
 
             foreach (var generatedClass in classes)
             {
-                string targetPath = Path.Combine(directory, generatedClass.ClassDescription.ClassName + ".cs");
+                string targetPath = Path.Combine(directory, generatedClass.ClassName + ".cs");
 
                 using (FileStream fs = File.Open(targetPath, FileMode.Create))
                 {
