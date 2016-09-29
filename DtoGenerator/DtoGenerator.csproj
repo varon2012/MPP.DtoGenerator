@@ -177,7 +177,6 @@
     <Compile Include="GeneratingClassUnit.cs" />
     <Compile Include="Parsers\IParser.cs" />
     <Compile Include="Parsers\JsonParser.cs" />
-    <Compile Include="Parsers\XmlParser.cs" />
     <Compile Include="Plugins\PluginLoader.cs" />
     <Compile Include="Plugins\TypeTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
