@@ -29,9 +29,9 @@ namespace DtoGenerator.Plugins
 
                     CreatePluginsInstaces(plugins);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    throw new InvalidOperationException("Plugin loading error");
+                    throw new InvalidOperationException("Plugin loading error", ex);
                 }
             }
         }

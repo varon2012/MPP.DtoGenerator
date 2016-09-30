@@ -23,7 +23,7 @@ namespace DtoGenerator.Plugins
 
             if (formatDictionary.ContainsKey(format))
             {
-                throw new InvalidOperationException("Plugin with the same type and format already exists");
+                throw new InvalidOperationException($"Plugin with the same type = {type} and format = {format} already exists");
             }
 
             formatDictionary.Add(format, typeObj);
