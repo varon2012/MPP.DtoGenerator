@@ -28,6 +28,10 @@ namespace DtoGenerator
 
         public DtoGenerator(ClassList classList, ICodeGenerator codeGenerator, IConfig configData)
         {
+            if (classList == null) throw new ArgumentNullException(nameof(classList));
+            if (codeGenerator == null) throw new ArgumentNullException(nameof(codeGenerator));
+            if (configData == null) throw new ArgumentNullException(nameof(configData));
+            
             this.sourceClassList = classList;
             this.codeGenerator = codeGenerator;
             this.configData = configData;

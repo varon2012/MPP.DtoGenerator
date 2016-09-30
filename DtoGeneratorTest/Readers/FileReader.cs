@@ -12,6 +12,11 @@ namespace DtoGeneratorTest.Readers
         private readonly string filename;
         public FileReader(string filename)
         {
+            if (filename == null)
+            {
+                throw new ArgumentNullException(nameof(filename));
+            }
+            
             this.filename = filename;
         }
 

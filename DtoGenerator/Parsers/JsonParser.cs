@@ -1,4 +1,5 @@
-﻿using DtoGenerator.DeserializedData;
+﻿using System;
+using DtoGenerator.DeserializedData;
 using Newtonsoft.Json;
 
 namespace DtoGenerator.Parsers
@@ -7,6 +8,10 @@ namespace DtoGenerator.Parsers
     {
         public ClassList ParseClassList(string classDescriptions)
         {
+            if (classDescriptions == null)
+            {
+                throw new ArgumentNullException(nameof(classDescriptions));
+            }
             return JsonConvert.DeserializeObject<ClassList>(classDescriptions);
         }
     }

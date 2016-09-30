@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using DtoGenerator;
 
@@ -8,6 +9,10 @@ namespace DtoGeneratorTest.Writers
     {
         public void Write(List<GenerationResult> classes, string directory)
         {
+            if (classes == null)
+            {
+                throw new ArgumentNullException(nameof(classes));
+            }
             CreateDirectoryIfNotExist(directory);
 
             foreach (var generatedClass in classes)
