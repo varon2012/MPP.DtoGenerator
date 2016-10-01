@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace DtoGeneratorTest.Readers
 {
-    class FileReader : IReader
+    internal sealed class FileReader : IReader
     {
         private readonly string filename;
-        public FileReader(string filename)
+        internal FileReader(string filename)
         {
             if (filename == null)
             {

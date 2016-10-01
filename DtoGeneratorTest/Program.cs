@@ -10,9 +10,9 @@ using DtoGeneratorTest.Writers;
 
 namespace DtoGeneratorTest
 {
-    static class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             if (args.Length != 2)
             {
@@ -23,7 +23,7 @@ namespace DtoGeneratorTest
             GenerateClasses(args[0], args[1]);
         }
 
-        static void GenerateClasses(string filename, string outputDir)
+        private static void GenerateClasses(string filename, string outputDir)
         {
             try
             {
