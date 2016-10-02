@@ -1,6 +1,5 @@
-﻿using DtoGenerator.Contracts.ThreadPool;
+﻿using DtoGenerator.Contracts.Services.ThreadPool;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 

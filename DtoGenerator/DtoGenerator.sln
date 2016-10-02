@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DtoGenerator", "DtoGenerato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonToDtoDeserializer", "JsonToDtoDeserializer\JsonToDtoDeserializer.csproj", "{21A4BD3A-E0AE-440A-81CE-7F221C4FCA02}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DtoGenerator.Contracts", "DtoGenerator.Contracts\DtoGenerator.Contracts.csproj", "{304A9C6D-5F64-4A60-93CF-80A50B693293}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumberPlugin", "NumberPlugin\NumberPlugin.csproj", "{41698F33-278F-489B-86D6-3304FFFA8766}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{21A4BD3A-E0AE-440A-81CE-7F221C4FCA02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21A4BD3A-E0AE-440A-81CE-7F221C4FCA02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21A4BD3A-E0AE-440A-81CE-7F221C4FCA02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{304A9C6D-5F64-4A60-93CF-80A50B693293}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{304A9C6D-5F64-4A60-93CF-80A50B693293}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{304A9C6D-5F64-4A60-93CF-80A50B693293}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{304A9C6D-5F64-4A60-93CF-80A50B693293}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41698F33-278F-489B-86D6-3304FFFA8766}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41698F33-278F-489B-86D6-3304FFFA8766}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41698F33-278F-489B-86D6-3304FFFA8766}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41698F33-278F-489B-86D6-3304FFFA8766}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
