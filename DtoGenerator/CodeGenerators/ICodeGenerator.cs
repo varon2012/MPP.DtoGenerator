@@ -2,6 +2,6 @@
 {
     public interface ICodeGenerator
     {
-        void GenerateCode(object generatingClass);
+        void GenerateCode(GenerationClassUnit generatingClass);
     }
 }

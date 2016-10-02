@@ -95,7 +95,7 @@ namespace DtoGenerator
         {
             currentWorkingTasksCount++;
             threadPool.QueueUserWorkItem(
-                    codeGenerator.GenerateCode,
+                    (classUnit) => { codeGenerator.GenerateCode((GenerationClassUnit)classUnit); },
                     generationClassUnit,
                     () =>
                     {

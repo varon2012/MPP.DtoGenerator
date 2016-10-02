@@ -3,7 +3,7 @@ using DtoGenerator.Plugins;
 
 namespace DtoGenerator
 {
-    internal class GenerationClassUnit
+    public class GenerationClassUnit
     {
         internal GenerationClassUnit(ClassDescription classDescription, string namespaceName, TypeTable typeTable)
         {

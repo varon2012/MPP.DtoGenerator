@@ -12,9 +12,8 @@ namespace DtoGenerator.CodeGenerators
 {
     public sealed class RoslynCodeGenerator : ICodeGenerator
     {
-        public void GenerateCode(object obj)
+        public void GenerateCode(GenerationClassUnit generationClassUnit)
         {
-            GenerationClassUnit generationClassUnit = (GenerationClassUnit)obj;
             GenerateDtoClassDeclaration(generationClassUnit);
         }
 

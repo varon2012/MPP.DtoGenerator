@@ -4,10 +4,9 @@ namespace DtoGenerator.CodeGenerators
 {
     public sealed class T4TemplateCodeGenerator : ICodeGenerator
     {
-        public void GenerateCode(object obj)
+        public void GenerateCode(GenerationClassUnit generationClassUnit)
         {
             RuntimeTextTemplateCodeGenerator template = new RuntimeTextTemplateCodeGenerator();
-            GenerationClassUnit generationClassUnit = (GenerationClassUnit)obj;
             template.Session = new Dictionary<string, object>()
             {
                 {"ClassDescription", generationClassUnit.ClassDescription},
