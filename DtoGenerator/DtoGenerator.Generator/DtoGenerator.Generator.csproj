@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DtoClassDeclaration.cs" />
+    <Compile Include="DtoClassDescription.cs" />
     <Compile Include="DtoClassProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

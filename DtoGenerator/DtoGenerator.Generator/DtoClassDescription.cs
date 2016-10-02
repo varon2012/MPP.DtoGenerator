@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace DtoGenerator.Generator
 {
-    public struct DtoClassDeclaration
+    public struct DtoClassDescription
     {
         public string ClassName { get; }
         public IEnumerable<DtoClassProperty> Properties { get; }
 
-        public DtoClassDeclaration(string className, IEnumerable<DtoClassProperty> properties)
+        public DtoClassDescription(string className, IEnumerable<DtoClassProperty> properties)
         {
             if (className == null) throw new ArgumentNullException(nameof(className));
             if (properties == null) throw new ArgumentNullException(nameof(properties));
