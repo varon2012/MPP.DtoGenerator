@@ -16,7 +16,6 @@ namespace DtoGenerator
 
         public DtoInfo()
         {
-
         }
 
         public string Name { get; set; }
