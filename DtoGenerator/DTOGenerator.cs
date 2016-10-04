@@ -17,7 +17,7 @@ namespace DtoGenerator
         private int TaskCount;
 
         private ManualResetEvent[] doneEvents;
-        static SemaphoreSlim SemaphoreLocker;
+        private SemaphoreSlim SemaphoreLocker;
         private List<Exception> SavedException = new List<Exception>();
 
         private readonly static object locker = new object();

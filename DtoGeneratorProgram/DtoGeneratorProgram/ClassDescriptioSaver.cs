@@ -16,6 +16,7 @@ namespace DtoGeneratorProgram
 
             codeWriter.Close();
             codeWriter.Dispose();
+            provider.Dispose();
         }
     }
 }
