@@ -42,12 +42,9 @@ namespace DtoGenerationLibrary
 
         public DtoClassDeclaration[] GenerateDtoClasses(DtoClassInfo[] dtoClassesInfo)
         {
+            InitState(dtoClassesInfo.Length);
             using (var countdownEvent = new CountdownEvent(dtoClassesInfo.Length))
             {
-                _tasksResult = new DtoClassDeclaration[dtoClassesInfo.Length];
-                _runningTasksCount = 0;
-                _tasksQueue.Clear();
-
                 for (int i = 0; i < dtoClassesInfo.Length; i++)
                 {
                     QueueGenerationTask(new TaskInfo(i, dtoClassesInfo[i]), countdownEvent);
@@ -60,6 +57,13 @@ namespace DtoGenerationLibrary
         }
 
         // Internals
+
+        private void InitState(int dtoClassesCount)
+        {
+            _tasksResult = new DtoClassDeclaration[dtoClassesCount];
+            _runningTasksCount = 0;
+            _tasksQueue.Clear();
+        }
 
         private bool HasTasks => _tasksQueue.Count > 0;
         private bool CanAddToPool => _runningTasksCount < MaxRunningTasksCount;
