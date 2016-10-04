@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -17,25 +18,52 @@ namespace DtoGenerator
 
         private readonly object _lock = new object();
         private readonly Workspace _workspace = new AdhocWorkspace();
-
+        private DtoDeclaration[] _dtoDeclarations;
+        
         public DtoGenerator(int maxTaskCount, string namespaceName)
         {
             NamespaceName = namespaceName;
             MaxTaskCount = maxTaskCount;
         }
 
-        private DtoDeclaration GenerateDtoClassDeclaration(DtoInfo dtoClassInfo)
+        public DtoDeclaration[] GenerateDtoDeclarations(DtoInfo[] dtoInfos)
+        {
+            lock (_lock)
+            {
+                using (CountdownEvent countdownEvent = new CountdownEvent(dtoInfos.Length))
+                using (Semaphore semaphore = new Semaphore(MaxTaskCount, MaxTaskCount))
+                {
+                    _dtoDeclarations = new DtoDeclaration[dtoInfos.Length];
+                    for (int i = 0; i < dtoInfos.Length; i++)
+                    {
+                        semaphore.WaitOne();
+                        int index = i;
+                        ThreadPool.QueueUserWorkItem(delegate
+                        {
+                            _dtoDeclarations[index] = (GenerateDtoDeclaration(dtoInfos[index]));
+                            semaphore.Release();
+                            countdownEvent.Signal();
+                        });
+                    }
+                    countdownEvent.Wait();
+                    return _dtoDeclarations;
+                }
+            }
+        }
+
+        
+        private DtoDeclaration GenerateDtoDeclaration(DtoInfo dtoInfo)
         {
             NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(NamespaceName));
-            ClassDeclarationSyntax classDeclaration = ClassDeclaration(dtoClassInfo.Name);
+            ClassDeclarationSyntax classDeclaration = ClassDeclaration(dtoInfo.Name);
             classDeclaration =
                 classDeclaration.WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword),
                     Token(SyntaxKind.SealedKeyword)));
             classDeclaration =
-                classDeclaration.WithMembers(List(dtoClassInfo.Fields.Select(GenerateDtoPropertyDeclaration)));
+                classDeclaration.WithMembers(List(dtoInfo.Fields.Select(GenerateDtoPropertyDeclaration)));
 
             namespaceDeclaration = namespaceDeclaration.AddMembers(classDeclaration);
-            return new DtoDeclaration(dtoClassInfo.Name,
+            return new DtoDeclaration(dtoInfo.Name,
                 Formatter.Format(namespaceDeclaration, _workspace).ToFullString());
         }
 
