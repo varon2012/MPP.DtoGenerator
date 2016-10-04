@@ -86,7 +86,6 @@ namespace DtoGenerator
 
         private void ThreadPoolCallback(Object threadContext)
         {
-            Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " in");
             ThreadContex data = (ThreadContex)threadContext;
             Dictionary<string, CodeCompileUnit> result = (Dictionary<string, CodeCompileUnit>)data.result;
             CodeCompileUnit unit;
@@ -108,7 +107,6 @@ namespace DtoGenerator
             }
             finally
             {
-                Console.WriteLine(Thread.CurrentThread.ManagedThreadId + " out");
                 SemaphoreLocker.Release();
                 data.doneEvent.Set();
             }
