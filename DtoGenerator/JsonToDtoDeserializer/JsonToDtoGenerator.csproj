@@ -93,14 +93,27 @@
   <ItemGroup>
     <Compile Include="JsonToDtoGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\GeneratorSettings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>GeneratorSettings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="Properties\GeneratorSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>GeneratorSettings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DtoGenerator.Contracts\DtoGenerator.Contracts.csproj">
+      <Project>{304A9C6D-5F64-4A60-93CF-80A50B693293}</Project>
+      <Name>DtoGenerator.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DtoGenerator\DtoGenerator.csproj">
       <Project>{b72f0a09-5614-4f59-8b09-fd8e6818e767}</Project>
       <Name>DtoGenerator</Name>

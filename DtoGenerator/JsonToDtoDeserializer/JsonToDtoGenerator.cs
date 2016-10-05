@@ -1,26 +1,40 @@
-﻿using DtoGenerator.Services.ThreadPool;
-using System;
+﻿using System;
 using System.IO;
+using static JsonToDtoDeserializer.Properties.GeneratorSettings;
 
-namespace JsonToDtoDeserializer
+namespace JsonToDtoGenerator
 {
     class JsonToDtoGenerator
     {
         static void Main(string[] args)
         {
-            var time = DateTime.Now;
+            if (args.Length != 2)
+                return;
 
-            DtoGenerator.Services.DtoGeneratror.DtoGenerator dtoGenerator = new DtoGenerator.Services.DtoGeneratror.DtoGenerator(1, "lol");
-            const string outputPath = "E:\\1";
-            var classes = dtoGenerator.Generate(File.ReadAllText("E:\\Json.txt"));
-            dtoGenerator.Dispose();
-            foreach (var @class in classes)
+            var pathToJsonFile = args[0];
+            var pathToOutputFolder = args[1];
+
+            DtoGenerator.Services.DtoGeneratror.DtoGenerator dtoGenerator = new DtoGenerator.Services.DtoGeneratror.DtoGenerator(Default.MaximumTaskNumber, Default.NamespaceName);
+            try
+            {             
+                dtoGenerator.LoadAdditionalTypes(Default.PluginsFolderName);
+                var classes = dtoGenerator.Generate(File.ReadAllText(pathToJsonFile));
+                foreach (var @class in classes)
+                {
+                    File.WriteAllText(string.Format(("{0}{1}{2}.cs"), pathToOutputFolder, Path.DirectorySeparatorChar, @class.Key), @class.Value);
+                }
+
+                Console.WriteLine("Generation was successful");
+            }
+            catch(Exception e)
             {
-                File.WriteAllText(outputPath + "\\" + @class.Key + ".cs", @class.Value);
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                dtoGenerator.Dispose();
             }
 
-            Console.WriteLine(DateTime.Now - time);
-            Console.ReadKey();
         }
     }
 }

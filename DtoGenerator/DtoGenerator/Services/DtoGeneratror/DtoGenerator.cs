@@ -65,6 +65,11 @@ namespace DtoGenerator.Services.DtoGeneratror
             _threadPool.Dispose();
         }
 
+        public void LoadAdditionalTypes(string folderName)
+        {
+            TableWithTypes.TableWithTypes.LoadAdditionalTypes(folderName);
+        }
+
         #endregion
 
         #region Private Methods
@@ -93,8 +98,8 @@ namespace DtoGenerator.Services.DtoGeneratror
 
         private MemberDeclarationSyntax CreatePropertysInClass(IPropertyDescription property)
         {
-
-            var propertyDeclaration = PropertyDeclaration(IdentifierName(property.Format), property.Name)
+            var propertyDeclaration = PropertyDeclaration(IdentifierName(TableWithTypes.TableWithTypes.TranslateToDotNetType(property.Format).ToString()), 
+                property.Name)
                 .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
                 .WithAccessorList(AccessorList(List
                     (new[]
