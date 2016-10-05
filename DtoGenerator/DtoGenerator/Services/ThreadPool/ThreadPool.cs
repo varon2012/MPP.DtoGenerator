@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace DtoGenerator.Services.ThreadPool
 {
-    internal class ThreadPool : IThreadPool
+    public class ThreadPool : IThreadPool
     {
         #region Private Members
 
@@ -19,14 +19,13 @@ namespace DtoGenerator.Services.ThreadPool
 
         #region Ctor
 
-        internal ThreadPool() :
-           this(Environment.ProcessorCount)
-        { }
+        public ThreadPool() :
+           this(Environment.ProcessorCount){ }
 
-        internal ThreadPool(int threadCount)
+        public ThreadPool(int threadCount)
         {
             if (threadCount <= 0)
-                throw new ArgumentOutOfRangeException("Concurrency Level must be greater than zero.");
+                throw new ArgumentOutOfRangeException("Thread Count must be greater than zero.");
 
             _threads = new Thread[threadCount];
             for (int i = 0; i < _threads.Length; i++)
@@ -38,12 +37,7 @@ namespace DtoGenerator.Services.ThreadPool
 
         #endregion
 
-        #region Internal Methods
-
-        public void QueueUserWorkItem(WaitCallback work)
-        {
-            QueueUserWorkItem(work, null);
-        }
+        #region Public Methods
 
         public void QueueUserWorkItem(WaitCallback work, object state)
         {
@@ -108,5 +102,3 @@ namespace DtoGenerator.Services.ThreadPool
         #endregion
     }
 }
-
-

@@ -1,11 +1,26 @@
-﻿namespace JsonToDtoDeserializer
+﻿using DtoGenerator.Services.ThreadPool;
+using System;
+using System.IO;
+
+namespace JsonToDtoDeserializer
 {
     class JsonToDtoDeserializer
     {
         static void Main(string[] args)
         {
-            DtoGenerator.Services.DtoGeneratror.DtoGenerator DtoGenerator = new DtoGenerator.Services.DtoGeneratror.DtoGenerator();
-            DtoGenerator.Generate("E:\\Json.txt",null);
+            var time = DateTime.Now;
+
+            DtoGenerator.Services.DtoGeneratror.DtoGenerator dtoGenerator = new DtoGenerator.Services.DtoGeneratror.DtoGenerator(1, "lol");
+            const string outputPath = "E:\\1";
+            var classes = dtoGenerator.Generate(File.ReadAllText("E:\\Json.txt"));
+            dtoGenerator.Dispose();
+            foreach (var @class in classes)
+            {
+                File.WriteAllText(outputPath + "\\" + @class.Key + ".cs", @class.Value);
+            }
+
+            Console.WriteLine(DateTime.Now - time);
+            Console.ReadKey();
         }
     }
 }
