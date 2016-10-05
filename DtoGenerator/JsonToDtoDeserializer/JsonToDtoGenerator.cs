@@ -4,7 +4,7 @@ using System.IO;
 
 namespace JsonToDtoDeserializer
 {
-    class JsonToDtoDeserializer
+    class JsonToDtoGenerator
     {
         static void Main(string[] args)
         {

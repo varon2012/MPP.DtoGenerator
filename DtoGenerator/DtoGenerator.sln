@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DtoGenerator", "DtoGenerator\DtoGenerator.csproj", "{B72F0A09-5614-4F59-8B09-FD8E6818E767}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonToDtoDeserializer", "JsonToDtoDeserializer\JsonToDtoDeserializer.csproj", "{21A4BD3A-E0AE-440A-81CE-7F221C4FCA02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonToDtoGenerator", "JsonToDtoDeserializer\JsonToDtoGenerator.csproj", "{21A4BD3A-E0AE-440A-81CE-7F221C4FCA02}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DtoGenerator.Contracts", "DtoGenerator.Contracts\DtoGenerator.Contracts.csproj", "{304A9C6D-5F64-4A60-93CF-80A50B693293}"
 EndProject
