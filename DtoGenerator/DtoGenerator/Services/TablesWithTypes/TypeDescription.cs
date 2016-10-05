@@ -1,15 +1,15 @@
 ﻿using DtoGenerator.Contracts.Plugins;
 using System;
 
-namespace DtoGenerator.Services.TableWithTypes
+namespace DtoGenerator.Services.TablesWithTypes
 {
-    public class TypeDescription : ITypeDescription
+    internal class TypeDescription : ITypeDescription
     {
         public string Type { get; set; }
         public string Format { get; set; }
         public Type DotNetType { get; set; }
 
-        public TypeDescription(string type, string format, Type dotNetType)
+        internal TypeDescription(string type, string format, Type dotNetType)
         {
             Type = type;
             Format = format;

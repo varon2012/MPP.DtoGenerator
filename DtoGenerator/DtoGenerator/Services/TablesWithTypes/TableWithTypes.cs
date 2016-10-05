@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace DtoGenerator.Services.TableWithTypes
+namespace DtoGenerator.Services.TablesWithTypes
 {
     internal static class TableWithTypes
     {
@@ -29,7 +29,7 @@ namespace DtoGenerator.Services.TableWithTypes
 
         #endregion
 
-        #region Public Methods
+        #region Internal Methods
 
         internal static void LoadAdditionalTypes(string folderName)
         {
@@ -49,9 +49,9 @@ namespace DtoGenerator.Services.TableWithTypes
             }
         }
 
-        internal static Type TranslateToDotNetType(string format)
+        internal static string TranslateToDotNetType(string format)
         {
-            return _table.Single((ITypeDescription x) => x.Format == format).DotNetType; 
+            return _table.Single((ITypeDescription x) => x.Format == format).DotNetType.ToString(); 
         }
 
         #endregion

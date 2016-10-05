@@ -1,11 +1,4 @@
-﻿using DtoGenerator.Contracts.Services.DtoGenerator;
-using DtoGenerator.Contracts.Services.ThreadPool;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using System;
+﻿using System;
 using System.Threading;
 using DtoGenerator.Contracts.InputModels;
 using System.Linq;
@@ -13,17 +6,24 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using DtoGenerator.InputModels;
 using Newtonsoft.Json;
+using DtoGenerator.Contracts.Services.DtoGenerators;
+using DtoGenerator.Contracts.Services.ThreadPools;
+using DtoGenerator.Services.TablesWithTypes;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace DtoGenerator.Services.DtoGeneratror
+namespace DtoGenerator.Services.DtoGenerators
 {
     public class DtoGenerator : IDtoGenerator
     {
         #region Private Members
 
-        private readonly IThreadPool _threadPool = new ThreadPool.ThreadPool();
+        private readonly IThreadPool _threadPool = new ThreadPools.ThreadPool();
         private ConcurrentDictionary<string,string> _classes = new ConcurrentDictionary<string,string>();
         private readonly Workspace _workspace = new AdhocWorkspace();
-        private readonly SemaphoreSlim _semaphore;
         private readonly int _maximumTaskNumber;
         private readonly string _namespaceName;
 
@@ -37,7 +37,6 @@ namespace DtoGenerator.Services.DtoGeneratror
                 throw new ArgumentOutOfRangeException("Task number Level must be greater than zero.");
             _maximumTaskNumber = maximumTaskNumber;
             _namespaceName = namespaceName;
-            _semaphore = new SemaphoreSlim(maximumTaskNumber, maximumTaskNumber);
         }
 
         #endregion
@@ -47,12 +46,14 @@ namespace DtoGenerator.Services.DtoGeneratror
         public IDictionary<string,string> Generate(string json)
         {
             ClassDescriptions classDescriptions = JsonConvert.DeserializeObject<ClassDescriptions>(json);
+
+            using (var semaphore = new SemaphoreSlim(_maximumTaskNumber,_maximumTaskNumber))
             using (var coutdownEvent = new CountdownEvent(classDescriptions.Classes.Count()))
             {
                 foreach (var classDescription in classDescriptions.Classes)
                 {
-                    _semaphore.Wait();
-                    _threadPool.QueueUserWorkItem((object state) => { CreateDto(state); _semaphore.Release(); coutdownEvent.Signal(); },
+                    semaphore.Wait();
+                    _threadPool.QueueUserWorkItem((object state) => { CreateDto(state); semaphore.Release(); coutdownEvent.Signal(); },
                         classDescription);
                 }
                 coutdownEvent.Wait();
@@ -67,7 +68,7 @@ namespace DtoGenerator.Services.DtoGeneratror
 
         public void LoadAdditionalTypes(string folderName)
         {
-            TableWithTypes.TableWithTypes.LoadAdditionalTypes(folderName);
+            TableWithTypes.LoadAdditionalTypes(folderName);
         }
 
         #endregion
@@ -98,7 +99,7 @@ namespace DtoGenerator.Services.DtoGeneratror
 
         private MemberDeclarationSyntax CreatePropertysInClass(IPropertyDescription property)
         {
-            var propertyDeclaration = PropertyDeclaration(IdentifierName(TableWithTypes.TableWithTypes.TranslateToDotNetType(property.Format).ToString()), 
+            return PropertyDeclaration(IdentifierName(TableWithTypes.TranslateToDotNetType(property.Format)), 
                 property.Name)
                 .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
                 .WithAccessorList(AccessorList(List
@@ -108,7 +109,6 @@ namespace DtoGenerator.Services.DtoGeneratror
                             AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
                         }
                     )));
-            return propertyDeclaration;
         }
 
         #endregion

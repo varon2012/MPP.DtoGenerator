@@ -46,8 +46,8 @@
     <Compile Include="Plugins\IPlugin.cs" />
     <Compile Include="Plugins\ITypeDescription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\DtoGenerator\IDtoGenerator.cs" />
-    <Compile Include="Services\ThreadPool\IThreadPool.cs" />
+    <Compile Include="Services\DtoGenerators\IDtoGenerator.cs" />
+    <Compile Include="Services\ThreadPools\IThreadPool.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

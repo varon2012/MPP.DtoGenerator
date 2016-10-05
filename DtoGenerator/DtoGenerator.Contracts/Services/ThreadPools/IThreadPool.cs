@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace DtoGenerator.Contracts.Services.ThreadPool
+namespace DtoGenerator.Contracts.Services.ThreadPools
 {
     public interface IThreadPool : IDisposable
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Generator = DtoGenerator.Services.DtoGenerators.DtoGenerator;
 using static JsonToDtoDeserializer.Properties.GeneratorSettings;
 
 namespace JsonToDtoGenerator
@@ -14,14 +15,15 @@ namespace JsonToDtoGenerator
             var pathToJsonFile = args[0];
             var pathToOutputFolder = args[1];
 
-            DtoGenerator.Services.DtoGeneratror.DtoGenerator dtoGenerator = new DtoGenerator.Services.DtoGeneratror.DtoGenerator(Default.MaximumTaskNumber, Default.NamespaceName);
+            Generator dtoGenerator = new Generator(Default.MaximumTaskNumber, Default.NamespaceName);
             try
             {             
                 dtoGenerator.LoadAdditionalTypes(Default.PluginsFolderName);
                 var classes = dtoGenerator.Generate(File.ReadAllText(pathToJsonFile));
                 foreach (var @class in classes)
                 {
-                    File.WriteAllText(string.Format(("{0}{1}{2}.cs"), pathToOutputFolder, Path.DirectorySeparatorChar, @class.Key), @class.Value);
+                    File.WriteAllText(string.Format(("{0}{1}{2}.cs"), pathToOutputFolder, Path.DirectorySeparatorChar, @class.Key), 
+                        @class.Value);
                 }
 
                 Console.WriteLine("Generation was successful");

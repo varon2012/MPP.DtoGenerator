@@ -1,11 +1,11 @@
-﻿using DtoGenerator.Contracts.Services.ThreadPool;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using DtoGenerator.Contracts.Services.ThreadPools;
 
-namespace DtoGenerator.Services.ThreadPool
+namespace DtoGenerator.Services.ThreadPools
 {
-    public class ThreadPool : IThreadPool
+    internal class ThreadPool : IThreadPool
     {
         #region Private Members
 
@@ -19,10 +19,10 @@ namespace DtoGenerator.Services.ThreadPool
 
         #region Ctor
 
-        public ThreadPool() :
+        internal ThreadPool() :
            this(Environment.ProcessorCount){ }
 
-        public ThreadPool(int threadCount)
+        internal ThreadPool(int threadCount)
         {
             if (threadCount <= 0)
                 throw new ArgumentOutOfRangeException("Thread Count must be greater than zero.");
@@ -68,7 +68,7 @@ namespace DtoGenerator.Services.ThreadPool
 
         #region Private Methods
 
-        internal void DispatchLoop()
+        private void DispatchLoop()
         {
             while (true)
             {
