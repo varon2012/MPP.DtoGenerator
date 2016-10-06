@@ -13,20 +13,25 @@ namespace DtoGenerator
 {
     public class DtoGenerator
     {
-        public int MaxTaskCount { get; set; }
-        public string NamespaceName { get; set; }
+        public static DtoGenerator Instance = new DtoGenerator();
+
+        public IDtoInfoListReader DtoReader { get; set; } = null;
+        public IDtoDeclarationWriter DtoWriter { get; set; } = null;
+        public int MaxTaskCount { get; set; } = -1;
+        public string NamespaceName { get; set; } = null;
 
         private readonly object _lock = new object();
         private readonly Workspace _workspace = new AdhocWorkspace();
-        private DtoDeclaration[] _dtoDeclarations;
+       
         
-        public DtoGenerator(int maxTaskCount, string namespaceName)
+        private DtoGenerator() { }
+
+        public void Reset()
         {
-            NamespaceName = namespaceName;
-            MaxTaskCount = maxTaskCount;
+            
         }
 
-        public DtoDeclaration[] GenerateDtoDeclarations(DtoInfo[] dtoInfos)
+ /*       public DtoDeclaration[] GenerateDtoDeclarations(DtoInfo[] dtoInfos)
         {
             lock (_lock)
             {
@@ -50,7 +55,7 @@ namespace DtoGenerator
                 }
             }
         }
-
+*/
         
         private DtoDeclaration GenerateDtoDeclaration(DtoInfo dtoInfo)
         {
