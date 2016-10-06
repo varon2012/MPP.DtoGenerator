@@ -38,25 +38,28 @@ namespace DtoGenerationLibrary
 
         public void LoadExternalTypes(string lookupDirectoryPath)
         {
-            foreach (string file in Directory.EnumerateFiles(lookupDirectoryPath))
+            if (Directory.Exists(lookupDirectoryPath))
             {
-                try
+                foreach (string file in Directory.EnumerateFiles(lookupDirectoryPath))
                 {
-                    Assembly assembly = Assembly.LoadFrom(file);
-                    Type[] exportedTypes = assembly.GetExportedTypes();
-
-                    Type[] typeDescriptionsProvidersTypes = Array.FindAll(exportedTypes,
-                        type => typeof(ITypeDescriptionsProvider).IsAssignableFrom(type) && !type.IsAbstract);
-                    foreach (Type typeDescriptionsProviderType in typeDescriptionsProvidersTypes)
+                    try
                     {
-                        ITypeDescriptionsProvider typeDescriptionsProvider =
-                            (ITypeDescriptionsProvider) Activator.CreateInstance(typeDescriptionsProviderType);
-                        RegisterTypes(typeDescriptionsProvider.TypeDescriptions);
+                        Assembly assembly = Assembly.LoadFrom(file);
+                        Type[] exportedTypes = assembly.GetExportedTypes();
+
+                        Type[] typeDescriptionsProvidersTypes = Array.FindAll(exportedTypes,
+                            type => typeof(ITypeDescriptionsProvider).IsAssignableFrom(type) && !type.IsAbstract);
+                        foreach (Type typeDescriptionsProviderType in typeDescriptionsProvidersTypes)
+                        {
+                            ITypeDescriptionsProvider typeDescriptionsProvider =
+                                (ITypeDescriptionsProvider) Activator.CreateInstance(typeDescriptionsProviderType);
+                            RegisterTypes(typeDescriptionsProvider.TypeDescriptions);
+                        }
                     }
-                }
-                catch (Exception)
-                {
-                    throw new PluginLoadingException();
+                    catch (Exception)
+                    {
+                        throw new PluginLoadingException();
+                    }
                 }
             }
         }
