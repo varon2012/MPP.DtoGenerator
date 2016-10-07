@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,50 +14,93 @@ namespace DtoGenerator
 {
     public class DtoGenerator
     {
-        public static DtoGenerator Instance = new DtoGenerator();
-
-        public IDtoInfoListReader DtoReader { get; set; } = null;
-        public IDtoDeclarationWriter DtoWriter { get; set; } = null;
-        public int MaxTaskCount { get; set; } = -1;
-        public string NamespaceName { get; set; } = null;
-
-        private readonly object _lock = new object();
-        private readonly Workspace _workspace = new AdhocWorkspace();
-       
         
-        private DtoGenerator() { }
+        private readonly Workspace _workspace = new AdhocWorkspace();
+        private IDtoInfoListReader _dtoInfoListReader;
+        private BlockingCollection<DtoInfo> _readerQueue;
+        private BlockingCollection<DtoDeclaration> _writerQueue;
+        private Semaphore _semaphore;
 
-        public void Reset()
+        public DtoGenerator(int maxTaskCount, string namespaceName,
+            IDtoInfoListReader dtoInfoListReader, IDtoDeclarationWriter dtoDeclarationWriter)
         {
-            
+            MaxTaskCount = maxTaskCount;
+            NamespaceName = namespaceName;
+            DtoInfoListReader = dtoInfoListReader;
+            DtoDeclarationWriter = dtoDeclarationWriter;
         }
 
- /*       public DtoDeclaration[] GenerateDtoDeclarations(DtoInfo[] dtoInfos)
+        public int MaxTaskCount { get; set; }
+        public string NamespaceName { get; set; }
+        public IDtoDeclarationWriter DtoDeclarationWriter { get; set; }
+        public IDtoInfoListReader DtoInfoListReader
         {
-            lock (_lock)
+            get { return _dtoInfoListReader; }
+            set
             {
-                using (CountdownEvent countdownEvent = new CountdownEvent(dtoInfos.Length))
-                using (Semaphore semaphore = new Semaphore(MaxTaskCount, MaxTaskCount))
-                {
-                    _dtoDeclarations = new DtoDeclaration[dtoInfos.Length];
-                    for (int i = 0; i < dtoInfos.Length; i++)
-                    {
-                        semaphore.WaitOne();
-                        int index = i;
-                        ThreadPool.QueueUserWorkItem(delegate
-                        {
-                            _dtoDeclarations[index] = (GenerateDtoDeclaration(dtoInfos[index]));
-                            semaphore.Release();
-                            countdownEvent.Signal();
-                        });
-                    }
-                    countdownEvent.Wait();
-                    return _dtoDeclarations;
-                }
+                _dtoInfoListReader = value;
+                _dtoInfoListReader.OnDtoInfoRead -= OnDtoInfoRead;
+                _dtoInfoListReader.OnDtoInfoRead += OnDtoInfoRead;
+                _dtoInfoListReader.OnReadCompleted -= OnReadCompleted;
+                _dtoInfoListReader.OnReadCompleted += OnReadCompleted;
             }
         }
-*/
+
+        private void OnReadCompleted()
+        {
+            _readerQueue.CompleteAdding();
+        }
+
+
+        private void OnDtoInfoRead(DtoInfo dtoInfo)
+        {
+            _readerQueue.Add(dtoInfo);
+            _semaphore.WaitOne();
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                DtoDeclaration dtoDeclaration = GenerateDtoDeclaration(_readerQueue.Take());
+                _writerQueue.Add(dtoDeclaration);
+                if (_readerQueue.IsCompleted)
+                {
+                    _writerQueue.CompleteAdding();
+                }
+                _semaphore.Release();
+            });
+
+        }
         
+        public void GenerateDtoDeclarations()
+        {
+            if (MaxTaskCount <= 0 || string.IsNullOrEmpty(NamespaceName)
+                || DtoDeclarationWriter == null || DtoInfoListReader == null)
+            {
+                throw new ArgumentException();
+            }
+
+            using (_readerQueue = new BlockingCollection<DtoInfo>(MaxTaskCount))
+            using (_writerQueue = new BlockingCollection<DtoDeclaration>())
+            using (_semaphore = new Semaphore(MaxTaskCount, MaxTaskCount))
+            using (ManualResetEvent manualResetEvent = new ManualResetEvent(false))
+            using (DtoDeclarationWriter)
+            using (DtoInfoListReader)
+            {
+               
+                ThreadPool.QueueUserWorkItem(delegate
+                {
+                    while (_writerQueue.IsCompleted)
+                    {
+                        DtoDeclarationWriter.Write(_writerQueue.Take());
+                    }
+                    manualResetEvent.Set();
+                });
+                DtoInfoListReader.ReadList();
+                manualResetEvent.WaitOne();
+            }
+        }
+
+        
+        
+
         private DtoDeclaration GenerateDtoDeclaration(DtoInfo dtoInfo)
         {
             NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(NamespaceName));
