@@ -1,8 +1,9 @@
-﻿using System;
+﻿using DtoGenerator.CodeGenerators;
+using DtoGeneratorTest.FileIO;
+using DtoGeneratorTest.FileReaders;
+using System;
+using System.CodeDom;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DtoGeneratorTest
 {
@@ -10,7 +11,16 @@ namespace DtoGeneratorTest
     {
         static void Main(string[] args)
         {
-            DtoGenerator.DtoGenerator.test();
+            IFileReader reader = new JsonFileReader();
+            string jsonString = reader.ReadFile(@"C:\Users\Anastasia_Paramonova\Desktop\file.json");
+            GeneratedClasses classes = DtoGenerator.DtoGenerator.GenerateClasses(jsonString, "myNamespace");
+            IFileWriter writer = new CSFileWriter( @"C:\Users\Anastasia_Paramonova\Desktop");
+            IEnumerator<CodeCompileUnit> enumerator = classes.GetEnumerator();
+            while(enumerator.MoveNext())
+            {
+                 writer.Write(enumerator.Current);
+            }
+            Console.WriteLine("done");
         }
     }
 }

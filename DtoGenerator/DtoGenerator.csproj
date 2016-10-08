@@ -45,16 +45,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeGenerators\CSCodeGenerator.cs" />
+    <Compile Include="CodeGenerators\GeneratedClasses.cs" />
     <Compile Include="CodeGenerators\ICodeGenerator.cs" />
     <Compile Include="CodeGenerators\Types\SupportedTypesTable.cs" />
     <Compile Include="DtoObjects\ClassDescription.cs" />
     <Compile Include="DtoObjects\ClassList.cs" />
     <Compile Include="DtoObjects\Property.cs" />
     <Compile Include="DtoGenerator.cs" />
-    <Compile Include="FileIO\CSFileWriter.cs" />
-    <Compile Include="FileIO\IFileReader.cs" />
-    <Compile Include="FileIO\IFileWriter.cs" />
-    <Compile Include="FileIO\JsonFileReader.cs" />
     <Compile Include="Parsers\JsonParser.cs" />
     <Compile Include="Parsers\IParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

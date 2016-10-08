@@ -15,17 +15,17 @@ namespace DtoGenerator.CodeGenerators.Types
         {
             typeTable = new Dictionary<Key, string>();
 
-            addSupportedType("integer", "int32", "System.Int32");
-            addSupportedType("integer", "int64", "System.Int64");
-            addSupportedType("number", "float", "System.Single");
-            addSupportedType("number", "double", "System.Double");
-            addSupportedType("string", "byte", "System.Byte");
-            addSupportedType("string", "date", "System.DateTime");
-            addSupportedType("string", "string", "System.String");
-            addSupportedType("boolean", "", "System.Boolean");
+            AddSupportedType("integer", "int32", "System.Int32");
+            AddSupportedType("integer", "int64", "System.Int64");
+            AddSupportedType("number", "float", "System.Single");
+            AddSupportedType("number", "double", "System.Double");
+            AddSupportedType("string", "byte", "System.Byte");
+            AddSupportedType("string", "date", "System.DateTime");
+            AddSupportedType("string", "string", "System.String");
+            AddSupportedType("boolean", "", "System.Boolean");
         }
 
-        public void addSupportedType(string type, string format, string netType)
+        public void AddSupportedType(string type, string format, string netType)
         {
             if(type == null)
             {
@@ -48,7 +48,7 @@ namespace DtoGenerator.CodeGenerators.Types
             
         }
 
-        public string getNetType(string type, string format)
+        public string GetNetType(string type, string format)
         {
             if (type == null)
             {

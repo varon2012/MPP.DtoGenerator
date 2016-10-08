@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DtoGenerator.FileReaders
+namespace DtoGeneratorTest.FileReaders
 {
     internal class JsonFileReader : IFileReader
     {
-        public string readFile(string filePath)
+        public string ReadFile(string filePath)
         {
             if(filePath == null)
             {

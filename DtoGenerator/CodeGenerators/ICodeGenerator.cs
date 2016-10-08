@@ -5,6 +5,6 @@ namespace DtoGenerator.CodeGenerators
 {
     interface ICodeGenerator
     {
-        CodeCompileUnit generateCode(ClassDescription classDescription, string classNamespace);
+        CodeCompileUnit GenerateCode(ClassDescription classDescription, string classNamespace);
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DtoGenerator.DtoDescriptors;
+﻿using System.CodeDom;
 using DtoGenerator.DtoDescriptor;
 using System.Reflection;
 using DtoGenerator.CodeGenerators.Types;
@@ -15,11 +9,11 @@ namespace DtoGenerator.CodeGenerators
     {
         private SupportedTypesTable supportedTypes = new SupportedTypesTable();
 
-        public CodeCompileUnit generateCode(ClassDescription classDescription, string classNamespace)
+        public CodeCompileUnit GenerateCode(ClassDescription classDescription, string classNamespace)
         {
             CodeCompileUnit targetUnit = new CodeCompileUnit();
             CodeNamespace codeNamespace = new CodeNamespace(classNamespace);
-            CodeTypeDeclaration targetClass = generateClass(classDescription.ClassName, classDescription.Properties);
+            CodeTypeDeclaration targetClass = GenerateClass(classDescription.ClassName, classDescription.Properties);
 
             targetUnit.Namespaces.Add(codeNamespace);
             codeNamespace.Types.Add(targetClass);
@@ -27,7 +21,7 @@ namespace DtoGenerator.CodeGenerators
             return targetUnit;
         }
 
-        private CodeTypeDeclaration generateClass(string name, Property[] properties)
+        private CodeTypeDeclaration GenerateClass(string name, Property[] properties)
         {
             CodeTypeDeclaration targetClass = new CodeTypeDeclaration(name);
             targetClass.IsClass = true;
@@ -35,15 +29,15 @@ namespace DtoGenerator.CodeGenerators
 
             foreach (Property property in properties)
             {
-                string propertyType = supportedTypes.getNetType(property.Type, property.Format);
-                CodeMemberProperty codeProperty = generateProperty(property.Name, propertyType);
+                string propertyType = supportedTypes.GetNetType(property.Type, property.Format);
+                CodeMemberProperty codeProperty = GenerateProperty(property.Name, propertyType);
                 targetClass.Members.Add(codeProperty);
             }
 
             return targetClass;
         }
 
-        private CodeMemberProperty generateProperty(string name, string type)
+        private CodeMemberProperty GenerateProperty(string name, string type)
         {
             CodeMemberProperty property = new CodeMemberProperty();
             property.Attributes = MemberAttributes.Public | MemberAttributes.Final;
