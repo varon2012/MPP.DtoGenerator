@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace DtoGenerator.DtoDescriptors
 {
-    class ClassList
+    public class ClassList
     {
-        internal ClassDescriptor[] classes { get; set; }
+        public ClassDescription[] classDescriptions { get; set; }
     }
 }

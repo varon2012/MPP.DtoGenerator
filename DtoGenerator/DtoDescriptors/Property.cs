@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DtoGenerator.DtoDescriptor
 {
-    internal class PropertyDescriptor
+    public class Property
     {
         public string Name { get; set; }
         public string Type { get; set; }

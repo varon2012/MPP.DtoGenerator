@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace DtoGenerator.DtoDescriptor
 {
-    internal class ClassDescriptor
+    public class ClassDescription
     {
-        internal string ClassName { get; set; }
-        internal PropertyDescriptor[] properties { get; set; }
+        public string ClassName { get; set; }
+        public Property[] properties { get; set; }
     }
 }

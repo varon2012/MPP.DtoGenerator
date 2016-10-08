@@ -18,6 +18,7 @@ namespace DtoGenerator
             string jsonString = reader.readFile(@"C:\Users\Anastasia_Paramonova\Desktop\file.json");
             IParser<ClassList> parser = new ClassParser();
             ClassList list = parser.parse(jsonString);
+            Console.WriteLine("done");
         }
     }
 }
