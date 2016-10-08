@@ -1,4 +1,5 @@
 ﻿using DtoGenerator.DtoDescriptor;
+using DtoGenerator.DtoDescriptors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -9,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace DtoGenerator.Parser
 {
-    class ClassDescroptorParser : IParser<ClassDescriptor>
+    internal class ClassParser : IParser<ClassList>
     {
-        public IList<ClassDescriptor> parse(string jsonString)
+        public ClassList parse(string jsonString)
         {
             if(jsonString == null)
             {
                 throw new ArgumentNullException(nameof(jsonString));
             }
 
-            IList<ClassDescriptor> classDescriptors = JsonConvert.DeserializeObject<List<ClassDescriptor>>(jsonString);
+            ClassList classDescriptors = JsonConvert.DeserializeObject<ClassList>(jsonString);
             return classDescriptors;
         }
     }

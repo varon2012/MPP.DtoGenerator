@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DtoGenerator.Parser
+namespace DtoGenerator.FileReaders
 {
-    interface IParser<T>
+    interface IFileReader
     {
-        T parse(string jsonString);
+        string readFile(string url);
     }
 }

@@ -10,7 +10,7 @@ namespace DtoGeneratorTest
     {
         static void Main(string[] args)
         {
-            
+            DtoGenerator.DtoGenerator.test();
         }
     }
 }

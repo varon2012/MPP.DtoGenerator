@@ -44,10 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DtoDescriptor\ClassDescriptor.cs" />
-    <Compile Include="DtoDescriptor\PropertyDescriptor.cs" />
-    <Compile Include="Parser\ClassDescroptorParser.cs" />
-    <Compile Include="Parser\IParser.cs" />
+    <Compile Include="DtoDescriptors\ClassDescriptor.cs" />
+    <Compile Include="DtoDescriptors\ClassList.cs" />
+    <Compile Include="DtoDescriptors\PropertyDescriptor.cs" />
+    <Compile Include="DtoGenerator.cs" />
+    <Compile Include="FileReaders\IFileReader.cs" />
+    <Compile Include="FileReaders\JsonFileReader.cs" />
+    <Compile Include="JsonParsers\ClassParser.cs" />
+    <Compile Include="JsonParsers\IParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
