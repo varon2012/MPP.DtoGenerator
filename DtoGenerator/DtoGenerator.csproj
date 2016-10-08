@@ -51,7 +51,7 @@
     <Compile Include="DtoObjects\ClassDescription.cs" />
     <Compile Include="DtoObjects\ClassList.cs" />
     <Compile Include="DtoObjects\Property.cs" />
-    <Compile Include="DtoGenerator.cs" />
+    <Compile Include="Generator.cs" />
     <Compile Include="Parsers\JsonParser.cs" />
     <Compile Include="Parsers\IParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
