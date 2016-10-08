@@ -46,6 +46,8 @@
   <ItemGroup>
     <Compile Include="DtoDescriptor\ClassDescriptor.cs" />
     <Compile Include="DtoDescriptor\PropertyDescriptor.cs" />
+    <Compile Include="Parser\ClassDescroptorParser.cs" />
+    <Compile Include="Parser\IParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
