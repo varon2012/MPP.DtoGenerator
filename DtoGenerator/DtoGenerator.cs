@@ -22,7 +22,7 @@ namespace DtoGenerator
             IParser<ClassList> parser = new ClassParser();
             ClassList list = parser.parse(jsonString);
             ICodeGenerator codeGenerator = new CSCodeGenerator();
-            IFileWriter writer = new CSSourceFileWriter();
+            IFileWriter writer = new CSFileWriter();
             foreach(ClassDescription classDescription in list.classDescriptions)
             {
                 CodeCompileUnit compileUnit = codeGenerator.generateCode(classDescription, "myNamespace");
