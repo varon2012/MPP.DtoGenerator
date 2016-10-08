@@ -1,7 +1,7 @@
 ﻿using DtoGenerator.CodeGenerators;
 using DtoGenerator.DtoDescriptor;
 using DtoGenerator.DtoDescriptors;
-using DtoGenerator.Parser;;
+using DtoGenerator.Parser;
 using System.CodeDom;
 
 namespace DtoGenerator
@@ -13,6 +13,7 @@ namespace DtoGenerator
             
             IParser<ClassList> parser = new ClassParser();
             ClassList list = parser.Parse(jsonString);
+
             ICodeGenerator codeGenerator = new CSCodeGenerator();
             GeneratedClasses classes = new GeneratedClasses();
             foreach(ClassDescription classDescription in list.classDescriptions)

@@ -4,6 +4,7 @@ using DtoGeneratorTest.FileReaders;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace DtoGeneratorTest
 {
@@ -13,7 +14,8 @@ namespace DtoGeneratorTest
         {
             IFileReader reader = new JsonFileReader();
             string jsonString = reader.ReadFile(@"C:\Users\Anastasia_Paramonova\Desktop\file.json");
-            GeneratedClasses classes = DtoGenerator.DtoGenerator.GenerateClasses(jsonString, "myNamespace");
+            string classesNamespace = ConfigurationManager.AppSettings["generatedClassesNamespace"];
+            GeneratedClasses classes = DtoGenerator.DtoGenerator.GenerateClasses(jsonString, classesNamespace);
             IFileWriter writer = new CSFileWriter( @"C:\Users\Anastasia_Paramonova\Desktop");
             IEnumerator<CodeCompileUnit> enumerator = classes.GetEnumerator();
             while(enumerator.MoveNext())
