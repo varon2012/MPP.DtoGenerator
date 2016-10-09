@@ -1,4 +1,5 @@
 ﻿using DtoGenerator.CodeGenerators;
+using DtoGenerator.CodeGenerators.GeneratedItems;
 using DtoGenerator.DtoDescriptor;
 using DtoGenerator.DtoDescriptors;
 using DtoGenerator.Parser;
@@ -47,7 +48,7 @@ namespace DtoGenerator
             GeneratedClasses classes = new GeneratedClasses();
             foreach (ClassDescription classDescription in list.classDescriptions)
             {
-                CodeCompileUnit compileUnit = codeGenerator.GenerateCode(classDescription, classesNamespace);
+                GeneratedClass compileUnit = codeGenerator.GenerateCode(classDescription, classesNamespace);
                 classes.AddClass(compileUnit);
             }
 

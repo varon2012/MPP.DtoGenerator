@@ -1,53 +1,67 @@
-﻿using System.CodeDom;
-using DtoGenerator.DtoDescriptor;
-using System.Reflection;
+﻿using DtoGenerator.DtoDescriptor;
 using DtoGenerator.CodeGenerators.Types;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using DtoGenerator.CodeGenerators.GeneratedItems;
 
 namespace DtoGenerator.CodeGenerators
 {
     class CSCodeGenerator : ICodeGenerator
     {
         private SupportedTypesTable supportedTypes = new SupportedTypesTable();
+        private Workspace _workspace = new AdhocWorkspace();
 
-        public CodeCompileUnit GenerateCode(ClassDescription classDescription, string classNamespace)
+
+        public GeneratedClass GenerateCode(ClassDescription classDescription, string classNamespace)
         {
-            CodeCompileUnit targetUnit = new CodeCompileUnit();
-            CodeNamespace codeNamespace = new CodeNamespace(classNamespace);
-            CodeTypeDeclaration targetClass = GenerateClass(classDescription.ClassName, classDescription.Properties);
+            var _ = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
 
-            targetUnit.Namespaces.Add(codeNamespace);
-            codeNamespace.Types.Add(targetClass);
+            NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(classNamespace));
+            ClassDeclarationSyntax classDeclaration = GenerateClass(classDescription.ClassName, classDescription.Properties);
+            namespaceDeclaration = namespaceDeclaration.AddMembers(classDeclaration);
 
-            return targetUnit;
+            GeneratedClass generatedClass = new GeneratedClass(classDescription.ClassName, Formatter.Format(namespaceDeclaration, new AdhocWorkspace()).ToFullString());
+
+            return generatedClass;
         }
 
-        private CodeTypeDeclaration GenerateClass(string name, Property[] properties)
+        private ClassDeclarationSyntax GenerateClass(string name, Property[] properties)
         {
-            CodeTypeDeclaration targetClass = new CodeTypeDeclaration(name);
-            targetClass.IsClass = true;
-            targetClass.TypeAttributes = TypeAttributes.Public | TypeAttributes.Sealed;
+            ClassDeclarationSyntax classDeclaration = ClassDeclaration(name);
+            classDeclaration = classDeclaration.WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
 
-            foreach (Property property in properties)
+            MemberDeclarationSyntax[] propertiesDeclarations = new MemberDeclarationSyntax[properties.Length];
+            for(int i = 0; i < properties.Length; i++)
             {
+                Property property = properties[i];
                 string propertyType = supportedTypes.GetNetType(property.Type, property.Format);
-                CodeMemberProperty codeProperty = GenerateProperty(property.Name, propertyType);
-                targetClass.Members.Add(codeProperty);
+                propertiesDeclarations[i] = GenerateProperty(property.Name, propertyType);
+                
             }
 
-            return targetClass;
+            classDeclaration = classDeclaration.AddMembers(propertiesDeclarations);
+            return classDeclaration;
         }
 
-        private CodeMemberProperty GenerateProperty(string name, string type)
+        private PropertyDeclarationSyntax GenerateProperty(string name, string type)
         {
-            CodeMemberProperty property = new CodeMemberProperty();
-            property.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-            property.Name = name;
-            property.Type = new CodeTypeReference(type);
-            property.HasGet = true;
-            property.HasSet = true;
+            PropertyDeclarationSyntax propertyDeclaration = PropertyDeclaration(IdentifierName(type), name);
+            propertyDeclaration = propertyDeclaration.WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
+            propertyDeclaration = propertyDeclaration.WithAccessorList(
+                AccessorList(
+                    List(
+                        new[] {
+                            AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
+                            AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
+                        }
+                        )
+                    )
+                );
 
-            return property;
+            return propertyDeclaration;
         }
-
     }
 }

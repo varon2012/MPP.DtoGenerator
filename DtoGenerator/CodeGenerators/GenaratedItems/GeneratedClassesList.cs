@@ -3,18 +3,18 @@ using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace DtoGenerator.CodeGenerators
+namespace DtoGenerator.CodeGenerators.GeneratedItems
 {
-    public class GeneratedClasses : IEnumerable<CodeCompileUnit>
+    public class GeneratedClasses : IEnumerable<GeneratedClass>
     {
-        private List<CodeCompileUnit> classes;
+        private List<GeneratedClass> classes;
 
         public GeneratedClasses()
         {
-            classes = new List<CodeCompileUnit>();
+            classes = new List<GeneratedClass>();
         }
 
-        public void AddClass(CodeCompileUnit generatedClass)
+        public void AddClass(GeneratedClass generatedClass)
         {
             if(generatedClass == null)
             {
@@ -24,7 +24,7 @@ namespace DtoGenerator.CodeGenerators
             classes.Add(generatedClass);
         }
 
-        public IEnumerator<CodeCompileUnit> GetEnumerator()
+        public IEnumerator<GeneratedClass> GetEnumerator()
         {
             return classes.GetEnumerator();
         }

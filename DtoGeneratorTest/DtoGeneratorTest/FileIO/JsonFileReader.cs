@@ -5,6 +5,8 @@ namespace DtoGeneratorTest.FileReaders
 {
     internal class JsonFileReader : IFileReader
     {
+        private const string JsonFileExtension = ".json";
+
         public string ReadFile(string filePath)
         {
             if(filePath == null)
@@ -12,7 +14,7 @@ namespace DtoGeneratorTest.FileReaders
                 throw new ArgumentNullException(nameof(filePath));
             }
 
-            if(!File.Exists(filePath) || !Path.GetExtension(filePath).Equals(".json"))
+            if(!File.Exists(filePath) || !Path.GetExtension(filePath).Equals(JsonFileExtension))
             {
                 return null;
             }

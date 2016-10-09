@@ -1,4 +1,5 @@
-﻿using Microsoft.CSharp;
+﻿using DtoGenerator.CodeGenerators.GeneratedItems;
+using Microsoft.CSharp;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -21,16 +22,16 @@ namespace DtoGeneratorTest.FileIO
             this.directoryPath = directoryPath;
         }
 
-        public void Write(CodeCompileUnit compileUnit)
+        public void Write(GeneratedClass generatedClass)
         {
-            if(compileUnit == null)
+            if(generatedClass == null)
             {
-                throw new ArgumentNullException(nameof(compileUnit));
+                throw new ArgumentNullException(nameof(generatedClass));
             }
 
-            string className = compileUnit.Namespaces[0].Types[0].Name;
+            string className = generatedClass.ClassName;
             string outputFilePath = BuildOutputFileName(className);
-            CreateCSFile(outputFilePath, compileUnit);
+            CreateCSFile(outputFilePath, generatedClass);
 
         }
 
@@ -40,19 +41,12 @@ namespace DtoGeneratorTest.FileIO
             return fileName;
         }
 
-        private void CreateCSFile(string filePath, CodeCompileUnit compileUnit)
+        private void CreateCSFile(string filePath, GeneratedClass generatedClass)
         {
-            CSharpCodeProvider provider = new CSharpCodeProvider();
-
             using (StreamWriter writer = new StreamWriter(filePath, false))
             {
-                CodeGeneratorOptions options = new CodeGeneratorOptions();
-                options.BracingStyle = CSBracingStyle;
-                options.BlankLinesBetweenMembers = false;
-
-                IndentedTextWriter textWriter = new IndentedTextWriter(writer);
-                provider.GenerateCodeFromCompileUnit(compileUnit, textWriter, options);
-                textWriter.Close();
+                writer.WriteLine(generatedClass.ClassCode);
+                writer.Close();
             }
         }
     }

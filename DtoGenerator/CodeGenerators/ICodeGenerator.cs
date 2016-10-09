@@ -1,10 +1,10 @@
-﻿using DtoGenerator.DtoDescriptor;
-using System.CodeDom;
+﻿using DtoGenerator.CodeGenerators.GeneratedItems;
+using DtoGenerator.DtoDescriptor;
 
 namespace DtoGenerator.CodeGenerators
 {
     interface ICodeGenerator
     {
-        CodeCompileUnit GenerateCode(ClassDescription classDescription, string classNamespace);
+        GeneratedClass GenerateCode(ClassDescription classDescription, string classNamespace);
     }
 }

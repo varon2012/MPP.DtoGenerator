@@ -1,9 +1,10 @@
-﻿using System.CodeDom;
+﻿using DtoGenerator.CodeGenerators.GeneratedItems;
+using System.CodeDom;
 
 namespace DtoGeneratorTest.FileIO
 {
     interface IFileWriter
     {
-        void Write(CodeCompileUnit compileUnit);
+        void Write(GeneratedClass generatedClass);
     }
 }

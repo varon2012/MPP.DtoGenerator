@@ -1,5 +1,6 @@
 ﻿using DtoGenerator;
 using DtoGenerator.CodeGenerators;
+using DtoGenerator.CodeGenerators.GeneratedItems;
 using DtoGeneratorTest.FileIO;
 using DtoGeneratorTest.FileReaders;
 using System;
@@ -47,12 +48,12 @@ namespace DtoGeneratorTest
             Generator generator = new Generator(classesNamespace);
             GeneratedClasses classes = generator.GenerateDtoClasses(jsonString);
             IFileWriter writer = new CSFileWriter(directoryPath);
-            IEnumerator<CodeCompileUnit> enumerator = classes.GetEnumerator();
+            IEnumerator<GeneratedClass> enumerator = classes.GetEnumerator();
             int i = 0;
             while (enumerator.MoveNext())
             {
-                CodeCompileUnit compileUnit = enumerator.Current;
-                writer.Write(compileUnit);
+                GeneratedClass generatedClass = enumerator.Current;
+                writer.Write(generatedClass);
                 i++;
             }
             Console.WriteLine("Generated " + i + " classes in directory " + directoryPath);
