@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using DtoPlugin;
 
@@ -7,12 +9,15 @@ namespace DtoGenerator.Plugins
 {
     internal class PluginLoader
     {
+        private List<Exception> loadingExceptions;
         private readonly TypeTable typeTable;
         internal PluginLoader()
         {
             typeTable = new TypeTable();
+            loadingExceptions = new List<Exception>();
         }
 
+        internal AggregateException LoadExceptions => new AggregateException("Plugin loading errors", loadingExceptions);
         internal TypeTable TypeTable => typeTable;
 
         internal void LoadExternalTypes(string pluginsDirectory)
@@ -31,7 +36,7 @@ namespace DtoGenerator.Plugins
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException("Plugin loading error", ex);
+                    loadingExceptions.Add(ex);
                 }
             }
         }
