@@ -17,7 +17,7 @@ namespace DtoGenerator.Plugins
             loadingExceptions = new List<Exception>();
         }
 
-        internal AggregateException LoadExceptions => new AggregateException("Plugin loading errors", loadingExceptions);
+        internal AggregateException LoadingExceptions => new AggregateException("Plugin loading errors", loadingExceptions);
         internal TypeTable TypeTable => typeTable;
 
         internal void LoadExternalTypes(string pluginsDirectory)

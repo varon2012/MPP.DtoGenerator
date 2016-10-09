@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,8 +26,9 @@ namespace DtoGenerator
         private readonly int maxWorkingTasksCount;
         private int currentWorkingTasksCount;
         private readonly CountdownEvent countdownEvent;
+        private Stream lowPriorityExceptionsStream;
 
-        public DtoGenerator(ClassList classList, ICodeGenerator codeGenerator, IConfig configData)
+        public DtoGenerator(ClassList classList, ICodeGenerator codeGenerator, IConfig configData, Stream lowPriorityExceptionsStream = null)
         {
             if (classList == null) throw new ArgumentNullException(nameof(classList));
             if (codeGenerator == null) throw new ArgumentNullException(nameof(codeGenerator));
@@ -42,6 +44,7 @@ namespace DtoGenerator
             asyncLoadingPlugins = new Task<TypeTable>(LoadPlugins);
             asyncLoadingPlugins.Start();
             maxWorkingTasksCount = configData.MaxTaskCount;
+            this.lowPriorityExceptionsStream = lowPriorityExceptionsStream;
         }
 
         public List<GenerationResult> GenerateClasses()
@@ -116,6 +119,18 @@ namespace DtoGenerator
         {
             PluginLoader pluginLoader  = new PluginLoader();
             pluginLoader.LoadExternalTypes(configData.PluginsDirectory);
+            if (pluginLoader.LoadingExceptions.InnerExceptions.Count != 0)
+            {
+                if (lowPriorityExceptionsStream != null)
+                {
+                    StreamWriter streamWriter = new StreamWriter(lowPriorityExceptionsStream);
+                    streamWriter.WriteLine(pluginLoader.LoadingExceptions);
+                }
+                else
+                {
+                    throw pluginLoader.LoadingExceptions;
+                }
+            }
             return pluginLoader.TypeTable;
         }
 
