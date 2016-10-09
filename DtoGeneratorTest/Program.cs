@@ -21,6 +21,8 @@ namespace DtoGeneratorTest
             }
 
             GenerateClasses(args[0], args[1]);
+            Console.WriteLine("The good has happened.");
+            Console.ReadLine();
         }
 
         private static void GenerateClasses(string filename, string outputDir)
@@ -31,7 +33,7 @@ namespace DtoGeneratorTest
 
                 ClassList classList = new JsonParser().ParseClassList(json);
 
-                using (var generator = new DtoGenerator.DtoGenerator(classList, new RoslynCodeGenerator(), new ConfigData()))
+                using (var generator = new DtoGenerator.DtoGenerator(classList, new T4TemplateCodeGenerator(), new ConfigData()))
                 {
                     List<DtoGenerator.GenerationResult> classes = generator.GenerateClasses();
                     new FileWriter().Write(classes, outputDir);
@@ -42,6 +44,7 @@ namespace DtoGeneratorTest
             {
                 Console.WriteLine(ex);
             }
+            
         }
     }
 }

@@ -109,6 +109,7 @@ namespace DtoGenerator
                             {
                                 AddToWorkingPool(pendingGenerationUnits.Dequeue());
                             }
+
                             countdownEvent.Signal();
                         }
                     }
@@ -131,6 +132,7 @@ namespace DtoGenerator
                     throw pluginLoader.LoadingExceptions;
                 }
             }
+
             return pluginLoader.TypeTable;
         }
 

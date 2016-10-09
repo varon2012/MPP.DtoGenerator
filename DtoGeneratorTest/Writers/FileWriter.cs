@@ -13,6 +13,7 @@ namespace DtoGeneratorTest.Writers
             {
                 throw new ArgumentNullException(nameof(classes));
             }
+
             CreateDirectoryIfNotExist(directory);
 
             foreach (var generatedClass in classes)

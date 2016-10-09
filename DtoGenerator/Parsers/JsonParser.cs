@@ -12,6 +12,7 @@ namespace DtoGenerator.Parsers
             {
                 throw new ArgumentNullException(nameof(classDescriptions));
             }
+
             return JsonConvert.DeserializeObject<ClassList>(classDescriptions);
         }
     }
