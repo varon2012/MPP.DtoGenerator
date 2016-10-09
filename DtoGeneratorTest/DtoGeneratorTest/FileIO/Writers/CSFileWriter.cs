@@ -1,8 +1,5 @@
 ﻿using DtoGenerator.CodeGenerators.GeneratedItems;
-using Microsoft.CSharp;
 using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using System.IO;
 
 namespace DtoGeneratorTest.FileIO
@@ -22,17 +19,21 @@ namespace DtoGeneratorTest.FileIO
             this.directoryPath = directoryPath;
         }
 
-        public void Write(GeneratedClass generatedClass)
+        public string CreateFile(GeneratedClass generatedClass)
         {
             if(generatedClass == null)
             {
                 throw new ArgumentNullException(nameof(generatedClass));
             }
+            if(!Directory.Exists(directoryPath))
+            {
+                return null;
+            }
 
             string className = generatedClass.ClassName;
             string outputFilePath = BuildOutputFileName(className);
             CreateCSFile(outputFilePath, generatedClass);
-
+            return outputFilePath;
         }
 
         private string BuildOutputFileName(string classname)

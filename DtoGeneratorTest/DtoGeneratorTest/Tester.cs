@@ -1,10 +1,8 @@
 ﻿using DtoGenerator;
-using DtoGenerator.CodeGenerators;
 using DtoGenerator.CodeGenerators.GeneratedItems;
 using DtoGeneratorTest.FileIO;
 using DtoGeneratorTest.FileReaders;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Configuration;
 
@@ -45,18 +43,24 @@ namespace DtoGeneratorTest
                 return;
             }
 
-            Generator generator = new Generator(classesNamespace);
+            CodeGenerator generator = new CodeGenerator(classesNamespace, maxThreadNumber);
             GeneratedClasses classes = generator.GenerateDtoClasses(jsonString);
             IFileWriter writer = new CSFileWriter(directoryPath);
             IEnumerator<GeneratedClass> enumerator = classes.GetEnumerator();
-            int i = 0;
             while (enumerator.MoveNext())
             {
                 GeneratedClass generatedClass = enumerator.Current;
-                writer.Write(generatedClass);
-                i++;
+                String filePath = writer.CreateFile(generatedClass);
+                if(filePath != null)
+                {
+                    Console.WriteLine("Created file " + filePath);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid directory " + directoryPath);
+                    return;
+                }
             }
-            Console.WriteLine("Generated " + i + " classes in directory " + directoryPath);
         }
 
         private string readJsonFile(string filePath)

@@ -88,7 +88,7 @@ namespace DtoGenerator.CodeGenerators.Types
 
             public override bool Equals(object obj)
             {
-                Key key = (Key)obj;
+                Key key = obj as Key;
                 return type.Equals(key.type) && format.Equals(key.format);
             }
         }

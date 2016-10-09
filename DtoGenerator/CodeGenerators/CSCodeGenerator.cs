@@ -6,18 +6,27 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using DtoGenerator.CodeGenerators.GeneratedItems;
+using System;
 
 namespace DtoGenerator.CodeGenerators
 {
     class CSCodeGenerator : ICodeGenerator
     {
         private SupportedTypesTable supportedTypes = new SupportedTypesTable();
-        private Workspace _workspace = new AdhocWorkspace();
 
-
-        public GeneratedClass GenerateCode(ClassDescription classDescription, string classNamespace)
+        public void GenerateCode(object threadContext)
         {
+            //I really don't know what happens here, but Roslyn doesn't work without it
             var _ = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
+
+            if(threadContext == null)
+            {
+                throw new ArgumentNullException(nameof(threadContext));
+            }
+
+            TaskInfo parameters = threadContext as TaskInfo;
+            string classNamespace = parameters.ClassesNamespace;
+            ClassDescription classDescription = parameters.ClassDescription;
 
             NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(classNamespace));
             ClassDeclarationSyntax classDeclaration = GenerateClass(classDescription.ClassName, classDescription.Properties);
@@ -25,7 +34,8 @@ namespace DtoGenerator.CodeGenerators
 
             GeneratedClass generatedClass = new GeneratedClass(classDescription.ClassName, Formatter.Format(namespaceDeclaration, new AdhocWorkspace()).ToFullString());
 
-            return generatedClass;
+            parameters.result = generatedClass;
+            parameters.ResetEvent.Set();
         }
 
         private ClassDeclarationSyntax GenerateClass(string name, Property[] properties)

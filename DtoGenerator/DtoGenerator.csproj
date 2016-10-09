@@ -104,11 +104,12 @@
     <Compile Include="CodeGenerators\GenaratedItems\GeneratedClass.cs" />
     <Compile Include="CodeGenerators\GenaratedItems\GeneratedClassesList.cs" />
     <Compile Include="CodeGenerators\ICodeGenerator.cs" />
+    <Compile Include="CodeGenerators\TaskInfo.cs" />
     <Compile Include="CodeGenerators\Types\SupportedTypesTable.cs" />
     <Compile Include="DtoObjects\ClassDescription.cs" />
     <Compile Include="DtoObjects\ClassList.cs" />
-    <Compile Include="DtoObjects\Property.cs" />
-    <Compile Include="Generator.cs" />
+    <Compile Include="DtoObjects\PropertyDescription.cs" />
+    <Compile Include="CodeGenerator.cs" />
     <Compile Include="Parsers\JsonParser.cs" />
     <Compile Include="Parsers\IParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
