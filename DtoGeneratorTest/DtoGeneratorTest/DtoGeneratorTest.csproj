@@ -71,9 +71,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileIO\Writers\CSFileWriter.cs" />
+    <Compile Include="FileIO\Writers\CSCodeWriter.cs" />
     <Compile Include="FileIO\Readers\IFileReader.cs" />
-    <Compile Include="FileIO\Writers\IFileWriter.cs" />
+    <Compile Include="FileIO\Writers\ICodeWriter.cs" />
     <Compile Include="FileIO\Readers\JsonFileReader.cs" />
     <Compile Include="Tester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

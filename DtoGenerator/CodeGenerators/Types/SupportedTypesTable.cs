@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DtoGenerator.CodeGenerators.Types
 {
@@ -27,18 +24,9 @@ namespace DtoGenerator.CodeGenerators.Types
 
         public void AddSupportedType(string type, string format, string netType)
         {
-            if(type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            if (format == null)
-            {
-                throw new ArgumentNullException(nameof(format));
-            }
-            if (netType== null)
-            {
-                throw new ArgumentNullException(nameof(netType));
-            }
+            if(type == null) throw new ArgumentNullException(nameof(type));
+            if (format == null) throw new ArgumentNullException(nameof(format));
+            if (netType== null) throw new ArgumentNullException(nameof(netType));
 
             Key key = new Key(type, format);
             if (!typeTable.ContainsKey(key))
@@ -50,14 +38,8 @@ namespace DtoGenerator.CodeGenerators.Types
 
         public string GetNetType(string type, string format)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            if (format == null)
-            {
-                throw new ArgumentNullException(nameof(format));
-            }
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (format == null) throw new ArgumentNullException(nameof(format));
 
             Key key = new Key(type, format);
             if (typeTable.ContainsKey(key))

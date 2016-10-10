@@ -2,8 +2,8 @@
 
 namespace DtoGeneratorTest.FileIO
 {
-    interface IFileWriter
+    interface ICodeWriter
     {
-        string CreateFile(GeneratedClass generatedClass);
+        string CreateSourceFile(GeneratedClass generatedClass);
     }
 }

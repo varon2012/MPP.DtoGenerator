@@ -5,21 +5,18 @@ using System.Collections.Generic;
 
 namespace DtoGenerator.CodeGenerators.GeneratedItems
 {
-    public class GeneratedClasses : IEnumerable<GeneratedClass>
+    public class GeneratedClassList : IEnumerable<GeneratedClass>
     {
         private List<GeneratedClass> classes;
 
-        public GeneratedClasses()
+        public GeneratedClassList()
         {
             classes = new List<GeneratedClass>();
         }
 
         public void AddClass(GeneratedClass generatedClass)
         {
-            if(generatedClass == null)
-            {
-                throw new ArgumentNullException(nameof(generatedClass));
-            }
+            if(generatedClass == null) throw new ArgumentNullException(nameof(generatedClass));
 
             classes.Add(generatedClass);
         }

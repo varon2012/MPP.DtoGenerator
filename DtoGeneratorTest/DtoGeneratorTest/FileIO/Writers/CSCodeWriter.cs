@@ -4,27 +4,33 @@ using System.IO;
 
 namespace DtoGeneratorTest.FileIO
 {
-    class CSFileWriter : IFileWriter
+    class CSCodeWriter : ICodeWriter
     {
         private const string CSFileExtension = ".cs";
         private const string CSBracingStyle = "C";
         private string directoryPath;
-
-        public CSFileWriter(string directoryPath)
+        public string DirectoryPath
         {
-            if (directoryPath == null)
+            set
             {
-                throw new ArgumentNullException(nameof(directoryPath));
+                if (value == null) throw new ArgumentNullException(nameof(directoryPath));
+                directoryPath = value;
             }
-            this.directoryPath = directoryPath;
+            get
+            {
+                return directoryPath;
+            }
         }
 
-        public string CreateFile(GeneratedClass generatedClass)
+        public CSCodeWriter(string directoryPath)
         {
-            if(generatedClass == null)
-            {
-                throw new ArgumentNullException(nameof(generatedClass));
-            }
+            DirectoryPath = directoryPath;
+        }
+
+        public string CreateSourceFile(GeneratedClass generatedClass)
+        {
+            if(generatedClass == null) throw new ArgumentNullException(nameof(generatedClass));
+
             if(!Directory.Exists(directoryPath))
             {
                 return null;
@@ -32,7 +38,7 @@ namespace DtoGeneratorTest.FileIO
 
             string className = generatedClass.ClassName;
             string outputFilePath = BuildOutputFileName(className);
-            CreateCSFile(outputFilePath, generatedClass);
+            WriteClassToFile(outputFilePath, generatedClass);
             return outputFilePath;
         }
 
@@ -42,9 +48,9 @@ namespace DtoGeneratorTest.FileIO
             return fileName;
         }
 
-        private void CreateCSFile(string filePath, GeneratedClass generatedClass)
+        private void WriteClassToFile(string outputFilePath, GeneratedClass generatedClass)
         {
-            using (StreamWriter writer = new StreamWriter(filePath, false))
+            using (StreamWriter writer = new StreamWriter(outputFilePath, false))
             {
                 writer.WriteLine(generatedClass.ClassCode);
                 writer.Close();

@@ -13,34 +13,40 @@ namespace DtoGenerator.CodeGenerators
     class CSCodeGenerator : ICodeGenerator
     {
         private SupportedTypesTable supportedTypes = new SupportedTypesTable();
+        private string classNamespace;
+        private ClassDescription classDescription;
 
         public void GenerateCode(object threadContext)
         {
             //I really don't know what happens here, but Roslyn doesn't work without it
             var _ = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
 
-            if(threadContext == null)
-            {
-                throw new ArgumentNullException(nameof(threadContext));
-            }
+            if(threadContext == null) throw new ArgumentNullException(nameof(threadContext));
 
             TaskInfo parameters = threadContext as TaskInfo;
-            string classNamespace = parameters.ClassesNamespace;
-            ClassDescription classDescription = parameters.ClassDescription;
+            classNamespace = parameters.ClassesNamespace;
+            classDescription = parameters.ClassDescription;
 
-            NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(classNamespace));
-            ClassDeclarationSyntax classDeclaration = GenerateClass(classDescription.ClassName, classDescription.Properties);
-            namespaceDeclaration = namespaceDeclaration.AddMembers(classDeclaration);
-
+            NamespaceDeclarationSyntax namespaceDeclaration = GenerateNamespace();
             GeneratedClass generatedClass = new GeneratedClass(classDescription.ClassName, Formatter.Format(namespaceDeclaration, new AdhocWorkspace()).ToFullString());
 
             parameters.result = generatedClass;
             parameters.ResetEvent.Set();
         }
 
-        private ClassDeclarationSyntax GenerateClass(string name, Property[] properties)
+
+        private NamespaceDeclarationSyntax GenerateNamespace()
         {
-            ClassDeclarationSyntax classDeclaration = ClassDeclaration(name);
+            NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(classNamespace));
+            ClassDeclarationSyntax classDeclaration = GenerateClass(classDescription.ClassName, classDescription.Properties);
+            namespaceDeclaration = namespaceDeclaration.AddMembers(classDeclaration);
+
+            return namespaceDeclaration;
+        }
+
+        private ClassDeclarationSyntax GenerateClass(string className, Property[] properties)
+        {
+            ClassDeclarationSyntax classDeclaration = ClassDeclaration(className);
             classDeclaration = classDeclaration.WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
 
             MemberDeclarationSyntax[] propertiesDeclarations = new MemberDeclarationSyntax[properties.Length];
@@ -56,9 +62,9 @@ namespace DtoGenerator.CodeGenerators
             return classDeclaration;
         }
 
-        private PropertyDeclarationSyntax GenerateProperty(string name, string type)
+        private PropertyDeclarationSyntax GenerateProperty(string propertyName, string propertyType)
         {
-            PropertyDeclarationSyntax propertyDeclaration = PropertyDeclaration(IdentifierName(type), name);
+            PropertyDeclarationSyntax propertyDeclaration = PropertyDeclaration(IdentifierName(propertyType), propertyName);
             propertyDeclaration = propertyDeclaration.WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
             propertyDeclaration = propertyDeclaration.WithAccessorList(
                 AccessorList(

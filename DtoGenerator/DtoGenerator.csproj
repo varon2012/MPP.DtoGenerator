@@ -102,15 +102,15 @@
   <ItemGroup>
     <Compile Include="CodeGenerators\CSCodeGenerator.cs" />
     <Compile Include="CodeGenerators\GenaratedItems\GeneratedClass.cs" />
-    <Compile Include="CodeGenerators\GenaratedItems\GeneratedClassesList.cs" />
+    <Compile Include="CodeGenerators\GenaratedItems\GeneratedClassList.cs" />
     <Compile Include="CodeGenerators\ICodeGenerator.cs" />
     <Compile Include="CodeGenerators\TaskInfo.cs" />
     <Compile Include="CodeGenerators\Types\SupportedTypesTable.cs" />
     <Compile Include="DtoObjects\ClassDescription.cs" />
-    <Compile Include="DtoObjects\ClassList.cs" />
+    <Compile Include="DtoObjects\ClassDescriptionList.cs" />
     <Compile Include="DtoObjects\PropertyDescription.cs" />
-    <Compile Include="CodeGenerator.cs" />
-    <Compile Include="Parsers\JsonParser.cs" />
+    <Compile Include="DtoCodeGenerator.cs" />
+    <Compile Include="Parsers\JsonStringParser.cs" />
     <Compile Include="Parsers\IParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

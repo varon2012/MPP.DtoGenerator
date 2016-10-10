@@ -2,7 +2,7 @@
 
 namespace DtoGenerator.DtoDescriptors
 {
-    public class ClassList
+    public class ClassDescriptionList
     {
         public ClassDescription[] classDescriptions { get; set; }
     }

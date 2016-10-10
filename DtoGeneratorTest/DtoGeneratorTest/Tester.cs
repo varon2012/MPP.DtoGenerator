@@ -26,32 +26,47 @@ namespace DtoGeneratorTest
             string jsonFilePath = args[0];
             string directoryPath = args[1];
 
-            classesNamespace = ConfigurationManager.AppSettings["generatedClassesNamespace"];
-            maxThreadNumber = Int32.Parse(ConfigurationManager.AppSettings["maxThreadNumber"]);
-
             Tester tester = new Tester();
-            tester.test(jsonFilePath, directoryPath);
+            tester.ReadApplicationSettings();
+            tester.Test(jsonFilePath, directoryPath);
             Console.ReadLine();
         }
 
-        private void test(string jsonFilePath, string directoryPath)
+        private void ReadApplicationSettings()
         {
-            string jsonString = readJsonFile(jsonFilePath);
+            classesNamespace = ConfigurationManager.AppSettings["generatedClassesNamespace"];
+            maxThreadNumber = Int32.Parse(ConfigurationManager.AppSettings["maxThreadNumber"]);
+        }
+
+        private void Test(string jsonFilePath, string directoryPath)
+        {
+            string jsonString = ReadJsonFile(jsonFilePath);
             if(jsonString == null)
             {
                 Console.WriteLine("Incorrect json file path.");
                 return;
             }
 
-            CodeGenerator generator = new CodeGenerator(classesNamespace, maxThreadNumber);
-            GeneratedClasses classes = generator.GenerateDtoClasses(jsonString);
-            IFileWriter writer = new CSFileWriter(directoryPath);
+            DtoCodeGenerator generator = new DtoCodeGenerator(classesNamespace, maxThreadNumber);
+            GeneratedClassList classes = generator.GenerateDtoClasses(jsonString);
+            WriteCodeToFiles(classes, directoryPath);
+        }
+
+        private string ReadJsonFile(string filePath)
+        {
+            IFileReader reader = new JsonFileReader();
+            return reader.ReadFile(filePath);
+        }
+
+        private void WriteCodeToFiles(GeneratedClassList classes, string directoryPath)
+        {
+            ICodeWriter writer = new CSCodeWriter(directoryPath);
             IEnumerator<GeneratedClass> enumerator = classes.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 GeneratedClass generatedClass = enumerator.Current;
-                String filePath = writer.CreateFile(generatedClass);
-                if(filePath != null)
+                String filePath = writer.CreateSourceFile(generatedClass);
+                if (filePath != null)
                 {
                     Console.WriteLine("Created file " + filePath);
                 }
@@ -61,12 +76,6 @@ namespace DtoGeneratorTest
                     return;
                 }
             }
-        }
-
-        private string readJsonFile(string filePath)
-        {
-            IFileReader reader = new JsonFileReader();
-            return reader.ReadFile(filePath);
         }
     }
 }

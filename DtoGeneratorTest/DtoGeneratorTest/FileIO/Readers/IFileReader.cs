@@ -2,6 +2,6 @@
 {
     interface IFileReader
     {
-        string ReadFile(string url);
+        string ReadFile(string filePath);
     }
 }

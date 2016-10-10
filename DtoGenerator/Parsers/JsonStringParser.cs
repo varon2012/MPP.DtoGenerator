@@ -4,16 +4,16 @@ using System;
 
 namespace DtoGenerator.Parser
 {
-    internal class ClassParser : IParser<ClassList>
+    internal class JsonStringParser : IParser<ClassDescriptionList>
     {
-        public ClassList Parse(string jsonString)
+        public ClassDescriptionList Parse(string jsonString)
         {
             if(jsonString == null)
             {
                 throw new ArgumentNullException(nameof(jsonString));
             }
 
-            ClassList classDescriptors = JsonConvert.DeserializeObject<ClassList>(jsonString);
+            ClassDescriptionList classDescriptors = JsonConvert.DeserializeObject<ClassDescriptionList>(jsonString);
             return classDescriptors;
         }
     }
