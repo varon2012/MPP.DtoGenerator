@@ -22,7 +22,6 @@ namespace DtoGenerator.CodeGenerators
         {
             if (maxThreadNumber < 1) throw new ArgumentOutOfRangeException(nameof(maxThreadNumber));
             semaphore = new Semaphore(maxThreadNumber, maxThreadNumber);
-            var _ = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
         }
 
         public void GenerateCode(object threadContext)
