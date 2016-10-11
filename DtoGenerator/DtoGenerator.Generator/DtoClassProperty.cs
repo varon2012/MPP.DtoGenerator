@@ -4,9 +4,14 @@ namespace DtoGenerator.Generator
 {
     public struct DtoClassProperty
     {
-        public string Name { get; }
-        public string Type { get; }
-        public string Format { get; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public string Format { get; set; }
+
+        public DtoClassProperty(string name, string type) 
+            : this(name, type, null)
+        {
+        }
 
         public DtoClassProperty(string name, string type, string format)
         {

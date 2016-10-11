@@ -5,8 +5,8 @@ namespace DtoGenerator.Generator
 {
     public struct DtoClassDescription
     {
-        public string ClassName { get; }
-        public IEnumerable<DtoClassProperty> Properties { get; }
+        public string ClassName { get; set; }
+        public IEnumerable<DtoClassProperty> Properties { get; set; }
 
         public DtoClassDescription(string className, IEnumerable<DtoClassProperty> properties)
         {
