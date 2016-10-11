@@ -66,15 +66,18 @@ namespace DtoGenerator.CodeGenerators.Types
 
             public override int GetHashCode()
             {
-                int result = hashCode;
-                if(result == 0)
+                unchecked
                 {
-                    result = 17;
-                    result = 31 * result + type.GetHashCode();
-                    result = 31 * result + format.GetHashCode();
+                    int result = hashCode;
+                    if(result == 0)
+                    {
+                        result = 17;
+                        result = 31 * result + type.GetHashCode();
+                        result = 31 * result + format.GetHashCode();
                     hashCode = result;
+                    }
+                    return result;
                 }
-                return result;
             }
 
             public override bool Equals(object obj)

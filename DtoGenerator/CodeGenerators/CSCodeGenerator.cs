@@ -14,38 +14,18 @@ namespace DtoGenerator.CodeGenerators
     internal class CSCodeGenerator : ICodeGenerator
     {
         private SupportedTypesTable supportedTypes = new SupportedTypesTable();
-        private string classNamespace;
-        private ClassDescription classDescription;
-        private Semaphore semaphore; 
-
-        public CSCodeGenerator(int maxThreadNumber)
-        {
-            if (maxThreadNumber < 1) throw new ArgumentOutOfRangeException(nameof(maxThreadNumber));
-            semaphore = new Semaphore(maxThreadNumber, maxThreadNumber);
-        }
 
         public void GenerateCode(object threadContext)
         {
-            try
-            {
-                semaphore.WaitOne();
-                if(threadContext == null) throw new ArgumentNullException(nameof(threadContext));
-                if (threadContext.GetType() != typeof(TaskInfo)) throw new ArgumentOutOfRangeException(nameof(threadContext));
+            if(threadContext == null) throw new ArgumentNullException(nameof(threadContext));
+            if (threadContext.GetType() != typeof(TaskInfo)) throw new ArgumentOutOfRangeException(nameof(threadContext));
 
-                PerformTask(threadContext as TaskInfo);
-            }
-            finally
-            {
-                semaphore.Release();
-            }
-        }
+            TaskInfo parameters = threadContext as TaskInfo;
 
-        private void PerformTask(TaskInfo parameters)
-        {
-            classNamespace = parameters.ClassesNamespace;
-            classDescription = parameters.ClassDescription;
+            string classNamespace = parameters.ClassesNamespace;
+            ClassDescription classDescription = parameters.ClassDescription;
 
-            NamespaceDeclarationSyntax namespaceDeclaration = GenerateNamespace();
+            NamespaceDeclarationSyntax namespaceDeclaration = GenerateNamespace(classDescription, classNamespace);
             GeneratedClass generatedClass = new GeneratedClass(classDescription.ClassName, Formatter.Format(namespaceDeclaration, new AdhocWorkspace()).ToFullString());
 
             parameters.result = generatedClass;
@@ -53,7 +33,7 @@ namespace DtoGenerator.CodeGenerators
         }
 
 
-        private NamespaceDeclarationSyntax GenerateNamespace()
+        private NamespaceDeclarationSyntax GenerateNamespace(ClassDescription classDescription, string classNamespace)
         {
             NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(classNamespace));
             ClassDeclarationSyntax classDeclaration = GenerateClass(classDescription.ClassName, classDescription.Properties);

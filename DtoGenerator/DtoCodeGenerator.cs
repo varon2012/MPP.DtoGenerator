@@ -38,13 +38,15 @@ namespace DtoGenerator
         }
 
         private ManualResetEvent[] doneEvents;
-        private TaskInfo[] tasks;
+        private TaskInfo[] tasksInQueue;
+        private ICodeGenerator codeGenerator;
 
 
         public DtoCodeGenerator(string classesNamespace, int maxThreadNumber)
         {
             ClassesNamespace = classesNamespace;
             MaxThreadNumber = maxThreadNumber;
+            codeGenerator = new CSCodeGenerator();
         }
 
         public GeneratedClassList GenerateDtoClasses(string jsonString)
@@ -64,43 +66,68 @@ namespace DtoGenerator
             return parser.Parse(jsonString);
         }
 
-        private GeneratedClassList GenerateClassesCode(ClassDescriptionList list)
+        private GeneratedClassList GenerateClassesCode(ClassDescriptionList classList)
         {
-            InitializeThreadsTasks(list.classDescriptions);
-            AddTasksToQueue();
-            WaitHandle.WaitAll(doneEvents);
+            ClassDescription[] descriptions = classList.classDescriptions;
+            int allTaskCount = descriptions.Length;
+            int maxQueueSize = Math.Min(allTaskCount, maxThreadNumber);
 
-            GeneratedClassList classes = new GeneratedClassList();
-            for (int i = 0; i < tasks.Length; i++)
-            {
-                classes.AddClass(tasks[i].result);
-            }
+            InitiateTaskQueue(maxQueueSize, descriptions);
+            GeneratedClassList classes = RefillQueueOnThreadFinishing(maxQueueSize, allTaskCount, descriptions);
+            WaitAllThreadsFinishing(classes);
 
             return classes;
         }
 
-        private void InitializeThreadsTasks(ClassDescription[] descriptions)
+        private void InitiateTaskQueue(int queueSize, ClassDescription[] classDescriptions)
         {
-            doneEvents = new ManualResetEvent[descriptions.Length];
-            tasks = new TaskInfo[descriptions.Length];
-            for (int i = 0; i < tasks.Length; i++)
+            doneEvents = new ManualResetEvent[queueSize];
+            tasksInQueue = new TaskInfo[queueSize];
+
+            for (int threadIndex = 0; threadIndex < queueSize; threadIndex++)
             {
-                ManualResetEvent resetEvent = new ManualResetEvent(false);
-                doneEvents[i] = resetEvent;
-                tasks[i] = new TaskInfo(descriptions[i], ClassesNamespace, resetEvent);
-            }
-
-        }
-
-        private void AddTasksToQueue()
-        {
-            ICodeGenerator codeGenerator = new CSCodeGenerator(maxThreadNumber);
-
-            for (int i = 0; i < tasks.Length; i++)
-            {
-                ThreadPool.QueueUserWorkItem(codeGenerator.GenerateCode, tasks[i]);
+                TaskInfo task = CreateThreadTask(threadIndex, classDescriptions[threadIndex]);
+                ThreadPool.QueueUserWorkItem(codeGenerator.GenerateCode, task);
             }
         }
 
+        private GeneratedClassList RefillQueueOnThreadFinishing(int addedTaskCount, int allTaskCount, ClassDescription[] descriptions)
+        {
+            GeneratedClassList classes = new GeneratedClassList();
+            for(int taskIndex = addedTaskCount; taskIndex < allTaskCount; taskIndex++)
+            {
+                int finishedThreadIndex = WaitHandle.WaitAny(doneEvents);
+                classes.AddClass(tasksInQueue[finishedThreadIndex].result);
+
+                AddTaskToQueue(finishedThreadIndex, descriptions[taskIndex]);
+                addedTaskCount++;
+            }
+            return classes;
+        }
+
+        private void WaitAllThreadsFinishing(GeneratedClassList classes)
+        {
+            WaitHandle.WaitAll(doneEvents);
+            for (int i = 0; i < tasksInQueue.Length; i++)
+            {
+                classes.AddClass(tasksInQueue[i].result);
+            }
+        }
+
+        private void AddTaskToQueue(int threadIndex, ClassDescription description)
+        {
+            TaskInfo task = CreateThreadTask(threadIndex, description);
+            ThreadPool.QueueUserWorkItem(codeGenerator.GenerateCode, tasksInQueue[threadIndex]);
+        }
+
+        private TaskInfo CreateThreadTask(int threadIndex, ClassDescription descriptions)
+        {
+            ManualResetEvent resetEvent = new ManualResetEvent(false);
+            doneEvents[threadIndex] = resetEvent;
+            TaskInfo task = new TaskInfo(descriptions, ClassesNamespace, resetEvent);
+            tasksInQueue[threadIndex] = task;
+
+            return task;
+        }
     }
 }
