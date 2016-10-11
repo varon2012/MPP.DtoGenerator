@@ -2,7 +2,7 @@
 
 namespace DtoGenerator.CodeGenerators
 {
-    interface ICodeGenerator
+    internal interface ICodeGenerator
     {
         void GenerateCode(object threadContext);
     }

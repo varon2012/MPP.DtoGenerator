@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace DtoGenerator.CodeGenerators
 {
-    class TaskInfo
+    internal class TaskInfo
     {
         public ClassDescription ClassDescription { get; }
         public string ClassesNamespace { get; }

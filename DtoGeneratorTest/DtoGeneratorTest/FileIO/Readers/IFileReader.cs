@@ -1,6 +1,6 @@
 ﻿namespace DtoGeneratorTest.FileReaders
 {
-    interface IFileReader
+    internal interface IFileReader
     {
         string ReadFile(string filePath);
     }

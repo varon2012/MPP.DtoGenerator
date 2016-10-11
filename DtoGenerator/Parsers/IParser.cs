@@ -1,6 +1,6 @@
 ﻿namespace DtoGenerator.Parser
 {
-    interface IParser<T>
+    internal interface IParser<T>
     {
         T Parse(string jsonString);
     }

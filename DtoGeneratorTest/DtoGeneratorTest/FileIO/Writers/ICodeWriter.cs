@@ -2,7 +2,7 @@
 
 namespace DtoGeneratorTest.FileIO
 {
-    interface ICodeWriter
+    internal interface ICodeWriter
     {
         string CreateSourceFile(GeneratedClass generatedClass);
     }

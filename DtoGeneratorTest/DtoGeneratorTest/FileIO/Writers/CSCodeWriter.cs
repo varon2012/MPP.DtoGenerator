@@ -4,7 +4,7 @@ using System.IO;
 
 namespace DtoGeneratorTest.FileIO
 {
-    class CSCodeWriter : ICodeWriter
+    internal class CSCodeWriter : ICodeWriter
     {
         private const string CSFileExtension = ".cs";
         private const string CSBracingStyle = "C";

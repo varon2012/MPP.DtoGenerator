@@ -10,7 +10,7 @@ using System;
 
 namespace DtoGenerator.CodeGenerators
 {
-    class CSCodeGenerator : ICodeGenerator
+    internal class CSCodeGenerator : ICodeGenerator
     {
         private SupportedTypesTable supportedTypes = new SupportedTypesTable();
         private string classNamespace;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DtoGenerator.CodeGenerators.Types
 {
-    class SupportedTypesTable
+    internal class SupportedTypesTable
     {
         private const string UndefinedType = "undefined";
         private Dictionary<Key, string> typeTable;
