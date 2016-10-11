@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.Formatting;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using DtoGenerator.CodeGenerators.GeneratedItems;
 using System;
+using System.Threading;
 
 namespace DtoGenerator.CodeGenerators
 {
@@ -15,15 +16,33 @@ namespace DtoGenerator.CodeGenerators
         private SupportedTypesTable supportedTypes = new SupportedTypesTable();
         private string classNamespace;
         private ClassDescription classDescription;
+        private Semaphore semaphore; 
+
+        public CSCodeGenerator(int maxThreadNumber)
+        {
+            if (maxThreadNumber < 1) throw new ArgumentOutOfRangeException(nameof(maxThreadNumber));
+            semaphore = new Semaphore(maxThreadNumber, maxThreadNumber);
+            var _ = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
+        }
 
         public void GenerateCode(object threadContext)
         {
-            //I really don't know what happens here, but Roslyn doesn't work without it
-            var _ = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
+            try
+            {
+                semaphore.WaitOne();
+                if(threadContext == null) throw new ArgumentNullException(nameof(threadContext));
+                if (threadContext.GetType() != typeof(TaskInfo)) throw new ArgumentOutOfRangeException(nameof(threadContext));
 
-            if(threadContext == null) throw new ArgumentNullException(nameof(threadContext));
+                PerformTask(threadContext as TaskInfo);
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        }
 
-            TaskInfo parameters = threadContext as TaskInfo;
+        private void PerformTask(TaskInfo parameters)
+        {
             classNamespace = parameters.ClassesNamespace;
             classDescription = parameters.ClassDescription;
 

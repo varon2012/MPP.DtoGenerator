@@ -17,7 +17,7 @@ namespace DtoGenerator
             {
                 return classesNamespace;
             }
-            set
+            private set
             {
                 if (value == null) throw new ArgumentNullException(nameof(classesNamespace));
                 classesNamespace = value;
@@ -30,7 +30,7 @@ namespace DtoGenerator
             {
                 return maxThreadNumber;
             }
-            set
+            private set
             {
                 if (value < 0) throw new ArgumentOutOfRangeException(nameof(maxThreadNumber));
                 maxThreadNumber = value;
@@ -94,8 +94,7 @@ namespace DtoGenerator
 
         private void AddTasksToQueue()
         {
-            ThreadPool.SetMaxThreads(maxThreadNumber, maxThreadNumber);
-            ICodeGenerator codeGenerator = new CSCodeGenerator();
+            ICodeGenerator codeGenerator = new CSCodeGenerator(maxThreadNumber);
 
             for (int i = 0; i < tasks.Length; i++)
             {
