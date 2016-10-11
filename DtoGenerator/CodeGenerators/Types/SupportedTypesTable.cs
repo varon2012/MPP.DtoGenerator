@@ -52,10 +52,11 @@ namespace DtoGenerator.CodeGenerators.Types
             }
         }
 
-        private class Key
+        private class Key : IEquatable<Key>
         {
             private string type;
             private string format;
+            private int hashCode;
 
             public Key(string type, string format)
             {
@@ -65,13 +66,30 @@ namespace DtoGenerator.CodeGenerators.Types
 
             public override int GetHashCode()
             {
-                return 15485863 | type.GetHashCode() & format.GetHashCode();
+                int result = hashCode;
+                if(result == 0)
+                {
+                    result = 17;
+                    result = 31 * result + type.GetHashCode();
+                    result = 31 * result + format.GetHashCode();
+                    hashCode = result;
+                }
+                return result;
             }
 
             public override bool Equals(object obj)
             {
-                Key key = obj as Key;
-                return type.Equals(key.type) && format.Equals(key.format);
+                if (ReferenceEquals(obj, null)) return false;
+                if (ReferenceEquals(obj, this)) return true;
+                if (obj.GetType() != GetType()) return false;
+
+                return Equals(obj as Key);
+            }
+
+            public bool Equals(Key other)
+            {
+                if (other == null) return false;
+                return string.Equals(type, other.type) && string.Equals(format, other.format);
             }
         }
     }
