@@ -5,35 +5,62 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
+using JSONAnalyzer;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DTOGenerator
 {
     class Program
     {
-
+            
         static void Main(string[] args)
         {
             string JSONFilePath = GetJSONFilePathFromConsole();
+
             try
             {
-                JSONFileStructure DTOClassesDecription = JSONParser.ParseJSONFile(JSONFilePath);
+                JSONFileStructure jsonFileStructure = JSONParser.ParseJSONFile(JSONFilePath);
+                try
+                {
+                    List<ClassDescription> dtoClassDescriptions = JSONFileStructureAdapter.AdaptToClassDecriptionList(jsonFileStructure);
+                    string directoryPath = GetOutputDirectoryFromConsole();
+                    List<DTODescription> dtoDecriptions = (new DTOGenerator()).GenerateCode(dtoClassDescriptions);
+
+                    foreach (DTODescription dtoDescription in dtoDecriptions)
+                    {
+                        DTOClassesWriter.WriteToFile(dtoDescription, directoryPath);
+                    }
+
+                    Console.ReadLine();
+                }
+                catch(InvalidOperationException e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.ReadLine();
+                }
+
+                
             }
-            catch(Exception)
+            catch(JsonReaderException)
             {
                 Console.WriteLine("Error reading JSON file");
+                Console.ReadLine();
             }
 
-            Console.ReadLine();
+            
+            
         }
 
         private static string GetJSONFilePathFromConsole()
         {
             string JSONFilePath = string.Empty;
             bool JSONFilePathIsCorrect = false;
+
             while (!JSONFilePathIsCorrect)
             {
                 Console.WriteLine("Enter JSON file path:");
                 JSONFilePath = Console.ReadLine();
+
                 if (!File.Exists(JSONFilePath))
                 {
                     Console.WriteLine("File doesn't exists. Try again.");
@@ -54,7 +81,14 @@ namespace DTOGenerator
             return JSONFilePath;
         }
 
-        
+        private static string GetOutputDirectoryFromConsole()
+        {
+            string outputDirectory = string.Empty;
+            Console.WriteLine("Enter output directory path:");
+            outputDirectory = Console.ReadLine();
+            return outputDirectory;
+        }
+
 
     }
 }

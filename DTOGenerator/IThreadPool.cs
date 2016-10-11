@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace DTOGenerator
 {
-    public enum NonPlatformType
+    interface IThreadPool : IDisposable
     {
-        Integer,
-        Number,
-        Boolean,
-        String
+        void QueueUserWorkItem(WaitCallback work, object obj);
     }
-
-
 }

@@ -10,27 +10,27 @@ namespace DTOGenerator
     public class JSONFileStructure
     {
         [JsonProperty("classDescriptions")]
-        ClassStructure[] classDescriptions;        
+        public ClassStructure[] ClassDescriptions { get; private set; }    
     }
 
     public class ClassStructure
     {
         [JsonProperty("className")]
-        string className;
+        public string ClassName { get; private set; }
 
         [JsonProperty("properties")]
-        PropertyInfo[] properties;
+        public PropertyInfo[] Properties { get; private set; }
     }
 
     public class PropertyInfo
     {
         [JsonProperty("name")]
-        string name;
+        public string Name { get; private set; }
 
         [JsonProperty("type")]
-        string type;
+        public string Type { get; private set; }
 
         [JsonProperty("format")]
-        string format;
+        public string Format { get; private set; }
     }
 }
