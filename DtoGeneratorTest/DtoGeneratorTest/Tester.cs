@@ -50,6 +50,8 @@ namespace DtoGeneratorTest
             DtoCodeGenerator generator = new DtoCodeGenerator(classesNamespace, maxThreadNumber);
             GeneratedClassList classes = generator.GenerateDtoClasses(jsonString);
             WriteCodeToFiles(classes, directoryPath);
+
+            generator.Dispose();
         }
 
         private string ReadJsonFile(string filePath)

@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace DtoGenerator
 {
-    public class DtoCodeGenerator
+    public class DtoCodeGenerator :IDisposable
     {
         private string classesNamespace;
         private int maxThreadNumber;
@@ -118,6 +118,14 @@ namespace DtoGenerator
             for (int i = 0; i < tasksPool.Length; i++)
             {
                 FinishTask(i);
+            }
+        }
+
+        public void Dispose()
+        {
+            for(int i = 0; i < tasksPool.Length; i++)
+            {
+                tasksPool[i].Dispose();
             }
         }
     }

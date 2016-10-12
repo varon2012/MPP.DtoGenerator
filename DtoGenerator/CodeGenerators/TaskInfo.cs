@@ -11,6 +11,7 @@ namespace DtoGenerator.CodeGenerators
         public string ClassesNamespace { get; }
         public ManualResetEvent ResetEvent { get; }
         public GeneratedClass Result { get; set; }
+        private bool disposed = false;
 
         public TaskInfo(ClassDescription classDescription, string classesNamespace, ManualResetEvent resetEvent)
         {
@@ -22,7 +23,12 @@ namespace DtoGenerator.CodeGenerators
 
         public void Dispose()
         {
-            ResetEvent.Dispose();
+            if (!disposed)
+            {
+                ResetEvent.Dispose();
+                disposed = true;
+            }
+            
         }
     }
 }
