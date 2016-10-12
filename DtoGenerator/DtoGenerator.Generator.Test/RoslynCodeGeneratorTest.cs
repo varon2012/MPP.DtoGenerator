@@ -22,27 +22,28 @@ namespace DtoGenerator.Generator.Test
                     new DtoClassProperty("MyProperty", "integer", "int32"),
                     new DtoClassProperty("OnlyMine", "boolean")
                 }),
-                new DtoClassDescription("SomethingWicked", new List<DtoClassProperty>
+                new DtoClassDescription("SomethingWicked1", new List<DtoClassProperty>
                 {
                     new DtoClassProperty("FirstProperty", "NotExistedType", "int32"),
                     new DtoClassProperty("SecondProperty", "integer", "int64"),
                     new DtoClassProperty("ThirdProperty", "number", "float")
                 }),
-                new DtoClassDescription("SomethingWicked", new List<DtoClassProperty>
+                new DtoClassDescription("SomethingWicked2", new List<DtoClassProperty>
                 {
                     new DtoClassProperty("FirstProperty", "integer", "int32"),
                     new DtoClassProperty("SecondProperty", "integer", "NotExistedFormat"),
                     new DtoClassProperty("ThirdProperty", "number" /* not specified format */)
                 }),
-                new DtoClassDescription("SomethingBad", new List<DtoClassProperty>
+                new DtoClassDescription("SomethingBad1", new List<DtoClassProperty>
                 {
                     new DtoClassProperty("MyProperty", "integer", "int32"),
                     new DtoClassProperty("OnlyMine", "boolean", "RedundantFormat")
                 }),
             };
 
-            var expectedResults = new List<string>
+            var expectedResults = new Dictionary<string, string>
             {
+                { "SomethingWicked",
 @"namespace Test
 {
     public sealed class SomethingWicked 
@@ -52,33 +53,8 @@ namespace DtoGenerator.Generator.Test
         public System.Single ThirdProperty { get; set; }
     }
 }
-",
-@"namespace Test
-{
-    public sealed class SomethingBad 
-    {
-        public System.Int32 MyProperty { get; set; }
-        public System.Boolean OnlyMine { get; set; }
-    }
-}
-",
-@"namespace Test
-{
-    public sealed class SomethingWicked 
-    {
-        public System.Int64 SecondProperty { get; set; }
-        public System.Single ThirdProperty { get; set; }
-    }
-}
-",
-@"namespace Test
-{
-    public sealed class SomethingWicked 
-    {
-        public System.Int32 FirstProperty { get; set; }
-    }
-}
-",
+" },
+                { "SomethingBad",
 @"namespace Test
 {
     public sealed class SomethingBad 
@@ -88,15 +64,48 @@ namespace DtoGenerator.Generator.Test
     }
 }
 "
+ },
+                { "SomethingWicked1",
+@"namespace Test
+{
+    public sealed class SomethingWicked1 
+    {
+        public System.Int64 SecondProperty { get; set; }
+        public System.Single ThirdProperty { get; set; }
+    }
+}
+" },
+                { "SomethingWicked2",
+@"namespace Test
+{
+    public sealed class SomethingWicked2 
+    {
+        public System.Int32 FirstProperty { get; set; }
+    }
+}
+" },
+                { "SomethingBad1",
+@"namespace Test
+{
+    public sealed class SomethingBad1 
+    {
+        public System.Int32 MyProperty { get; set; }
+        public System.Boolean OnlyMine { get; set; }
+    }
+}
+" }
             };
 
-            using (var iterator = expectedResults.GetEnumerator())
+            var config = new Config
             {
-                foreach (var classString in new ClassCodeGenerator("Test", new RoslynCodeGenerator()).Generate(classDescriptions))
-                {
-                    iterator.MoveNext();
-                    Assert.AreEqual(iterator.Current, classString);
-                }
+                ClassesNamespace = "Test"
+            };
+
+            var result = new ClassCodeGenerator(config, new RoslynCodeGenerator()).Generate(classDescriptions);
+
+            foreach (var className in result.Keys)
+            {
+                Assert.AreEqual(expectedResults[className], result[className]);
             }
         }
     }

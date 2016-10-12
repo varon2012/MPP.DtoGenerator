@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using DtoGenerator.Generator;
 using DtoGenerator.IO;
@@ -36,8 +37,7 @@ namespace DtoGenerator
         {
             var classes = parser.Parse(filename);
 
-            // TODO: fetch namespace from config file
-            var generator = new ClassCodeGenerator("Test", new RoslynCodeGenerator());
+            var generator = new ClassCodeGenerator(GetConfig(), new RoslynCodeGenerator());
             var generatedClasses = generator.Generate(classes);
 
             IClassWriter writter = new FileWriter(outputPath);
@@ -54,6 +54,48 @@ namespace DtoGenerator
                     Console.Error.WriteLine($"Error occurred during writing to file: {e.Message}");
                 }
             }
+        }
+
+        private static Config GetConfig()
+        {
+            return new Config
+            {
+                ClassesNamespace = TryGetStringConfig("classesNamespace"),
+                MaxTaskCount = TryGetIntConfig("maxTaskCount"),
+                PluginsDirectoryPath = TryGetStringConfig("pluginsDirectoryPath")
+            };
+        }
+
+        private static string TryGetStringConfig(string configName)
+        {
+            var config = ConfigurationManager.AppSettings[configName];
+
+            if (config == null)
+            {
+                throw new BadInputException($"Unresolved config {configName}");
+            }
+
+            return config;
+        }
+
+        private static int TryGetIntConfig(string configName)
+        {
+            int config;
+
+            try
+            {
+                config = int.Parse(ConfigurationManager.AppSettings[configName]);
+            }
+            catch (ArgumentNullException)
+            {
+                throw new BadInputException($"Unresolved config {configName}");
+            }
+            catch (FormatException e)
+            {
+                throw new BadInputException($"Config {configName} has invalid format: {e.Message}");
+            }
+
+            return config;
         }
     }
 }

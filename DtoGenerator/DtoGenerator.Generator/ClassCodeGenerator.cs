@@ -5,12 +5,12 @@ namespace DtoGenerator.Generator
 {
     public sealed class ClassCodeGenerator
     {
-        private readonly string _specifiedNamespace;
+        private readonly Config _config;
         private readonly ICodeGenerator _generator;
 
-        public ClassCodeGenerator(string specifiedNamespace, ICodeGenerator generator)
+        public ClassCodeGenerator(Config config, ICodeGenerator generator)
         {
-            _specifiedNamespace = specifiedNamespace;
+            _config = config;
             _generator = generator;
         }
 
@@ -22,7 +22,7 @@ namespace DtoGenerator.Generator
             foreach (var classDescription in classDescriptions)
             {
                 result[classDescription.ClassName] = 
-                    _generator.Generate(_specifiedNamespace, classDescription, new TypeResolver());
+                    _generator.Generate(_config.ClassesNamespace, classDescription, new TypeResolver());
             }
 
             return result;

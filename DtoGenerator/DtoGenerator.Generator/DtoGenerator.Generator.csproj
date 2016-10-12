@@ -34,6 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ClassCodeGenerator.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="DtoClassDescription.cs" />
     <Compile Include="DtoClassProperty.cs" />
     <Compile Include="ICodeGenerator.cs" />
