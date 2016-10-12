@@ -30,22 +30,25 @@ namespace FromJsonToCsFilesDtoGenerator
 
                 while (reader.Read())
                 {
-                    if (reader.TokenType == JsonToken.StartObject)
+                    if (reader.TokenType != JsonToken.StartObject)
+                        continue;
+
+                    dynamic obj = JObject.Load(reader);
+
+                    string className = obj["className"];
+                    List<DtoFieldInfo> fields = new List<DtoFieldInfo>();
+                    foreach (var property in obj.properties)
                     {
-                        
-                        dynamic obj = JObject.Load(reader);
+                        DtoFieldInfo fieldInfo = new DtoFieldInfo(property.name.ToString(), 
+                            DtoGeneratorTypesTable.Instance.GetDotNetType(
+                                Enum.Parse(typeof(TypeForm), property.type.ToString(), true), 
+                                property.format.ToString()));    
+                        fields.Add(fieldInfo);
+                    }
 
-                   /*     string className = obj["className"];
-                        List<DtoFieldInfo> fields = new List<DtoFieldInfo>();
-                        foreach (var property in obj.properties)
-                        {
-                            DtoFieldInfo fieldInfo = new DtoFieldInfo(property.name.ToString(), 
-                                DtoGeneratorTypesTable.Instance.GetDotNetType());    
-                        }
-
-                    }*/
+                    OnDtoInfoRead?.Invoke(new DtoInfo(className, fields.ToArray()));
                 }
-
+                OnReadCompleted?.Invoke();
             }
 
 
