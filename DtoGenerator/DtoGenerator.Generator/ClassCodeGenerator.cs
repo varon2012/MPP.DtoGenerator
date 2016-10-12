@@ -17,12 +17,15 @@ namespace DtoGenerator.Generator
         public IDictionary<string, string> Generate(IEnumerable<DtoClassDescription> classDescriptions)
         {
             var result = new Dictionary<string, string>();
+            var typeResolver = _config.PluginsDirectoryPath != null
+                ? new TypeResolver(_config.PluginsDirectoryPath)
+                : new TypeResolver();
 
             // TODO: use thread pool
             foreach (var classDescription in classDescriptions)
             {
                 result[classDescription.ClassName] = 
-                    _generator.Generate(_config.ClassesNamespace, classDescription, new TypeResolver(_config.PluginsDirectoryPath));
+                    _generator.Generate(_config.ClassesNamespace, classDescription, typeResolver);
             }
 
             return result;

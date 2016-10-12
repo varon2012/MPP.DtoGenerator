@@ -37,6 +37,8 @@ namespace DtoGenerator.Generator.Types
         public TypeResolver(string pluginsDirectory)
             : this()
         {
+            if (pluginsDirectory == null) throw new ArgumentNullException(nameof(pluginsDirectory));
+
             var types = PluginsLoader.GetTypesWithAttribute<TypeAttribute>(pluginsDirectory);
 
             foreach (var type in types)

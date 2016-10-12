@@ -62,7 +62,7 @@ namespace DtoGenerator
             {
                 ClassesNamespace = TryGetStringConfig("classesNamespace"),
                 MaxTaskCount = TryGetIntConfig("maxTaskCount"),
-                PluginsDirectoryPath = TryGetStringConfig("pluginsDirectoryPath")
+                PluginsDirectoryPath = TryGetOptionalStringConfig("pluginsDirectoryPath")
             };
         }
 
@@ -76,6 +76,11 @@ namespace DtoGenerator
             }
 
             return config;
+        }
+
+        private static string TryGetOptionalStringConfig(string configName)
+        {
+            return ConfigurationManager.AppSettings[configName];
         }
 
         private static int TryGetIntConfig(string configName)
