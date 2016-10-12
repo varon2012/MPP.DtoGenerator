@@ -22,7 +22,7 @@ namespace DtoGenerator.Generator
             foreach (var classDescription in classDescriptions)
             {
                 result[classDescription.ClassName] = 
-                    _generator.Generate(_config.ClassesNamespace, classDescription, new TypeResolver());
+                    _generator.Generate(_config.ClassesNamespace, classDescription, new TypeResolver(_config.PluginsDirectoryPath));
             }
 
             return result;

@@ -5,14 +5,14 @@ namespace DtoGenerator.Generator.Types
 {
     internal sealed class TypeFormats
     {
-        private readonly bool _hasSingleFormat;
+        public bool HasSingleFormat { get; }
         private readonly Type _singleFormat;
 
         private readonly Dictionary<string, Type> _formats;
 
         public TypeFormats()
         {
-            _hasSingleFormat = false;
+            HasSingleFormat = false;
             _formats = new Dictionary<string, Type>();
         }
 
@@ -20,7 +20,7 @@ namespace DtoGenerator.Generator.Types
         {
             if (singleFormat == null) throw new ArgumentNullException(nameof(singleFormat));
 
-            _hasSingleFormat = true;
+            HasSingleFormat = true;
             _singleFormat = singleFormat;
         }
 
@@ -28,7 +28,7 @@ namespace DtoGenerator.Generator.Types
         {
             Type resultType;
 
-            if (_hasSingleFormat)
+            if (HasSingleFormat)
             {
                 resultType = _singleFormat;
             }
@@ -54,7 +54,7 @@ namespace DtoGenerator.Generator.Types
             if (format == null) throw new ArgumentNullException(nameof(format));
             if (dotNetType == null) throw new ArgumentNullException(nameof(dotNetType));
 
-            if (_hasSingleFormat)
+            if (HasSingleFormat)
             {
                 throw new InvalidOperationException("This instance has only single type format");
             }

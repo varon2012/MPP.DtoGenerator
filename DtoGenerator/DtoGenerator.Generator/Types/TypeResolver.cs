@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace DtoGenerator.Generator.Types
 {
@@ -31,6 +32,33 @@ namespace DtoGenerator.Generator.Types
                     "boolean", new TypeFormats(typeof(bool))
                 }
             };
+        }
+
+        public TypeResolver(string pluginsDirectory)
+            : this()
+        {
+            var types = PluginsLoader.GetTypesWithAttribute<TypeAttribute>(pluginsDirectory);
+
+            foreach (var type in types)
+            {
+                var attribute = type.GetCustomAttribute(typeof(TypeAttribute)) as TypeAttribute;
+                if (attribute == null) continue;
+
+                var typeName = attribute.Name ?? type.Name;
+                var typeFormat = attribute.Format;
+                TypeFormats typeFormats;
+
+                if (!_types.TryGetValue(typeName, out typeFormats))
+                {
+                    typeFormats = typeFormat == null ? new TypeFormats(type) : new TypeFormats();
+                    _types[typeName] = typeFormats;
+                }
+
+                if (!typeFormats.HasSingleFormat)
+                {
+                    typeFormats.AddTypeFormat(typeFormat, type);
+                }
+            }
         }
 
         public Type ResolveType(string type, string format)
