@@ -47,6 +47,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
     <Compile Include="RoslynCodeGeneratorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -59,6 +64,22 @@
       <Project>{7c35aca1-cfed-46d6-986c-7a36eb0e5ef7}</Project>
       <Name>TextFormatters</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SomethingWicked2.txt" />
+    <None Include="Resources\SomethingWicked1.txt" />
+    <None Include="Resources\SomethingWicked.txt" />
+    <None Include="Resources\SomethingBad1.txt" />
+    <None Include="Resources\SomethingBad.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

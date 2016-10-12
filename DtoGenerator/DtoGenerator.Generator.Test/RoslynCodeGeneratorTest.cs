@@ -41,60 +41,13 @@ namespace DtoGenerator.Generator.Test
                 }),
             };
 
-            var expectedResults = new Dictionary<string, string>
+            var expectedResults = new Dictionary<string, string>();
+
+            foreach (var classDescription in classDescriptions)
             {
-                { "SomethingWicked",
-@"namespace Test
-{
-    public sealed class SomethingWicked 
-    {
-        public System.Int32 FirstProperty { get; set; }
-        public System.Int64 SecondProperty { get; set; }
-        public System.Single ThirdProperty { get; set; }
-    }
-}
-" },
-                { "SomethingBad",
-@"namespace Test
-{
-    public sealed class SomethingBad 
-    {
-        public System.Int32 MyProperty { get; set; }
-        public System.Boolean OnlyMine { get; set; }
-    }
-}
-"
- },
-                { "SomethingWicked1",
-@"namespace Test
-{
-    public sealed class SomethingWicked1 
-    {
-        public System.Int64 SecondProperty { get; set; }
-        public System.Single ThirdProperty { get; set; }
-    }
-}
-" },
-                { "SomethingWicked2",
-@"namespace Test
-{
-    public sealed class SomethingWicked2 
-    {
-        public System.Int32 FirstProperty { get; set; }
-    }
-}
-" },
-                { "SomethingBad1",
-@"namespace Test
-{
-    public sealed class SomethingBad1 
-    {
-        public System.Int32 MyProperty { get; set; }
-        public System.Boolean OnlyMine { get; set; }
-    }
-}
-" }
-            };
+                var className = classDescription.ClassName;
+                expectedResults[className] = Resource.ResourceManager.GetString(className);
+            }
 
             var config = new Config
             {
