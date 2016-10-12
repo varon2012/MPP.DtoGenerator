@@ -86,7 +86,6 @@ namespace DtoGenerator.Generator
                 {
                     propertyList.Add(GenerateProperty(property, GenerateAccessorList(), typeResolver));
                 }
-                // TODO: separate exceptions handling
                 catch (Exception e)
                 {
                     if (_logger == null) continue;

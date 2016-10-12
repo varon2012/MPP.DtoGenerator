@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DtoGenerator.Generator.Types;
+using TextFormatters;
 
 namespace DtoGenerator.Generator
 {
@@ -14,11 +15,11 @@ namespace DtoGenerator.Generator
             _generator = generator;
         }
 
-        public IDictionary<string, string> Generate(IEnumerable<DtoClassDescription> classDescriptions)
+        public IDictionary<string, string> Generate(IEnumerable<DtoClassDescription> classDescriptions, ILogger logger)
         {
             var result = new Dictionary<string, string>();
             var typeResolver = _config.PluginsDirectoryPath != null
-                ? new TypeResolver(_config.PluginsDirectoryPath)
+                ? new TypeResolver(_config.PluginsDirectoryPath, logger)
                 : new TypeResolver();
 
             // TODO: use thread pool

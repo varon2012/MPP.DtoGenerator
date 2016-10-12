@@ -50,7 +50,8 @@ namespace DtoGenerator
             var classes = parser.Parse(filename);
 
             var generator = new ClassCodeGenerator(GetConfig(), GetCodeGenerator());
-            var generatedClasses = generator.Generate(classes);
+            var logger = (ILogger) Activator.CreateInstance(Loggers[TryGetOptionalStringConfig("logger")]);
+            var generatedClasses = generator.Generate(classes, logger);
 
             IClassWriter writter = new FileWriter(outputPath);
 

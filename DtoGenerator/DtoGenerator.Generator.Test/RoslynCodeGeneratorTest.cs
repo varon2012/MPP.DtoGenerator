@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TextFormatters;
 
 namespace DtoGenerator.Generator.Test
 {
@@ -54,7 +55,8 @@ namespace DtoGenerator.Generator.Test
                 ClassesNamespace = "Test"
             };
 
-            var result = new ClassCodeGenerator(config, new RoslynCodeGenerator()).Generate(classDescriptions);
+            var result = new ClassCodeGenerator(config, new RoslynCodeGenerator())
+                .Generate(classDescriptions, new ConsoleLogger());
 
             foreach (var className in result.Keys)
             {

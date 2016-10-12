@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using TextFormatters;
 
 namespace DtoGenerator.Generator.Types
 {
@@ -34,12 +35,12 @@ namespace DtoGenerator.Generator.Types
             };
         }
 
-        public TypeResolver(string pluginsDirectory)
+        public TypeResolver(string pluginsDirectory, ILogger logger)
             : this()
         {
             if (pluginsDirectory == null) throw new ArgumentNullException(nameof(pluginsDirectory));
 
-            var types = PluginsLoader.GetTypesWithAttribute<TypeAttribute>(pluginsDirectory);
+            var types = new PluginsLoader(logger).GetTypesWithAttribute<TypeAttribute>(pluginsDirectory);
 
             foreach (var type in types)
             {
