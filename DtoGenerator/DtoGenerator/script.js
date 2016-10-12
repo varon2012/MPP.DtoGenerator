@@ -7,7 +7,7 @@
       '{{repeat(2, 10)}}',
       {
         name: 'Property{{index()}}',
-        type: '{{random("integer", "number", "string", "boolean")}}',
+        type: '{{random("integer", "number", "string", "boolean", "Class1", "MyCustomType", "MyCustomTypeWithFormats")}}',
         format: function (tags) {
           var formats = {
             integer: [
@@ -21,6 +21,11 @@
             string: [
               'date',
               'string'
+            ],
+            MyCustomTypeWithFormats: [
+              'Format1',
+              'Format2',
+              'Format3'
             ]
           };
 
