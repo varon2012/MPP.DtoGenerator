@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace DtoGenerator
+namespace DtoGenerator.IO
 {
     [Serializable]
     internal class BadInputException : Exception

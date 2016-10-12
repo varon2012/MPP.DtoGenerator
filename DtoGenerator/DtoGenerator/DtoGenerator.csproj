@@ -35,11 +35,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BadInputException.cs" />
-    <Compile Include="FileWriter.cs" />
-    <Compile Include="IClassWriter.cs" />
-    <Compile Include="IFileParser.cs" />
-    <Compile Include="JsonParser.cs" />
+    <Compile Include="IO\BadInputException.cs" />
+    <Compile Include="IO\FileWriter.cs" />
+    <Compile Include="IO\IClassWriter.cs" />
+    <Compile Include="IO\IFileParser.cs" />
+    <Compile Include="IO\JsonParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

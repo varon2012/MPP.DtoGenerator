@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using DtoGenerator.Generator;
+using DtoGenerator.IO;
 
 namespace DtoGenerator
 {

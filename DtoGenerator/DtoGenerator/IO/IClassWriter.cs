@@ -1,4 +1,4 @@
-﻿namespace DtoGenerator
+﻿namespace DtoGenerator.IO
 {
     internal interface IClassWriter
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DtoGenerator
+namespace DtoGenerator.IO
 {
     internal interface IFileParser<out T>
     {

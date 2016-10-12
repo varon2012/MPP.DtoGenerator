@@ -2,7 +2,7 @@
 using System.IO;
 using Newtonsoft.Json;
 
-namespace DtoGenerator
+namespace DtoGenerator.IO
 {
     internal sealed class JsonParser<T> : IFileParser<T>
     {

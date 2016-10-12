@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace DtoGenerator
+namespace DtoGenerator.IO
 {
     internal sealed class FileWriter : IClassWriter
     {
