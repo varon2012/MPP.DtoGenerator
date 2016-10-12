@@ -36,6 +36,7 @@ namespace FromJsonToCsFilesDtoGenerator
             {
                 Console.Error.WriteLine("Error: invalid argument count");
             }
+            Console.Read();
         }
     }
 }
