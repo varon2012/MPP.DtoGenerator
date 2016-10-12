@@ -103,9 +103,11 @@
     <Compile Include="DtoGenerator.cs" />
     <Compile Include="DtoInfo.cs" />
     <Compile Include="DtoTypeInfo.cs" />
+    <Compile Include="DtoGeneratorTypesTable.cs" />
     <Compile Include="IDtoDeclarationWriter.cs" />
     <Compile Include="IDtoInfoReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeNotSupportedException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
