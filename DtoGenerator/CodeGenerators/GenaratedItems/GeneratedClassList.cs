@@ -30,5 +30,10 @@ namespace DtoGenerator.CodeGenerators.GeneratedItems
         {
             return this.GetEnumerator();
         }
+
+        public void ClearClassList()
+        {
+            classes.Clear();
+        }
     }
 }

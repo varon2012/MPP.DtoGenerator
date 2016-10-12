@@ -11,42 +11,22 @@ namespace DtoGenerator
     public class DtoCodeGenerator
     {
         private string classesNamespace;
-        public string ClassesNamespace
-        {
-            get
-            {
-                return classesNamespace;
-            }
-            private set
-            {
-                if (value == null) throw new ArgumentNullException(nameof(classesNamespace));
-                classesNamespace = value;
-            }
-        }
         private int maxThreadNumber;
-        public int MaxThreadNumber
-        {
-            get
-            {
-                return maxThreadNumber;
-            }
-            private set
-            {
-                if (value < 0) throw new ArgumentOutOfRangeException(nameof(maxThreadNumber));
-                maxThreadNumber = value;
-            }
-        }
-
         private ManualResetEvent[] doneEvents;
-        private TaskInfo[] tasksInQueue;
+        private TaskInfo[] tasksPool;
         private ICodeGenerator codeGenerator;
+        private GeneratedClassList generatedClasses;
 
 
         public DtoCodeGenerator(string classesNamespace, int maxThreadNumber)
         {
-            ClassesNamespace = classesNamespace;
-            MaxThreadNumber = maxThreadNumber;
+            if (maxThreadNumber < 0) throw new ArgumentOutOfRangeException(nameof(maxThreadNumber));
+            if (classesNamespace == null) throw new ArgumentNullException(nameof(classesNamespace));
+
+            this.classesNamespace = classesNamespace;
+            this.maxThreadNumber = maxThreadNumber;
             codeGenerator = new CSCodeGenerator();
+            generatedClasses = new GeneratedClassList();
         }
 
         public GeneratedClassList GenerateDtoClasses(string jsonString)
@@ -68,66 +48,77 @@ namespace DtoGenerator
 
         private GeneratedClassList GenerateClassesCode(ClassDescriptionList classList)
         {
-            ClassDescription[] descriptions = classList.classDescriptions;
-            int allTaskCount = descriptions.Length;
-            int maxQueueSize = Math.Min(allTaskCount, maxThreadNumber);
+            ClassDescription[] classDescriptions = classList.classDescriptions;
+            int allTaskCount = classDescriptions.Length;
+            int taskPoolSize = Math.Min(allTaskCount, maxThreadNumber);
 
-            InitiateTaskQueue(maxQueueSize, descriptions);
-            GeneratedClassList classes = RefillQueueOnThreadFinishing(maxQueueSize, allTaskCount, descriptions);
-            WaitAllThreadsFinishing(classes);
+            generatedClasses.ClearClassList();
 
-            return classes;
+            InitializeTasks(taskPoolSize, classDescriptions);
+            int taskAdded = 0;
+            while(taskAdded < taskPoolSize)
+            {
+                AddTaskToQueue(tasksPool[taskAdded]);
+                taskAdded++;
+            }
+            while(taskAdded < allTaskCount)
+            {
+                RefillQueueOnTaskFinishing(classDescriptions[taskAdded++]);
+            }
+            FinishAllTasks();
+
+            return generatedClasses;
         }
 
-        private void InitiateTaskQueue(int queueSize, ClassDescription[] classDescriptions)
+        private void InitializeTasks(int taskPoolSize, ClassDescription[] classDescriptions)
         {
-            doneEvents = new ManualResetEvent[queueSize];
-            tasksInQueue = new TaskInfo[queueSize];
+            tasksPool = new TaskInfo[taskPoolSize];
+            doneEvents = new ManualResetEvent[taskPoolSize];
 
-            for (int threadIndex = 0; threadIndex < queueSize; threadIndex++)
+            for (int i = 0; i < taskPoolSize; i++)
             {
-                TaskInfo task = CreateThreadTask(threadIndex, classDescriptions[threadIndex]);
-                ThreadPool.QueueUserWorkItem(codeGenerator.GenerateCode, task);
+                tasksPool[i] = CreateNewTask(i, classDescriptions[i]);
             }
         }
 
-        private GeneratedClassList RefillQueueOnThreadFinishing(int addedTaskCount, int allTaskCount, ClassDescription[] descriptions)
-        {
-            GeneratedClassList classes = new GeneratedClassList();
-            for(int taskIndex = addedTaskCount; taskIndex < allTaskCount; taskIndex++)
-            {
-                int finishedThreadIndex = WaitHandle.WaitAny(doneEvents);
-                classes.AddClass(tasksInQueue[finishedThreadIndex].result);
-
-                AddTaskToQueue(finishedThreadIndex, descriptions[taskIndex]);
-                addedTaskCount++;
-            }
-            return classes;
-        }
-
-        private void WaitAllThreadsFinishing(GeneratedClassList classes)
-        {
-            WaitHandle.WaitAll(doneEvents);
-            for (int i = 0; i < tasksInQueue.Length; i++)
-            {
-                classes.AddClass(tasksInQueue[i].result);
-            }
-        }
-
-        private void AddTaskToQueue(int threadIndex, ClassDescription description)
-        {
-            TaskInfo task = CreateThreadTask(threadIndex, description);
-            ThreadPool.QueueUserWorkItem(codeGenerator.GenerateCode, tasksInQueue[threadIndex]);
-        }
-
-        private TaskInfo CreateThreadTask(int threadIndex, ClassDescription descriptions)
+        private TaskInfo CreateNewTask(int taskIndex, ClassDescription classDescription)
         {
             ManualResetEvent resetEvent = new ManualResetEvent(false);
-            doneEvents[threadIndex] = resetEvent;
-            TaskInfo task = new TaskInfo(descriptions, ClassesNamespace, resetEvent);
-            tasksInQueue[threadIndex] = task;
+            doneEvents[taskIndex] = resetEvent;
+            TaskInfo task = new TaskInfo(classDescription, classesNamespace, resetEvent);
 
             return task;
+        }
+
+        private void AddTaskToQueue(TaskInfo task)
+        {
+            ThreadPool.QueueUserWorkItem(codeGenerator.GenerateCode, task);
+        }
+
+        private void RefillQueueOnTaskFinishing(ClassDescription classDescription)
+        {
+            int finishedTaskIndex = WaitHandle.WaitAny(doneEvents);
+            FinishTask(finishedTaskIndex);
+
+            TaskInfo newTask = CreateNewTask(finishedTaskIndex, classDescription);
+            tasksPool[finishedTaskIndex] = newTask;
+            AddTaskToQueue(newTask);
+        }
+
+        private void FinishTask(int taskIndex)
+        {
+            TaskInfo finishedTask = tasksPool[taskIndex];
+            generatedClasses.AddClass(finishedTask.Result);
+            finishedTask.Dispose();
+        }
+
+        private void FinishAllTasks()
+        {
+            WaitHandle.WaitAll(doneEvents);
+            for (int i = 0; i < tasksPool.Length; i++)
+            {
+                FinishTask(i);
+            }
         }
     }
 }

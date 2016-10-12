@@ -28,7 +28,7 @@ namespace DtoGenerator.CodeGenerators
             NamespaceDeclarationSyntax namespaceDeclaration = GenerateNamespace(classDescription, classNamespace);
             GeneratedClass generatedClass = new GeneratedClass(classDescription.ClassName, Formatter.Format(namespaceDeclaration, new AdhocWorkspace()).ToFullString());
 
-            parameters.result = generatedClass;
+            parameters.Result = generatedClass;
             parameters.ResetEvent.Set();
         }
 

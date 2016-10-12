@@ -62,9 +62,8 @@ namespace DtoGeneratorTest
         {
             ICodeWriter writer = new CSCodeWriter(directoryPath);
             IEnumerator<GeneratedClass> enumerator = classes.GetEnumerator();
-            while (enumerator.MoveNext())
+            foreach(GeneratedClass generatedClass in classes)
             {
-                GeneratedClass generatedClass = enumerator.Current;
                 String filePath = writer.CreateSourceFile(generatedClass);
                 if (filePath != null)
                 {
