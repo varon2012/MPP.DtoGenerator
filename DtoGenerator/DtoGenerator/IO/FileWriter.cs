@@ -21,7 +21,7 @@ namespace DtoGenerator.IO
             if (className == null) throw new ArgumentNullException(nameof(className));
             if (classCode == null) throw new ArgumentNullException(nameof(classCode));
 
-            using (var stream = File.OpenWrite($"{_directory}/{className}.cs"))
+            using (var stream = File.Open($"{_directory}/{className}.cs", FileMode.Create))
             {
                 using (var fileWritter = new StreamWriter(stream, Encoding.UTF8))
                 {
