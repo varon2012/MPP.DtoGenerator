@@ -3,11 +3,23 @@ using System.Configuration;
 using System.IO;
 using DtoGenerator.Generator;
 using DtoGenerator.IO;
+using System.Collections.Generic;
+using TextFormatters;
 
 namespace DtoGenerator
 {
     internal sealed class Program
     {
+        private static readonly Dictionary<string, Type> CodeGenerators = new Dictionary<string, Type>
+        {
+            { "RoslynCodeGenerator", typeof(RoslynCodeGenerator) }
+        };
+
+        private static readonly Dictionary<string, Type> Loggers = new Dictionary<string, Type>
+        {
+            { "ConsoleLogger", typeof(ConsoleLogger) }
+        };
+
         public static void Main(string[] args)
         {
             if (args.Length < 2)
@@ -37,7 +49,7 @@ namespace DtoGenerator
         {
             var classes = parser.Parse(filename);
 
-            var generator = new ClassCodeGenerator(GetConfig(), new RoslynCodeGenerator());
+            var generator = new ClassCodeGenerator(GetConfig(), GetCodeGenerator());
             var generatedClasses = generator.Generate(classes);
 
             IClassWriter writter = new FileWriter(outputPath);
@@ -64,6 +76,16 @@ namespace DtoGenerator
                 MaxTaskCount = TryGetIntConfig("maxTaskCount"),
                 PluginsDirectoryPath = TryGetOptionalStringConfig("pluginsDirectoryPath")
             };
+        }
+
+        private static ICodeGenerator GetCodeGenerator()
+        {
+            var codeGeneratorType = TryGetStringConfig("codeGenerator");
+            object[] args =
+            {
+                Activator.CreateInstance(Loggers[TryGetOptionalStringConfig("logger")])
+            };
+            return (ICodeGenerator) Activator.CreateInstance(CodeGenerators[codeGeneratorType], args);
         }
 
         private static string TryGetStringConfig(string configName)
