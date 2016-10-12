@@ -36,8 +36,9 @@ namespace DtoGenerator
         {
             var classes = parser.Parse(filename);
 
-            // classes generation magic
-            IDictionary<string, string> generatedClasses;
+            // TODO: fetch namespace from config file
+            var generator = new ClassCodeGenerator("Test", new RoslynCodeGenerator());
+            var generatedClasses = generator.Generate(classes);
 
             IClassWriter writter = new FileWriter(outputPath);
 

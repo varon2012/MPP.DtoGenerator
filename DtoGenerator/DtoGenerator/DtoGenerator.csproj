@@ -52,6 +52,10 @@
       <Project>{e400e0bf-dbb2-4ac2-be1d-c6a98330bf8a}</Project>
       <Name>DtoGenerator.Generator</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TextFormatters\TextFormatters.csproj">
+      <Project>{7c35aca1-cfed-46d6-986c-7a36eb0e5ef7}</Project>
+      <Name>TextFormatters</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

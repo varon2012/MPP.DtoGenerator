@@ -11,6 +11,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{DCA1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Generator", "Generator", "{F69D4478-3306-48B4-AB09-00C08CC695F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DtoGenerator.Generator.Test", "DtoGenerator.Generator.Test\DtoGenerator.Generator.Test.csproj", "{2C41E7BB-3D48-4491-A37E-043D15A8917A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{447E19A8-43EC-459D-804C-6F0BE118C414}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextFormatters", "TextFormatters\TextFormatters.csproj", "{7C35ACA1-CFED-46D6-986C-7A36EB0E5EF7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,11 +31,21 @@ Global
 		{E400E0BF-DBB2-4AC2-BE1D-C6A98330BF8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E400E0BF-DBB2-4AC2-BE1D-C6A98330BF8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E400E0BF-DBB2-4AC2-BE1D-C6A98330BF8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C41E7BB-3D48-4491-A37E-043D15A8917A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C41E7BB-3D48-4491-A37E-043D15A8917A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C41E7BB-3D48-4491-A37E-043D15A8917A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C41E7BB-3D48-4491-A37E-043D15A8917A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C35ACA1-CFED-46D6-986C-7A36EB0E5EF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C35ACA1-CFED-46D6-986C-7A36EB0E5EF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C35ACA1-CFED-46D6-986C-7A36EB0E5EF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C35ACA1-CFED-46D6-986C-7A36EB0E5EF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E400E0BF-DBB2-4AC2-BE1D-C6A98330BF8A} = {F69D4478-3306-48B4-AB09-00C08CC695F7}
+		{2C41E7BB-3D48-4491-A37E-043D15A8917A} = {F69D4478-3306-48B4-AB09-00C08CC695F7}
+		{7C35ACA1-CFED-46D6-986C-7A36EB0E5EF7} = {447E19A8-43EC-459D-804C-6F0BE118C414}
 	EndGlobalSection
 EndGlobal
