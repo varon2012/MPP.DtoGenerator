@@ -3,7 +3,7 @@ using DtoGenerator.Generator.Types;
 
 namespace DtoGenerator.Generator
 {
-    public class ClassCodeGenerator
+    public sealed class ClassCodeGenerator
     {
         private readonly string _specifiedNamespace;
         private readonly ICodeGenerator _generator;

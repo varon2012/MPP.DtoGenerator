@@ -9,7 +9,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace DtoGenerator.Generator
 {
-    public class RoslynCodeGenerator : ICodeGenerator
+    public sealed class RoslynCodeGenerator : ICodeGenerator
     {
         private const string ClassIndent = "    ";
         private const string PropertyIndent = "        ";

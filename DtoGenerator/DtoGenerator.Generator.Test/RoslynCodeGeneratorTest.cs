@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace DtoGenerator.Generator.Test
 {
     [TestClass]
-    public class RoslynCodeGeneratorTest
+    public sealed class RoslynCodeGeneratorTest
     {
         [TestMethod]
         public void Test()

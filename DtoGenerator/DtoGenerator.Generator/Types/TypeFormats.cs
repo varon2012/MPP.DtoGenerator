@@ -10,13 +10,13 @@ namespace DtoGenerator.Generator.Types
 
         private readonly Dictionary<string, Type> _formats;
 
-        internal TypeFormats()
+        public TypeFormats()
         {
             _hasSingleFormat = false;
             _formats = new Dictionary<string, Type>();
         }
 
-        internal TypeFormats(Type singleFormat)
+        public TypeFormats(Type singleFormat)
         {
             if (singleFormat == null) throw new ArgumentNullException(nameof(singleFormat));
 
@@ -24,7 +24,7 @@ namespace DtoGenerator.Generator.Types
             _singleFormat = singleFormat;
         }
 
-        internal Type ResolveFormat(string format)
+        public Type ResolveFormat(string format)
         {
             Type resultType;
 
@@ -49,7 +49,7 @@ namespace DtoGenerator.Generator.Types
             return resultType;
         }
 
-        internal TypeFormats AddTypeFormat(string format, Type dotNetType)
+        public TypeFormats AddTypeFormat(string format, Type dotNetType)
         {
             if (format == null) throw new ArgumentNullException(nameof(format));
             if (dotNetType == null) throw new ArgumentNullException(nameof(dotNetType));
