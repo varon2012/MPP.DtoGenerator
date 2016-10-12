@@ -82,7 +82,6 @@ namespace DtoGenerator
             using (_semaphore = new Semaphore(MaxTaskCount, MaxTaskCount))
             using (ManualResetEvent manualResetEvent = new ManualResetEvent(false))
             using (DtoDeclarationWriter)
-            using (DtoInfoListReader)
             {
                
                 ThreadPool.QueueUserWorkItem(delegate

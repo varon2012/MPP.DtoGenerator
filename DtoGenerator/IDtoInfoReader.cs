@@ -2,8 +2,8 @@
 
 namespace DtoGenerator
 {
-    public interface IDtoInfoListReader : IDisposable
-    {
+    public interface IDtoInfoListReader
+    { 
         event Action<DtoInfo> OnDtoInfoRead;
         event Action OnReadCompleted; 
 
