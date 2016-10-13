@@ -23,8 +23,9 @@ namespace FromJsonToCsFilesDtoGenerator
                     JsonDtoInfoListReader reader = new JsonDtoInfoListReader(jsonFilePath);
                     CsFileDtoDeclarationWriter writer = new CsFileDtoDeclarationWriter(outputDirectoryPath);
 
-                    DtoGenerator.DtoGenerator generator = new DtoGenerator.DtoGenerator(3, "dtos", reader, writer);
+                    DtoGenerator.DtoGenerator generator = new DtoGenerator.DtoGenerator(3, "DTONAMESPACE", reader, writer);
                     generator.GenerateDtoDeclarations();
+                    Console.WriteLine($"DTO's successfully generated");
                 }
                 catch (Exception e)
                 {

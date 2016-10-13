@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,16 +11,20 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
+// ReSharper disable All
+
 namespace DtoGenerator
 {
     public class DtoGenerator
     {
-        
+        private static readonly Logger Logger = Logger.GetLogger(typeof(DtoGenerator).Name);
+
         private readonly Workspace _workspace = new AdhocWorkspace();
         private IDtoInfoListReader _dtoInfoListReader;
         private BlockingCollection<DtoInfo> _readerQueue;
         private BlockingCollection<DtoDeclaration> _writerQueue;
         private Semaphore _semaphore;
+        private bool _isGenerationCompleted = false;
 
         public DtoGenerator(int maxTaskCount, string namespaceName,
             IDtoInfoListReader dtoInfoListReader, IDtoDeclarationWriter dtoDeclarationWriter)
@@ -33,6 +38,7 @@ namespace DtoGenerator
         public int MaxTaskCount { get; set; }
         public string NamespaceName { get; set; }
         public IDtoDeclarationWriter DtoDeclarationWriter { get; set; }
+
         public IDtoInfoListReader DtoInfoListReader
         {
             get { return _dtoInfoListReader; }
@@ -49,32 +55,43 @@ namespace DtoGenerator
         private void OnReadCompleted()
         {
             _readerQueue.CompleteAdding();
+            Logger.Log("Reading completed");
         }
 
+        private int _counter = 0;
+
+        private int _activeTaskCount = 0;
 
         private void OnDtoInfoRead(DtoInfo dtoInfo)
         {
+            Interlocked.Increment(ref _activeTaskCount);
             _readerQueue.Add(dtoInfo);
             _semaphore.WaitOne();
             ThreadPool.QueueUserWorkItem(delegate
             {
+                int index = _counter++;
+                Logger.Log($"Thread_{index} starts");
+
                 DtoDeclaration dtoDeclaration = GenerateDtoDeclaration(_readerQueue.Take());
+                Logger.Log($"Declaration generated for {dtoDeclaration.ClassName}");
+
                 _writerQueue.Add(dtoDeclaration);
-                if (_readerQueue.IsCompleted)
+                Interlocked.Decrement(ref _activeTaskCount);
+                if ((_activeTaskCount == 0) && _readerQueue.IsCompleted)
                 {
                     _writerQueue.CompleteAdding();
                 }
+                Logger.Log($"Thread_{index} ends");
                 _semaphore.Release();
             });
-
         }
-        
+
         public void GenerateDtoDeclarations()
         {
             if (MaxTaskCount <= 0 || string.IsNullOrEmpty(NamespaceName)
                 || DtoDeclarationWriter == null || DtoInfoListReader == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Illegal argument values");
             }
 
             using (_readerQueue = new BlockingCollection<DtoInfo>(MaxTaskCount))
@@ -83,13 +100,16 @@ namespace DtoGenerator
             using (ManualResetEvent manualResetEvent = new ManualResetEvent(false))
             using (DtoDeclarationWriter)
             {
-               
                 ThreadPool.QueueUserWorkItem(delegate
                 {
-                    while (_writerQueue.IsCompleted)
+                    while ((!_writerQueue.IsCompleted))
                     {
-                        DtoDeclarationWriter.Write(_writerQueue.Take());
+                        DtoDeclaration declaration = _writerQueue.Take();
+                        DtoDeclarationWriter.Write(declaration);
+                        Logger.Log($"{declaration.ClassName}.cs has been written");
                     }
+
+                    Logger.Log("Writing completed");
                     manualResetEvent.Set();
                 });
                 DtoInfoListReader.ReadList();
@@ -97,8 +117,6 @@ namespace DtoGenerator
             }
         }
 
-        
-        
 
         private DtoDeclaration GenerateDtoDeclaration(DtoInfo dtoInfo)
         {

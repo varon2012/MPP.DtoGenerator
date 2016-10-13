@@ -40,7 +40,7 @@ namespace FromJsonToCsFilesDtoGenerator
                     foreach (var property in obj.properties)
                     {
                         DtoFieldInfo fieldInfo = new DtoFieldInfo(property.name.ToString(), 
-                            DtoGeneratorTypesTable.Instance.GetDotNetType(
+                            DtoGeneratorTypesTable.Instance.GetDotTypeInfo(
                                 Enum.Parse(typeof(TypeForm), property.type.ToString(), true), 
                                 property.format.ToString()));    
                         fields.Add(fieldInfo);

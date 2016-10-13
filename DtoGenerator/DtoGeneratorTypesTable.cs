@@ -29,13 +29,13 @@ namespace DtoGenerator
             };
         }
 
-        public Type GetDotNetType(TypeForm form, string format)
+        public DtoTypeInfo GetDotTypeInfo(TypeForm form, string format)
         {
             foreach (DtoTypeInfo dtoTypeInfo in _dtoTypes)
             {
                 if (dtoTypeInfo.Format.Equals(format) && dtoTypeInfo.Form.Equals(form))
                 {
-                    return dtoTypeInfo.DotNetType;
+                    return dtoTypeInfo;
                 }    
             }
 
