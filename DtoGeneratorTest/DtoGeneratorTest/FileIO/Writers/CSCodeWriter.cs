@@ -44,8 +44,8 @@ namespace DtoGeneratorTest.FileIO
 
         private string BuildOutputFileName(string classname)
         {
-            string fileName = String.Concat(directoryPath, Path.DirectorySeparatorChar, classname, CSFileExtension);
-            return fileName;
+            string fileName = String.Concat(classname, CSFileExtension);
+            return Path.Combine(directoryPath, fileName);
         }
 
         private void WriteClassToFile(string outputFilePath, GeneratedClass generatedClass)

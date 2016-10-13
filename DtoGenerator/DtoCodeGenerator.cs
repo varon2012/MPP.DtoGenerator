@@ -2,7 +2,6 @@
 using DtoGenerator.CodeGenerators.GeneratedItems;
 using DtoGenerator.DtoDescriptor;
 using DtoGenerator.DtoDescriptors;
-using DtoGenerator.Parser;
 using System;
 using System.Threading;
 
@@ -29,21 +28,14 @@ namespace DtoGenerator
             generatedClasses = new GeneratedClassList();
         }
 
-        public GeneratedClassList GenerateDtoClasses(string jsonString)
+        public GeneratedClassList GenerateDtoClasses(ClassDescriptionList list)
         {
             
-            if(jsonString == null) throw new ArgumentNullException(nameof(jsonString));
+            if(list == null) throw new ArgumentNullException(nameof(list));
 
-            ClassDescriptionList list = ParseJsonString(jsonString);
             GeneratedClassList classes = GenerateClassesCode(list);
 
             return classes;
-        }
-
-        private ClassDescriptionList ParseJsonString(string jsonString)
-        {
-            IParser<ClassDescriptionList> parser = new JsonStringParser();
-            return parser.Parse(jsonString);
         }
 
         private GeneratedClassList GenerateClassesCode(ClassDescriptionList classList)

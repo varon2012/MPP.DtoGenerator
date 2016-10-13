@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using System;
 
-namespace DtoGenerator.Parser
+namespace DtoGeneratorTest.Parser
 {
     internal class JsonStringParser : IParser<ClassDescriptionList>
     {

@@ -1,4 +1,4 @@
-﻿namespace DtoGenerator.Parser
+﻿namespace DtoGeneratorTest.Parser
 {
     internal interface IParser<T>
     {

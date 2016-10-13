@@ -102,8 +102,6 @@
     <Compile Include="DtoObjects\ClassDescriptionList.cs" />
     <Compile Include="DtoObjects\PropertyDescription.cs" />
     <Compile Include="DtoCodeGenerator.cs" />
-    <Compile Include="Parsers\JsonStringParser.cs" />
-    <Compile Include="Parsers\IParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

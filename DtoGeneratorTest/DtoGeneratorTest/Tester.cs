@@ -1,7 +1,9 @@
 ﻿using DtoGenerator;
 using DtoGenerator.CodeGenerators.GeneratedItems;
+using DtoGenerator.DtoDescriptors;
 using DtoGeneratorTest.FileIO;
 using DtoGeneratorTest.FileReaders;
+using DtoGeneratorTest.Parser;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -34,8 +36,9 @@ namespace DtoGeneratorTest
 
         private void ReadApplicationSettings()
         {
-            classesNamespace = ConfigurationManager.AppSettings["generatedClassesNamespace"];
-            maxThreadNumber = Int32.Parse(ConfigurationManager.AppSettings["maxThreadNumber"]);
+            ApplicationSettingsReader settingsReader = new ApplicationSettingsReader();
+            classesNamespace = settingsReader.GetClassesNamespace();
+            maxThreadNumber = settingsReader.GetMaxThreadNumber();
         }
 
         private void Test(string jsonFilePath, string directoryPath)
@@ -48,7 +51,9 @@ namespace DtoGeneratorTest
             }
 
             DtoCodeGenerator generator = new DtoCodeGenerator(classesNamespace, maxThreadNumber);
-            GeneratedClassList classes = generator.GenerateDtoClasses(jsonString);
+            IParser<ClassDescriptionList> parser = new JsonStringParser();
+            ClassDescriptionList list = parser.Parse(jsonString);
+            GeneratedClassList classes = generator.GenerateDtoClasses(list);
             WriteCodeToFiles(classes, directoryPath);
 
             generator.Dispose();
