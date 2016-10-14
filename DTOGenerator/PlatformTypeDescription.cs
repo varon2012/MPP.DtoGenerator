@@ -14,9 +14,9 @@ namespace DTOGenerator
 
         internal PlatformTypeDescription(NonPlatformType type, string format, Type platformType)
         {
-            this.Type = type;
-            this.Format = format;
-            this.PlatformType = platformType;
+            Type = type;
+            Format = format;
+            PlatformType = platformType;
         } 
     }
 }

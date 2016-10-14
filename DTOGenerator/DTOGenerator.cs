@@ -13,6 +13,8 @@ namespace DTOGenerator
         private readonly int threadPoolLimit;
         private readonly string dtoNamespace;
         private int workingThreadsCount;
+        private Queue<UserWorkItem> localTaskQueue;
+        private object lockWorkingThreadsCount = new object();
 
         public DTOGenerator(int threadPoolLimit, string dtoNamespace)
         {
@@ -25,24 +27,27 @@ namespace DTOGenerator
         {
             List<DTODescription> classUnits = new List<DTODescription>();
             CountdownEvent countDownEvent = new CountdownEvent(classesList.Count);
-            Boolean allThreadsAreBusy = false;
 
             foreach (ClassDescription classDescription in classesList)
             {
                 DTODescription dtoDescription = new DTODescription(classDescription.ClassName);
                 classUnits.Add(dtoDescription);
 
-                if (workingThreadsCount == threadPoolLimit)
-                {
-                    allThreadsAreBusy = true;
-                    while (allThreadsAreBusy)
+                localTaskQueue.Enqueue(new UserWorkItem(delegate(object state)
+                { 
+                    try
                     {
-                        if (workingThreadsCount < threadPoolLimit)
-                        {
-                            allThreadsAreBusy = false;
-                        }
+                        Interlocked.Increment(workingThreadsCount);
+                        GenerateClassCode(state);
                     }
-                }
+                    finally
+                    {
+                        countDownEvent.Signal();
+                        Interlocked.Decrement(workingThreadsCount);
+                    }
+                },
+                new object[] { classDescription, dtoDescription }));
+                
 
                 ThreadPool.QueueUserWorkItem(delegate (object state)
                 {
@@ -60,6 +65,7 @@ namespace DTOGenerator
                 new object[] { classDescription, dtoDescription });
             }
             countDownEvent.Wait();
+            countDownEvent.Dispose();
             return classUnits;
         } 
 

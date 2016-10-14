@@ -13,7 +13,7 @@ namespace DTOGenerator
 
         public ClassDescription(string className)
         {
-            this.ClassName = className;
+            ClassName = className;
             PropertyDescriptions = new List<PropertyDescription>();
         }
     }

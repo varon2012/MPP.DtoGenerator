@@ -114,6 +114,7 @@
     <Compile Include="NonPlatformType.cs" />
     <Compile Include="PlatformTypeDescription.cs" />
     <Compile Include="PropertyDescription.cs" />
+    <Compile Include="UserWorkItem.cs" />
     <Compile Include="TypesStorage.cs" />
   </ItemGroup>
   <ItemGroup>

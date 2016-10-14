@@ -14,7 +14,7 @@ namespace DTOGenerator
 
         public DTODescription(string className)
         {
-            this.ClassName = className;
+            ClassName = className;
         }
     }
 }

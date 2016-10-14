@@ -13,8 +13,8 @@ namespace DTOGenerator
 
         public PropertyDescription(string name, Type type)
         {
-            this.Name = name;
-            this.Type = type;    
+            Name = name;
+            Type = type;    
         }
     }
 }
