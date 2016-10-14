@@ -16,37 +16,37 @@ namespace DTOGenerator
     {
     
         private readonly string dtoNamespace;
-        private readonly object SyncList = new object();
-        private SimpleLockThreadPool threadPool;
 
-        public DTOGenerator()
+        public DTOGenerator(int threadPoolLimit, string dtoNamespace)
         {
-            int threadPoolLimit;
-            if (!Int32.TryParse(ConfigurationManager.AppSettings.Get("threadPoolLimit"), out threadPoolLimit))
-            {
-                throw new InvalidOperationException("threadPoolLimit is not found in app.config");    
-            }
-            threadPool = new SimpleLockThreadPool(threadPoolLimit);
-
-
-            dtoNamespace = ConfigurationManager.AppSettings.Get("dtoNamespace");
-            if ((dtoNamespace == null) || (dtoNamespace == string.Empty))
-            {
-                throw new InvalidOperationException("dtoNamespace is not found in app.config");
-            }           
+            this.dtoNamespace = dtoNamespace;
+            ThreadPool.SetMaxThreads(threadPoolLimit, threadPoolLimit);
         }
 
         public List<DTODescription> GenerateCode(List<ClassDescription> classesList)
         {
             List<DTODescription> classUnits = new List<DTODescription>();
+            CountdownEvent countDownEvent = new CountdownEvent(classesList.Count);
 
             foreach (ClassDescription classDescription in classesList)
             {
                 DTODescription dtoDescription = new DTODescription(classDescription.ClassName);
                 classUnits.Add(dtoDescription);
-                ThreadPool.QueueUserWorkItem(new WaitCallback(GenerateClassCode), new object[] {classDescription, dtoDescription});
+
+                ThreadPool.QueueUserWorkItem(delegate (object state)
+                {
+                    try
+                    {
+                        GenerateClassCode(state);
+                    }
+                    finally
+                    {
+                        countDownEvent.Signal();
+                    }
+                },
+                new object[] { classDescription, dtoDescription });
             }
-            threadPool.Dispose();
+            countDownEvent.Wait();
             return classUnits;
         } 
 
@@ -60,7 +60,7 @@ namespace DTOGenerator
 
             foreach (PropertyDescription propertyDescription in classDescription.PropertyDescriptions)
             {
-                memberDeclarationSyntaxesList.Add(GeneratePropertyCode(propertyDescription));
+                memberDeclarationSyntaxesList = memberDeclarationSyntaxesList.Add(GeneratePropertyCode(propertyDescription));
             }
 
             CompilationUnitSyntax compilationUnit = CompilationUnit()

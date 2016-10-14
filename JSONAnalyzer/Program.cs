@@ -24,13 +24,13 @@ namespace DTOGenerator
                 {
                     List<ClassDescription> dtoClassDescriptions = JSONFileStructureAdapter.AdaptToClassDecriptionList(jsonFileStructure);
                     string directoryPath = GetOutputDirectoryFromConsole();
-                    List<DTODescription> dtoDecriptions = (new DTOGenerator()).GenerateCode(dtoClassDescriptions);
+                    List<DTODescription> dtoDecriptions = (new DTOGenerator(SettingsManager.GetThreadPoolLimit(),SettingsManager.GetDtoNamespace())).GenerateCode(dtoClassDescriptions);
 
                     foreach (DTODescription dtoDescription in dtoDecriptions)
                     {
                         DTOClassesWriter.WriteToFile(dtoDescription, directoryPath);
                     }
-
+                    Console.WriteLine("Done!");
                     Console.ReadLine();
                 }
                 catch(InvalidOperationException e)

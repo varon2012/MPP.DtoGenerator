@@ -110,13 +110,11 @@
     <Compile Include="ClassDescription.cs" />
     <Compile Include="DTODescription.cs" />
     <Compile Include="DTOGenerator.cs" />
-    <Compile Include="IThreadPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NonPlatformType.cs" />
     <Compile Include="PlatformTypeDescription.cs" />
     <Compile Include="PropertyDescription.cs" />
     <Compile Include="TypesStorage.cs" />
-    <Compile Include="SimpleLockThreadPool.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
