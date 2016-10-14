@@ -8,7 +8,7 @@ namespace DTOGenerator
 {
     public class TypesStorage
     {
-        public static volatile TypesStorage instance;
+        public static TypesStorage instance;
         public static readonly object syncRoot = new object();
 
         public Dictionary<string, NonPlatformType> nonPlatformTypesMappingDictionary { get; private set;}

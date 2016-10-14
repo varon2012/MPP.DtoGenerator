@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Configuration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -14,34 +10,51 @@ namespace DTOGenerator
 {
     public class DTOGenerator
     {
-    
+        private readonly int threadPoolLimit;
         private readonly string dtoNamespace;
+        private int workingThreadsCount;
 
         public DTOGenerator(int threadPoolLimit, string dtoNamespace)
         {
             this.dtoNamespace = dtoNamespace;
-            ThreadPool.SetMaxThreads(threadPoolLimit, threadPoolLimit);
+            this.threadPoolLimit = threadPoolLimit;
+            workingThreadsCount = 0;
         }
 
         public List<DTODescription> GenerateCode(List<ClassDescription> classesList)
         {
             List<DTODescription> classUnits = new List<DTODescription>();
             CountdownEvent countDownEvent = new CountdownEvent(classesList.Count);
+            Boolean allThreadsAreBusy = false;
 
             foreach (ClassDescription classDescription in classesList)
             {
                 DTODescription dtoDescription = new DTODescription(classDescription.ClassName);
                 classUnits.Add(dtoDescription);
 
+                if (workingThreadsCount == threadPoolLimit)
+                {
+                    allThreadsAreBusy = true;
+                    while (allThreadsAreBusy)
+                    {
+                        if (workingThreadsCount < threadPoolLimit)
+                        {
+                            allThreadsAreBusy = false;
+                        }
+                    }
+                }
+
                 ThreadPool.QueueUserWorkItem(delegate (object state)
                 {
                     try
                     {
+                        workingThreadsCount++;
                         GenerateClassCode(state);
                     }
                     finally
                     {
                         countDownEvent.Signal();
+                        workingThreadsCount--;
                     }
                 },
                 new object[] { classDescription, dtoDescription });
