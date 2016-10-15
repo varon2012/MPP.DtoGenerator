@@ -23,12 +23,12 @@ namespace DtoGenerator
 
         private readonly Dictionary<string, Type> _codeGenerators = new Dictionary<string, Type>
         {
-            { "RoslynCodeGenerator", typeof(RoslynCodeGenerator) }
+            ["RoslynCodeGenerator"] = typeof(RoslynCodeGenerator)
         };
 
         private readonly Dictionary<string, Type> _loggers = new Dictionary<string, Type>
         {
-            { "ConsoleLogger", typeof(ConsoleLogger) }
+            ["ConsoleLogger"] = typeof(ConsoleLogger)
         };
 
         public App(IFileParser<DtoClassDescription> parser, string filename, string outputPath)

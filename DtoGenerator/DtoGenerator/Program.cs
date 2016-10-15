@@ -1,6 +1,7 @@
 ﻿using System;
 using DtoGenerator.Generator;
 using DtoGenerator.IO;
+using static System.Console;
 
 namespace DtoGenerator
 {
@@ -10,7 +11,7 @@ namespace DtoGenerator
         {
             if (args.Length < 2)
             {
-                Console.Error.WriteLine("Usage: <path-to-json-file> <path-to-output-directory>");
+                Error.WriteLine("Usage: <path-to-json-file> <path-to-output-directory>");
                 return;
             }
 
@@ -24,11 +25,11 @@ namespace DtoGenerator
             }
             catch (BadInputException e)
             {
-                Console.Error.WriteLine($"Error occurred during working with supplied data: {e.Message}");
+                Error.WriteLine($"Error occurred during working with supplied data: {e.Message}");
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine($"Unknown error occurred: {e.Message}");
+                Error.WriteLine($"Unknown error occurred: {e.Message}");
             }
         }
     }
