@@ -35,7 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="App.cs" />
     <Compile Include="IO\BadInputException.cs" />
+    <Compile Include="IO\ConfigFetcher.cs" />
     <Compile Include="IO\FileWriter.cs" />
     <Compile Include="IO\IClassWriter.cs" />
     <Compile Include="IO\IFileParser.cs" />
