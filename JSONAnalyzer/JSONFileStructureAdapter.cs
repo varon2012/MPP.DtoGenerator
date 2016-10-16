@@ -21,7 +21,7 @@ namespace JSONAnalyzer
 
                 foreach (PropertyInfo propertyInfo in classStructure.Properties)
                 {
-                    NonPlatformType propertyNonPlatformType = typesStorage.nonPlatformTypesMappingDictionary[propertyInfo.Type];
+                    NonPlatformType propertyNonPlatformType = typesStorage.NonPlatformTypesMappingDictionary[propertyInfo.Type];
                     Type propertyType = typesStorage.GetPlatformType(propertyNonPlatformType, propertyInfo.Format);
                     classDescription.PropertyDescriptions.Add(new PropertyDescription(propertyInfo.Name, propertyType));
                 }

@@ -12,7 +12,7 @@ namespace DTOGenerator
         public string ClassName { get; private set; }
         public SyntaxTree SyntaxTree { get; set; }
 
-        public DTODescription(string className)
+        public DTODescription(string className) 
         {
             ClassName = className;
         }

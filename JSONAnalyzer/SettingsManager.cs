@@ -8,11 +8,18 @@ namespace DTOGenerator
         public static int GetThreadPoolLimit()
         {
             int threadPoolLimit;
-            if (!Int32.TryParse(ConfigurationManager.AppSettings.Get("threadPoolLimit"), out threadPoolLimit))
+            if (ConfigurationManager.AppSettings.Get("threadPoolLimit") == null)
             {
                 throw new InvalidOperationException("threadPoolLimit is not found in app.config");
             }
-            return threadPoolLimit;
+            else
+            {
+                if (!Int32.TryParse(ConfigurationManager.AppSettings.Get("threadPoolLimit"), out threadPoolLimit))
+                {
+                    throw new InvalidOperationException("threadPoolLimit is not correct");
+                }
+                return threadPoolLimit;
+            }
         }
 
         public static string GetDtoNamespace()
@@ -21,6 +28,13 @@ namespace DTOGenerator
             if ((dtoNamespace == null) || (dtoNamespace == string.Empty))
             {
                 throw new InvalidOperationException("dtoNamespace is not found in app.config");
+            }
+            else
+            {
+                if (dtoNamespace == null)
+                {
+                    throw new InvalidOperationException("dtoNamespace is not correct");
+                }
             }
             return dtoNamespace;
         }

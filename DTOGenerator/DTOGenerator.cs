@@ -13,8 +13,7 @@ namespace DTOGenerator
         private readonly int threadPoolLimit;
         private readonly string dtoNamespace;
         private int workingThreadsCount;
-        private Queue<UserWorkItem> localTaskQueue;
-        private object lockWorkingThreadsCount = new object();
+        private Queue<object[]> localTaskQueue = new Queue<object[]>();
 
         public DTOGenerator(int threadPoolLimit, string dtoNamespace)
         {
@@ -26,46 +25,43 @@ namespace DTOGenerator
         public List<DTODescription> GenerateCode(List<ClassDescription> classesList)
         {
             List<DTODescription> classUnits = new List<DTODescription>();
-            CountdownEvent countDownEvent = new CountdownEvent(classesList.Count);
 
-            foreach (ClassDescription classDescription in classesList)
+            using (CountdownEvent countDownEvent = new CountdownEvent(classesList.Count))
+            using (ManualResetEvent manualResetEvent = new ManualResetEvent(true))
             {
-                DTODescription dtoDescription = new DTODescription(classDescription.ClassName);
-                classUnits.Add(dtoDescription);
-
-                localTaskQueue.Enqueue(new UserWorkItem(delegate(object state)
-                { 
-                    try
-                    {
-                        Interlocked.Increment(workingThreadsCount);
-                        GenerateClassCode(state);
-                    }
-                    finally
-                    {
-                        countDownEvent.Signal();
-                        Interlocked.Decrement(workingThreadsCount);
-                    }
-                },
-                new object[] { classDescription, dtoDescription }));
-                
-
-                ThreadPool.QueueUserWorkItem(delegate (object state)
+                foreach (ClassDescription classDescription in classesList)
                 {
-                    try
+                    DTODescription dtoDescription = new DTODescription(classDescription.ClassName);
+                    classUnits.Add(dtoDescription);
+                    manualResetEvent.WaitOne();
+                    
+                    ThreadPool.QueueUserWorkItem(delegate (object state)
                     {
-                        workingThreadsCount++;
-                        GenerateClassCode(state);
-                    }
-                    finally
-                    {
-                        countDownEvent.Signal();
-                        workingThreadsCount--;
-                    }
-                },
-                new object[] { classDescription, dtoDescription });
+                        try
+                        {
+                            Interlocked.Increment(ref workingThreadsCount);
+                            if (Volatile.Read(ref workingThreadsCount) == threadPoolLimit)
+                            {
+                                manualResetEvent.Set();
+                            }
+                            GenerateClassCode(state);
+                        }
+                        finally
+                        {
+                            countDownEvent.Signal();
+                            Interlocked.Decrement(ref workingThreadsCount);
+                            if (Volatile.Read(ref workingThreadsCount) < threadPoolLimit)
+                            {
+                                manualResetEvent.Reset();
+                            }
+                        }
+                    },
+                    new object[] { classDescription, dtoDescription });
+                }
+
+                countDownEvent.Wait();
             }
-            countDownEvent.Wait();
-            countDownEvent.Dispose();
+
             return classUnits;
         } 
 

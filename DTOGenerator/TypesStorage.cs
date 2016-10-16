@@ -8,17 +8,17 @@ namespace DTOGenerator
 {
     public class TypesStorage
     {
-        public static TypesStorage instance;
-        public static readonly object syncRoot = new object();
+        private static TypesStorage instance;
+        private static readonly object syncRoot = new object();
 
-        public Dictionary<string, NonPlatformType> nonPlatformTypesMappingDictionary { get; private set;}
+        public Dictionary<string, NonPlatformType> NonPlatformTypesMappingDictionary { get; private set;}
 
         private List<PlatformTypeDescription> platformTypesList;
 
         private TypesStorage()
         {
             platformTypesList = new List<PlatformTypeDescription>();
-            nonPlatformTypesMappingDictionary = new Dictionary<string, NonPlatformType>();
+            NonPlatformTypesMappingDictionary = new Dictionary<string, NonPlatformType>();
 
             AddBasicTypes();
             InitializeNonPlatformTypesMappingDictionary();
@@ -53,17 +53,17 @@ namespace DTOGenerator
 
         private void InitializeNonPlatformTypesMappingDictionary()
         {
-            nonPlatformTypesMappingDictionary.Add("integer", NonPlatformType.Integer);
-            nonPlatformTypesMappingDictionary.Add("number", NonPlatformType.Number);
-            nonPlatformTypesMappingDictionary.Add("string", NonPlatformType.String);
-            nonPlatformTypesMappingDictionary.Add("boolean", NonPlatformType.Boolean);
+            NonPlatformTypesMappingDictionary.Add("integer", NonPlatformType.Integer);
+            NonPlatformTypesMappingDictionary.Add("number", NonPlatformType.Number);
+            NonPlatformTypesMappingDictionary.Add("string", NonPlatformType.String);
+            NonPlatformTypesMappingDictionary.Add("boolean", NonPlatformType.Boolean);
         }
 
         public NonPlatformType GetNonPlatformType(string type)
         {
-            if (nonPlatformTypesMappingDictionary.ContainsKey(type))
+            if (NonPlatformTypesMappingDictionary.ContainsKey(type))
             {
-                return nonPlatformTypesMappingDictionary[type];
+                return NonPlatformTypesMappingDictionary[type];
             }
             else
             {
@@ -78,6 +78,7 @@ namespace DTOGenerator
                 if ((platformTypeDescription.Type == type) && (platformTypeDescription.Format == format))
                     return platformTypeDescription.PlatformType;
             }
+
             throw new InvalidOperationException("Platfrom type is not found.");
         }
     }
