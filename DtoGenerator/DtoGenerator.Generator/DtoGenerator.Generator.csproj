@@ -78,6 +78,10 @@
       <Project>{7c35aca1-cfed-46d6-986c-7a36eb0e5ef7}</Project>
       <Name>TextFormatters</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ThreadPool\ThreadPool.csproj">
+      <Project>{655ae495-1631-4c14-af07-f76b0616b170}</Project>
+      <Name>ThreadPool</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

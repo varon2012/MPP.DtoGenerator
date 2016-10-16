@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DtoGenerator.Generator.Types;
 using TextFormatters;
+using ThreadPool;
 
 namespace DtoGenerator.Generator
 {
@@ -21,15 +23,28 @@ namespace DtoGenerator.Generator
             var typeResolver = _config.PluginsDirectoryPath != null
                 ? new TypeResolver(_config.PluginsDirectoryPath, logger)
                 : new TypeResolver();
+            var dtoClassDescriptions = classDescriptions as DtoClassDescription[] ?? classDescriptions.ToArray();
+            var taskCount = dtoClassDescriptions.Length;
 
-            // TODO: use thread pool
-            foreach (var classDescription in classDescriptions)
+            using (var threadPool = new CustomThreadPool(_config.MaxTaskCount, taskCount))
             {
-                result[classDescription.ClassName] = 
-                    _generator.Generate(_config.ClassesNamespace, classDescription, typeResolver);
-            }
+                foreach (var classDescription in dtoClassDescriptions)
+                {
+                    threadPool.AddToProcessingQueue(new TaskInfo
+                    {
+                        WaitCallback = data =>
+                        {
+                            result[classDescription.ClassName] =
+                                _generator.Generate(_config.ClassesNamespace, classDescription,
+                                    typeResolver);
+                        }
+                    });
+                }
 
-            return result;
+                threadPool.Countdown.Wait();
+
+                return result;
+            }
         }
     }
 }
