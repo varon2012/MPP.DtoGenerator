@@ -28,7 +28,7 @@ namespace ThreadPool.Test
                 }
             };
 
-            using (var threadPool = new CustomThreadPool(maxProcessingTaskCount, overallTaskCount))
+            using (var threadPool = new CustomThreadPool(maxProcessingTaskCount))
             {
                 var random = new Random();
 

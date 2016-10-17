@@ -24,12 +24,10 @@ namespace DtoGenerator.Generator
             var typeResolver = _config.PluginsDirectoryPath != null
                 ? new TypeResolver(_config.PluginsDirectoryPath, logger)
                 : new TypeResolver();
-            var dtoClassDescriptions = classDescriptions as DtoClassDescription[] ?? classDescriptions.ToArray();
-            var taskCount = dtoClassDescriptions.Length;
 
-            using (var threadPool = new CustomThreadPool(_config.MaxTaskCount, taskCount))
+            using (var threadPool = new CustomThreadPool(_config.MaxTaskCount))
             {
-                foreach (var classDescription in dtoClassDescriptions)
+                foreach (var classDescription in classDescriptions)
                 {
                     threadPool.AddToProcessingQueue(new TaskInfo
                     {

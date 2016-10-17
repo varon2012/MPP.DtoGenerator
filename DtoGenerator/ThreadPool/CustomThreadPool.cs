@@ -19,16 +19,21 @@ namespace ThreadPool
         private volatile Queue<TaskInfo> _tasks = new Queue<TaskInfo>();
         private volatile object _syncRoot = new object();
 
-        public CustomThreadPool(int maxProcessingTaskCount, int overallTaskCount)
+        public CustomThreadPool(int maxProcessingTaskCount)
         {
             _maxProcessingTaskCount = maxProcessingTaskCount;
-            Countdown = new CountdownEvent(overallTaskCount);
+            Countdown = new CountdownEvent(0);
         }
 
         public void AddToProcessingQueue(TaskInfo taskInfo)
         {
             lock (_syncRoot)
             {
+                if (!Countdown.TryAddCount())
+                {
+                    Countdown.Reset(1);
+                }
+
                 if (_currentWorkingTaskCount < _maxProcessingTaskCount)
                 {
                     ProcessTask(taskInfo);
