@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using DtoGenerator.Generator.Types;
 using TextFormatters;
@@ -19,7 +20,7 @@ namespace DtoGenerator.Generator
 
         public IDictionary<string, string> Generate(IEnumerable<DtoClassDescription> classDescriptions, ILogger logger)
         {
-            var result = new Dictionary<string, string>();
+            var result = new ConcurrentDictionary<string, string>();
             var typeResolver = _config.PluginsDirectoryPath != null
                 ? new TypeResolver(_config.PluginsDirectoryPath, logger)
                 : new TypeResolver();
