@@ -1,0 +1,8 @@
+namespace Test
+{
+    public sealed class SomethingBad1 
+    {
+        public System.Int32 MyProperty { get; set; }
+        public System.Boolean OnlyMine { get; set; }
+    }
+}

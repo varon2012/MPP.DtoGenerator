@@ -1,0 +1,7 @@
+namespace Test
+{
+    public sealed class SomethingWicked2 
+    {
+        public System.Int32 FirstProperty { get; set; }
+    }
+}
