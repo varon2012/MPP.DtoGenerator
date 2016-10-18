@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DtoGenerator;
+// ReSharper disable All
 
 namespace FromJsonToCsFilesDtoGenerator
 {
@@ -37,7 +33,7 @@ namespace FromJsonToCsFilesDtoGenerator
             {
                 Console.Error.WriteLine("Error: invalid argument count");
             }
-            Console.Read();
+            //Console.Read();
         }
     }
 }

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -24,7 +21,6 @@ namespace DtoGenerator
         private BlockingCollection<DtoInfo> _readerQueue;
         private BlockingCollection<DtoDeclaration> _writerQueue;
         private Semaphore _semaphore;
-        private bool _isGenerationCompleted = false;
 
         public DtoGenerator(int maxTaskCount, string namespaceName,
             IDtoInfoListReader dtoInfoListReader, IDtoDeclarationWriter dtoDeclarationWriter)
