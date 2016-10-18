@@ -24,7 +24,7 @@ namespace DtoGenerator.Generator
                 ? new TypeResolver(_config.PluginsDirectoryPath, logger)
                 : new TypeResolver();
 
-            using (var threadPool = new CustomThreadPool(_config.MaxTaskCount))
+            using (var threadPool = new LimitedThreadPool(_config.MaxTaskCount))
             {
                 foreach (var classDescription in classDescriptions)
                 {

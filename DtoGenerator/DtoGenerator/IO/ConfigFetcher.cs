@@ -5,18 +5,18 @@ namespace DtoGenerator.IO
 {
     internal sealed class ConfigFetcher
     {
-        private readonly NameValueCollection _appSettimgs;
+        private readonly NameValueCollection _appSettings;
 
-        public ConfigFetcher(NameValueCollection appSettimgs)
+        public ConfigFetcher(NameValueCollection appSettings)
         {
-            if (appSettimgs == null) throw new ArgumentNullException(nameof(appSettimgs));
-            _appSettimgs = appSettimgs;
+            if (appSettings == null) throw new ArgumentNullException(nameof(appSettings));
+            _appSettings = appSettings;
         }
 
         public string GetStringConfig(string configName, bool isMandatory = true)
         {
             if (configName == null) throw new ArgumentNullException(nameof(configName));
-            var config = _appSettimgs[configName];
+            var config = _appSettings[configName];
 
             if (isMandatory && config == null)
             {
@@ -29,7 +29,7 @@ namespace DtoGenerator.IO
         public int GetIntConfig(string configName)
         {
             if (configName == null) throw new ArgumentNullException(nameof(configName));
-            var config = _appSettimgs[configName];
+            var config = _appSettings[configName];
 
             try
             {

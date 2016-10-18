@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ThreadPool.Test
 {
     [TestClass]
-    public sealed class CustomThreadPoolTest
+    public sealed class LimitedThreadPoolTest
     {
         [TestMethod]
         public void Test()
@@ -28,7 +28,7 @@ namespace ThreadPool.Test
                 }
             };
 
-            using (var threadPool = new CustomThreadPool(maxProcessingTaskCount))
+            using (var threadPool = new LimitedThreadPool(maxProcessingTaskCount))
             {
                 var random = new Random();
 

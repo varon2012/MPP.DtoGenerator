@@ -10,16 +10,16 @@ namespace ThreadPool
         public object Data;
     }
 
-    public sealed class CustomThreadPool : IDisposable
+    public sealed class LimitedThreadPool : IDisposable
     {
         public CountdownEvent Countdown { get; }
 
         private readonly int _maxProcessingTaskCount;
         private volatile int _currentWorkingTaskCount;
-        private volatile Queue<TaskInfo> _tasks = new Queue<TaskInfo>();
+        private readonly Queue<TaskInfo> _tasks = new Queue<TaskInfo>();
         private volatile object _syncRoot = new object();
 
-        public CustomThreadPool(int maxProcessingTaskCount)
+        public LimitedThreadPool(int maxProcessingTaskCount)
         {
             _maxProcessingTaskCount = maxProcessingTaskCount;
             Countdown = new CountdownEvent(0);
