@@ -12,23 +12,47 @@ namespace DtoGeneratorTest
     {
         static void Main(string[] args)
         {
-            string jsonFile = GetFilePath();
+            string jsonFile = GetJSONFile();
             DtoGenerator.DtoGenerator dtoGenerator = new DtoGenerator.DtoGenerator();
-            dtoGenerator.GenerateClasses(jsonFile);
+            Dictionary<string,List<StringBuilder>> resultClasses = dtoGenerator.GenerateClasses(jsonFile);
+            SaveCSFiles(resultClasses);
             Console.ReadKey();
         }
 
-        private static string GetFilePath()
+        private static string GetJSONFile()
         {
-            Console.WriteLine("Enter the path to JSON file: ");
-            string jsonFilePath = Console.ReadLine();
-            while (!File.Exists(jsonFilePath))
-            {
-                Console.WriteLine("Wrong path :( Try to enter the path again.");
-                jsonFilePath = Console.ReadLine();
-            }
-
+            string jsonFilePath = GetPath("JSON file", true);
             return File.ReadAllText(jsonFilePath);
         }
+
+        private static void SaveCSFiles(Dictionary<string,List<StringBuilder>> resultClasses)
+        {
+            string saveDirectory = GetPath("directory to save generated .cs files", false);
+            foreach (var className in resultClasses.Keys)
+                foreach (var unit in resultClasses[className])
+                    File.WriteAllText(string.Format("{0}/{1}.cs",saveDirectory, className), unit.ToString());
+            Console.WriteLine("Classes have been saved.");
+        }
+
+        private static string GetPath(string destination, bool isFile)
+        {
+            Console.WriteLine(string.Format("Enter the path to {0}:", destination));
+            string path = Console.ReadLine();
+            if (isFile)
+                while (!File.Exists(path))
+                    path = RepeatPathInput();
+            else
+                while (!Directory.Exists(path))
+                    path = RepeatPathInput();
+
+            return path;
+        }
+
+        private static string RepeatPathInput()
+        {
+            Console.WriteLine("Wrong path :( Try to enter the path again.");
+            return Console.ReadLine();
+        }
+
     }
 }
