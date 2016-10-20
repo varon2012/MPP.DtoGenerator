@@ -20,21 +20,28 @@ namespace DtoGenerator
             }
         }
 
-        private Dictionary<TypeKey, Type> types = new Dictionary<TypeKey, Type>();
+        private Dictionary<TypeKey, string> types;
+
+        public PropertyType()
+        {
+            types = new Dictionary<TypeKey, string>();
+            AddTypes();
+        }
+        
 
         private void AddTypes()
         {
-            types.Add(new TypeKey("integer", "int32"), typeof(Int32));
-            types.Add(new TypeKey("integer", "int64"), typeof(Int64));
-            types.Add(new TypeKey("number", "float"), typeof(Single));
-            types.Add(new TypeKey("number", "double"), typeof(Double));
-            types.Add(new TypeKey("string", "byte"), typeof(Byte));
-            types.Add(new TypeKey("boolean", ""), typeof(Boolean));
-            types.Add(new TypeKey("string", "date"), typeof(DateTime));
-            types.Add(new TypeKey("string", "string"), typeof(String));
+            types.Add(new TypeKey("integer", "int32"), "Int32");
+            types.Add(new TypeKey("integer", "int64"), "Int64");
+            types.Add(new TypeKey("number", "float"), "Single");
+            types.Add(new TypeKey("number", "double"), "Double");
+            types.Add(new TypeKey("string", "byte"), "Byte");
+            types.Add(new TypeKey("boolean", ""), "Boolean");
+            types.Add(new TypeKey("string", "date"), "DateTime");
+            types.Add(new TypeKey("string", "string"), "String");
         }
 
-        public Type GetType(string type, string format)
+        public string GetType(string type, string format)
         {
             foreach (var key in types.Keys)
             {

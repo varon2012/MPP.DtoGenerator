@@ -12,25 +12,80 @@ using Microsoft.CodeAnalysis.Formatting;
 using System.IO;
 using Microsoft.CodeAnalysis.CSharp.Formatting;
 using Microsoft.CodeAnalysis.Options;
+using System.Threading;
 
 namespace DtoGenerator
 {
     public class DtoGenerator
     {
+        private string classesNamespace;
+        private PropertyType propertyType;
+        private List<Task<CompilationUnitSyntax>> tasksList;
+        private int maxThreadsCount;
+
+        public DtoGenerator(int maxThreadsCount, string classesNamespace)
+        {
+            this.classesNamespace = classesNamespace;
+            this.maxThreadsCount = maxThreadsCount;
+            propertyType = new PropertyType();
+            tasksList = new List<Task<CompilationUnitSyntax>>();
+        }
+
         public Dictionary<string, List<StringBuilder>> GenerateClasses(string jsonFile)
         {
             ClassDescriptionList classDescriptionList = JsonConvert.DeserializeObject<ClassDescriptionList>(jsonFile);
-            Dictionary<string,List<StringBuilder>> resultUnits = new Dictionary<string, List<StringBuilder>>();
+            return GenerateResultUnits(classDescriptionList.classDescriptions);
+        }
 
-            foreach (var classDescription in classDescriptionList.classDescriptions)
+        private Dictionary<string, List<StringBuilder>> GenerateResultUnits(List<ClassDescription> classDescriptions)
+        {
+            Dictionary<string, List<StringBuilder>> resultUnits = new Dictionary<string, List<StringBuilder>>();
+            foreach (var classDescription in classDescriptions)
             {
-                CompilationUnitSyntax compilationUnit = GenerateUnit(classDescription);
+                Task<CompilationUnitSyntax> task = CreateNewTask(classDescription);
+                task.Start();
                 if (!resultUnits.ContainsKey(classDescription.ClassName))
                     resultUnits.Add(classDescription.ClassName, new List<StringBuilder>());
-                resultUnits[classDescription.ClassName].Add(ConvertUnitToString(compilationUnit));
+                resultUnits[classDescription.ClassName].Add(ConvertUnitToString(task.Result));
             }
 
             return resultUnits;
+        }
+
+        private Task<CompilationUnitSyntax> CreateNewTask(ClassDescription classDescription)
+        {
+            Task<CompilationUnitSyntax> task;
+            if (tasksList.Count >= maxThreadsCount)
+                task = TerminateCompletedTask();
+            task = new Task<CompilationUnitSyntax>(GenerateTask, classDescription);
+            if (tasksList.Count < maxThreadsCount)
+                tasksList.Add(task);          
+
+            return task;
+        }
+
+        private Task<CompilationUnitSyntax> TerminateCompletedTask()
+        {
+            Task<CompilationUnitSyntax> task;
+            task = FindFreeTask();
+            task.Dispose();
+
+            return task;
+        }
+
+        private Task<CompilationUnitSyntax> FindFreeTask()
+        {
+            for(;;)
+            {
+                foreach (var task in tasksList)
+                    if (task.IsCompleted)
+                        return task;
+            }
+        }
+
+        private CompilationUnitSyntax GenerateTask(object classDescription)
+        {
+            return GenerateUnit((ClassDescription)classDescription);
         }
 
         private CompilationUnitSyntax GenerateUnit(ClassDescription classDescription)
@@ -43,7 +98,7 @@ namespace DtoGenerator
 
         private NamespaceDeclarationSyntax AddNamespace(ClassDescription classDescription)
         {
-            NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName("Myspace"));
+            NamespaceDeclarationSyntax namespaceDeclaration = NamespaceDeclaration(IdentifierName(classesNamespace));
             namespaceDeclaration = namespaceDeclaration.AddMembers(AddClass(classDescription));
 
             return namespaceDeclaration;
@@ -71,7 +126,10 @@ namespace DtoGenerator
 
         private PropertyDeclarationSyntax GenerateProperty(Property property)
         {
-            PropertyDeclarationSyntax propertyDeclaration = PropertyDeclaration(ParseTypeName("int"), property.Name)
+            string type = propertyType.GetType(property.Type, property.Format);
+            if (type == null)
+                throw new ArgumentNullException();
+            PropertyDeclarationSyntax propertyDeclaration = PropertyDeclaration(ParseTypeName(type), property.Name)
                         .AddModifiers(Token(SyntaxKind.PublicKeyword))
                         .AddAccessorListAccessors(AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
                             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)))
@@ -84,6 +142,7 @@ namespace DtoGenerator
         {
             AdhocWorkspace workspace = new AdhocWorkspace();
             SyntaxNode syntaxNode = Formatter.Format(unit, workspace, SetOptions(workspace));
+
             return WriteToString(syntaxNode);
         }
 
