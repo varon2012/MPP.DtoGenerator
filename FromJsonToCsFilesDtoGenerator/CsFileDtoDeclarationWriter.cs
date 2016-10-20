@@ -21,11 +21,6 @@ namespace FromJsonToCsFilesDtoGenerator
             {
                 Disposed = true;
             }
-            else
-            {
-                throw new ObjectDisposedException(ToString());
-            }
-
         }
 
         public void Write(DtoDeclaration dtoDeclaration)

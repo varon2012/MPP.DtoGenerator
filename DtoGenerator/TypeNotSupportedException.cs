@@ -2,6 +2,7 @@
 
 namespace DtoGenerator
 {
+    [Serializable]
     public class TypeNotSupportedException : Exception
     {
 

@@ -7,7 +7,7 @@ namespace DtoGenerator
     {
 
         public static DtoGeneratorTypesTable Instance { get; } = new DtoGeneratorTypesTable();
-        private HashSet<DtoTypeInfo> _dtoTypes;
+        private Dictionary<DtoTypeInfoKey, DtoTypeInfo> _dtoTypes;
 
         private DtoGeneratorTypesTable()
         {
@@ -16,29 +16,24 @@ namespace DtoGenerator
 
         private void InitializeDefaultTypes()
         {
-            _dtoTypes = new HashSet<DtoTypeInfo>
-            {
-                new DtoTypeInfo(TypeForm.Integer, "int32", typeof(int)),
-                new DtoTypeInfo(TypeForm.Integer, "int64", typeof(long)),
-                new DtoTypeInfo(TypeForm.Number, "float", typeof(float)),
-                new DtoTypeInfo(TypeForm.Number, "double", typeof(double)),
-                new DtoTypeInfo(TypeForm.String, "byte", typeof(byte)),
-                new DtoTypeInfo(TypeForm.Boolean, null, typeof(bool)),
-                new DtoTypeInfo(TypeForm.String, "date", typeof(DateTime)),
-                new DtoTypeInfo(TypeForm.String, "string", typeof(string))
-            };
+            _dtoTypes = new Dictionary<DtoTypeInfoKey, DtoTypeInfo>();
+            _dtoTypes.Add(new DtoTypeInfoKey(TypeForm.Integer, "int32"), new DtoTypeInfo(TypeForm.Integer, "int32", typeof(int)));
+            _dtoTypes.Add(new DtoTypeInfoKey(TypeForm.Integer, "int64"), new DtoTypeInfo(TypeForm.Integer, "int64", typeof(long)));
+            _dtoTypes.Add(new DtoTypeInfoKey(TypeForm.Number, "float"), new DtoTypeInfo(TypeForm.Number, "float", typeof(float)));
+            _dtoTypes.Add(new DtoTypeInfoKey(TypeForm.Number, "double") , new DtoTypeInfo(TypeForm.Number, "double", typeof(double)));
+            _dtoTypes.Add(new DtoTypeInfoKey(TypeForm.Number, "byte"), new DtoTypeInfo(TypeForm.Number, "byte", typeof(byte)));
+            _dtoTypes.Add(new DtoTypeInfoKey(TypeForm.Boolean, null), new DtoTypeInfo(TypeForm.Boolean, null, typeof(bool)));
+            _dtoTypes.Add(new DtoTypeInfoKey(TypeForm.String, "date"), new DtoTypeInfo(TypeForm.String, "date", typeof(DateTime)));
+            _dtoTypes.Add(new DtoTypeInfoKey(TypeForm.String, "string"), new DtoTypeInfo(TypeForm.String, "string", typeof(string)));
         }
 
         public DtoTypeInfo GetDotTypeInfo(TypeForm form, string format)
         {
-            foreach (DtoTypeInfo dtoTypeInfo in _dtoTypes)
+            DtoTypeInfo dtoTypeInfo;
+            if (_dtoTypes.TryGetValue(new DtoTypeInfoKey(form, format), out dtoTypeInfo))
             {
-                if (dtoTypeInfo.Format.Equals(format) && dtoTypeInfo.Form.Equals(form))
-                {
-                    return dtoTypeInfo;
-                }    
+                return dtoTypeInfo;
             }
-
             throw new TypeNotSupportedException();
         }
     }

@@ -12,7 +12,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace DtoGenerator
 {
-    public class DtoGenerator
+    public class DtoGenerator : IDisposable
     {
         private static readonly Logger Logger = Logger.GetLogger(typeof(DtoGenerator).Name);
 
@@ -148,6 +148,13 @@ namespace DtoGenerator
                 )
             );
             return propertyDeclaration;
+        }
+
+        public void Dispose()
+        {
+            _semaphore?.Dispose();
+            _readerQueue?.Dispose();
+            _writerQueue?.Dispose();
         }
     }
 }
