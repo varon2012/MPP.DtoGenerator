@@ -47,7 +47,7 @@ namespace DtoGeneratorTest
             string saveDirectory = GetPath("directory to save generated .cs files", false);
             foreach (var className in resultClasses.Keys)
                 foreach (var unit in resultClasses[className])
-                    File.WriteAllText(string.Format("{0}/{1}.cs",saveDirectory, className), unit.ToString());
+                    File.WriteAllText(Path.Combine(saveDirectory, string.Concat(className,".cs")), unit.ToString());
             Console.WriteLine("Classes have been saved.");
         }
 
