@@ -20,72 +20,37 @@ namespace DtoGenerator
     {
         private string classesNamespace;
         private PropertyType propertyType;
-        private List<Task<CompilationUnitSyntax>> tasksList;
-        private int maxThreadsCount;
+        private Dictionary<string, List<StringBuilder>> resultUnits;
+        private static object locker = new object();
 
         public DtoGenerator(int maxThreadsCount, string classesNamespace)
         {
             this.classesNamespace = classesNamespace;
-            this.maxThreadsCount = maxThreadsCount;
             propertyType = new PropertyType();
-            tasksList = new List<Task<CompilationUnitSyntax>>();
+            resultUnits = new Dictionary<string, List<StringBuilder>>();
+            ThreadPool.SetMaxThreads(maxThreadsCount, maxThreadsCount);
         }
 
         public Dictionary<string, List<StringBuilder>> GenerateClasses(string jsonFile)
         {
             ClassDescriptionList classDescriptionList = JsonConvert.DeserializeObject<ClassDescriptionList>(jsonFile);
-            return GenerateResultUnits(classDescriptionList.classDescriptions);
-        }
-
-        private Dictionary<string, List<StringBuilder>> GenerateResultUnits(List<ClassDescription> classDescriptions)
-        {
-            Dictionary<string, List<StringBuilder>> resultUnits = new Dictionary<string, List<StringBuilder>>();
-            foreach (var classDescription in classDescriptions)
+            foreach (var classDescription in classDescriptionList.classDescriptions)
             {
-                Task<CompilationUnitSyntax> task = CreateNewTask(classDescription);
-                task.Start();
-                if (!resultUnits.ContainsKey(classDescription.ClassName))
-                    resultUnits.Add(classDescription.ClassName, new List<StringBuilder>());
-                resultUnits[classDescription.ClassName].Add(ConvertUnitToString(task.Result));
+                ThreadPool.QueueUserWorkItem(new WaitCallback(GetAllUnits), classDescription);
             }
 
             return resultUnits;
         }
 
-        private Task<CompilationUnitSyntax> CreateNewTask(ClassDescription classDescription)
+        private void GetAllUnits(object description)
         {
-            Task<CompilationUnitSyntax> task;
-            if (tasksList.Count >= maxThreadsCount)
-                task = TerminateCompletedTask();
-            task = new Task<CompilationUnitSyntax>(GenerateTask, classDescription);
-            if (tasksList.Count < maxThreadsCount)
-                tasksList.Add(task);          
-
-            return task;
-        }
-
-        private Task<CompilationUnitSyntax> TerminateCompletedTask()
-        {
-            Task<CompilationUnitSyntax> task;
-            task = FindFreeTask();
-            task.Dispose();
-
-            return task;
-        }
-
-        private Task<CompilationUnitSyntax> FindFreeTask()
-        {
-            for(;;)
+            ClassDescription classDescription = (ClassDescription)description;
+            lock (locker)
             {
-                foreach (var task in tasksList)
-                    if (task.IsCompleted)
-                        return task;
+                if (!resultUnits.ContainsKey(classDescription.ClassName))
+                    resultUnits.Add(classDescription.ClassName, new List<StringBuilder>());
+                resultUnits[classDescription.ClassName].Add(ConvertUnitToString(GenerateUnit(classDescription)));
             }
-        }
-
-        private CompilationUnitSyntax GenerateTask(object classDescription)
-        {
-            return GenerateUnit((ClassDescription)classDescription);
         }
 
         private CompilationUnitSyntax GenerateUnit(ClassDescription classDescription)

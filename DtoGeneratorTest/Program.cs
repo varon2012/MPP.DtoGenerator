@@ -15,10 +15,8 @@ namespace DtoGeneratorTest
             try
             {
                 string[] configInformation = GetConfigInformation();
-
                 DtoGenerator.DtoGenerator dtoGenerator = new DtoGenerator.DtoGenerator(Int32.Parse(configInformation[0]), configInformation[1]);
                 string jsonFile = GetJSONFile();
-
                 Dictionary<string, List<StringBuilder>> resultClasses = dtoGenerator.GenerateClasses(jsonFile);
                 SaveCSFiles(resultClasses);
                 Console.ReadKey();
