@@ -8,18 +8,6 @@ namespace DtoGenerator
 {
     internal class PropertyType
     {
-        private class TypeKey
-        {
-            public string Type { get; }
-            public string Format { get; }
-
-            public TypeKey(string type,string format)
-            {
-                Type = type;
-                Format = format;
-            }
-        }
-
         private Dictionary<TypeKey, string> types;
 
         public PropertyType()
@@ -28,7 +16,6 @@ namespace DtoGenerator
             AddTypes();
         }
         
-
         private void AddTypes()
         {
             types.Add(new TypeKey("integer", "int32"), "Int32");
