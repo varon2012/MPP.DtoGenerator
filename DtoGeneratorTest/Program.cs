@@ -56,11 +56,15 @@ namespace DtoGeneratorTest
             Console.WriteLine(string.Format("Enter the path to {0}:", destination));
             string path = Console.ReadLine();
             if (isFile)
+            {
                 while (!File.Exists(path))
                     path = RepeatPathInput();
+            }
             else
+            {
                 while (!Directory.Exists(path))
                     path = RepeatPathInput();
+            }
 
             return path;
         }
