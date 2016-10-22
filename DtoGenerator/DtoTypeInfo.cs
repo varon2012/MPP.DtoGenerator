@@ -43,17 +43,13 @@ namespace DtoGenerator
 
         public override int GetHashCode()
         {
-            int result = 17 * Form.GetHashCode();
-            if (Format != null)
+            unchecked 
             {
-                result += 31 * Format.GetHashCode();
+                int result = 17;
+                result = result * 31 + Form.GetHashCode();
+                result = result * 31 + ((Format != null) ? Format.GetHashCode() : 1);
+                return result;    
             }
-            else
-            {
-                result++;
-            }
-//            result += 31 * ((Format != null)? Format.GetHashCode() : 1);
-            return result;
         }
     }
 
