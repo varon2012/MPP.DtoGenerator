@@ -8,6 +8,6 @@ namespace DtoGenerator
 {
     internal class ClassDescriptionList
     {
-        public List<ClassDescription> classDescriptions { get; set; }
+        public ClassDescription[] classDescriptions { get; set; }
     }
 }

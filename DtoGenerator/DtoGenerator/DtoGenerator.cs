@@ -19,37 +19,56 @@ namespace DtoGenerator
     public class DtoGenerator
     {
         private string classesNamespace;
-        private PropertyType propertyType;
-        private Dictionary<string, List<StringBuilder>> resultUnits;
-        private static object locker = new object();
-
+        private int maxThreadsCount;
+        private PropertyType propertyType = new PropertyType();
+        private ClassDescriptionList classDescriptionList;
+        private Dictionary<string, List<StringBuilder>> resultUnits = new Dictionary<string, List<StringBuilder>>();
+        private static object locker = new object();        
+        private static ManualResetEvent[] resetEvents;
+        private int[] eventThreadConnection;
+        
         public DtoGenerator(int maxThreadsCount, string classesNamespace)
         {
             this.classesNamespace = classesNamespace;
-            propertyType = new PropertyType();
-            resultUnits = new Dictionary<string, List<StringBuilder>>();
-            ThreadPool.SetMaxThreads(maxThreadsCount, maxThreadsCount);
+            this.maxThreadsCount = maxThreadsCount;
+            resetEvents = new ManualResetEvent[maxThreadsCount];
+            eventThreadConnection = new int[maxThreadsCount];
         }
 
         public Dictionary<string, List<StringBuilder>> GenerateClasses(string jsonFile)
         {
-            ClassDescriptionList classDescriptionList = JsonConvert.DeserializeObject<ClassDescriptionList>(jsonFile);
-            foreach (var classDescription in classDescriptionList.classDescriptions)
+            classDescriptionList = JsonConvert.DeserializeObject<ClassDescriptionList>(jsonFile);
+            for (int i = 0; i < classDescriptionList.classDescriptions.Count(); i++)
             {
-                ThreadPool.QueueUserWorkItem(new WaitCallback(GetAllUnits), classDescription);
+                if (i < maxThreadsCount)
+                {
+                    eventThreadConnection[i] = i;
+                    resetEvents[i] = new ManualResetEvent(false);                    
+                }
+                else
+                {
+                    int index = WaitHandle.WaitAny(resetEvents);
+                    eventThreadConnection[index] = i;
+                    resetEvents[index].Reset();
+                }
+
+                ThreadPool.QueueUserWorkItem(new WaitCallback(GetAllUnits), i);
             }
 
             return resultUnits;
         }
 
-        private void GetAllUnits(object description)
+        private void GetAllUnits(object index)
         {
-            ClassDescription classDescription = (ClassDescription)description;
+            int resetEventIndex = 0;
+            while (eventThreadConnection[resetEventIndex] != (int)index) 
+                resetEventIndex++;
+            ClassDescription classDescription = classDescriptionList.classDescriptions[(int)index];
             lock (locker)
             {
-                if (!resultUnits.ContainsKey(classDescription.ClassName))
-                    resultUnits.Add(classDescription.ClassName, new List<StringBuilder>());
+                resultUnits.Add(classDescription.ClassName, new List<StringBuilder>());
                 resultUnits[classDescription.ClassName].Add(ConvertUnitToString(GenerateUnit(classDescription)));
+                resetEvents[resetEventIndex].Set();
             }
         }
 
