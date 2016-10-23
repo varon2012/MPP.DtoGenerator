@@ -15,7 +15,7 @@ using System.Threading;
 
 namespace DtoGenerator
 {
-    public class DtoGenerator
+    public class DtoGenerator : IDisposable
     {
         private string classesNamespace;
         private int maxThreadsCount;
@@ -57,6 +57,7 @@ namespace DtoGenerator
                 ThreadPool.QueueUserWorkItem(new WaitCallback(GetAllUnits), i);
             }
 
+            WaitHandle.WaitAll(resetEvents);
             DisposeResetEventResources();
 
             return resultUnits;
@@ -64,7 +65,6 @@ namespace DtoGenerator
 
         private void DisposeResetEventResources ()
         {
-            WaitHandle.WaitAll(resetEvents);
             foreach (var resetEvent in resetEvents)
                 resetEvent.Dispose();
         }
@@ -160,6 +160,11 @@ namespace DtoGenerator
             }
 
             return resultString;
+        }
+
+        public void Dispose()
+        {
+            DisposeResetEventResources();
         }
     }
 }
