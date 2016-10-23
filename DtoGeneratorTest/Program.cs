@@ -16,10 +16,9 @@ namespace DtoGeneratorTest
             {
                 string[] configInformation = GetConfigInformation();
                 DtoGenerator.DtoGenerator dtoGenerator = new DtoGenerator.DtoGenerator(Int32.Parse(configInformation[0]), configInformation[1]);
-                string jsonFile = GetJSONFile();
                 JsonParser jsonParser = new JsonParser();
-                ClassDescriptionList classDescriptionList = jsonParser.Parse(jsonFile);
-                Dictionary<string, List<StringBuilder>> resultClasses = dtoGenerator.GenerateClasses(classDescriptionList);
+                string jsonFile = GetJSONFile();
+                Dictionary<string, List<StringBuilder>> resultClasses = dtoGenerator.GenerateClasses(jsonParser.Parse(jsonFile));
                 SaveCSFiles(resultClasses);
                 Console.ReadKey();
             }

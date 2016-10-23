@@ -13,8 +13,11 @@ namespace DtoGenerator
 
         public TypeKey(string type, string format)
         {
-            if (type == null || format == null)
-                throw new ArgumentNullException();
+            if (type == null) 
+                throw new ArgumentNullException(nameof(type));
+            if (format == null)
+                throw new ArgumentNullException(nameof(format));
+
             Type = type;
             Format = format;
         }

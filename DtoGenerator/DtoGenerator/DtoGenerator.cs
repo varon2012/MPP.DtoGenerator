@@ -29,7 +29,7 @@ namespace DtoGenerator
         public DtoGenerator(int maxThreadsCount, string classesNamespace)
         {
             if (maxThreadsCount <= 0)
-                throw new ArgumentException();
+                throw new ArgumentException(nameof(maxThreadsCount));
 
             this.classesNamespace = classesNamespace;
             this.maxThreadsCount = maxThreadsCount;
@@ -39,6 +39,7 @@ namespace DtoGenerator
 
         public Dictionary<string, List<StringBuilder>> GenerateClasses(ClassDescriptionList classDescriptionList)
         {
+            this.classDescriptionList = classDescriptionList;
             for (int i = 0; i < classDescriptionList.classDescriptions.Count(); i++)
             {
                 if (i < maxThreadsCount)
@@ -123,7 +124,7 @@ namespace DtoGenerator
         {
             string type = propertyType.GetType(property.Type, property.Format);
             if (type == null)
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(type));
             PropertyDeclarationSyntax propertyDeclaration = PropertyDeclaration(ParseTypeName(type), property.Name)
                         .AddModifiers(Token(SyntaxKind.PublicKeyword))
                         .AddAccessorListAccessors(AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
