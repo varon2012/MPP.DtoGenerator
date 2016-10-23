@@ -39,7 +39,6 @@ namespace DtoGenerator
 
         public Dictionary<string, List<StringBuilder>> GenerateClasses(ClassDescriptionList classDescriptionList)
         {
-            //classDescriptionList = JsonConvert.DeserializeObject<ClassDescriptionList>(jsonFile);
             for (int i = 0; i < classDescriptionList.classDescriptions.Count(); i++)
             {
                 if (i < maxThreadsCount)
@@ -71,10 +70,11 @@ namespace DtoGenerator
 
         private void GetAllUnits(object index)
         {
+            int currentIndex = (int)index;
             int resetEventIndex = 0;
-            while (eventThreadConnection[resetEventIndex] != (int)index) 
+            while (eventThreadConnection[resetEventIndex] != currentIndex) 
                 resetEventIndex++;
-            ClassDescription classDescription = classDescriptionList.classDescriptions[(int)index];
+            ClassDescription classDescription = classDescriptionList.classDescriptions[currentIndex];
             lock (locker)
             {
                 resultUnits.Add(classDescription.ClassName, new List<StringBuilder>());
