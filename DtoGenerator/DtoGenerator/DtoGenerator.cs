@@ -24,7 +24,7 @@ namespace DtoGenerator
         private ClassDescriptionList classDescriptionList;
         private Dictionary<string, List<StringBuilder>> resultUnits = new Dictionary<string, List<StringBuilder>>();
         private static object locker = new object();        
-        private static ManualResetEvent[] resetEvents;
+        private ManualResetEvent[] resetEvents;
         private int[] eventThreadConnection;
         
         public DtoGenerator(int maxThreadsCount, string classesNamespace)
@@ -58,7 +58,16 @@ namespace DtoGenerator
                 ThreadPool.QueueUserWorkItem(new WaitCallback(GetAllUnits), i);
             }
 
+            DisposeEventResources();
+
             return resultUnits;
+        }
+
+        private void DisposeEventResources ()
+        {
+            WaitHandle.WaitAll(resetEvents);
+            foreach (var resetEvent in resetEvents)
+                resetEvent.Dispose();
         }
 
         private void GetAllUnits(object index)
