@@ -30,13 +30,15 @@ namespace DtoGenerator
 
         public string GetType(string type, string format)
         {
-            foreach (var key in types.Keys)
-            {
-                if (key.Type == type && key.Format == format)
-                    return types[key];
-            }
+            if (type == null || format == null)
+                throw new ArgumentNullException();
 
-            return null;
+            TypeKey key = new TypeKey(type, format);
+
+            if (types.ContainsKey(key))
+                return types[key];
+            else
+                throw new KeyNotFoundException();
         }
     }
 }

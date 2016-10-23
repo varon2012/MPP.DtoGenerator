@@ -29,6 +29,9 @@ namespace DtoGenerator
         
         public DtoGenerator(int maxThreadsCount, string classesNamespace)
         {
+            if (maxThreadsCount <= 0)
+                throw new ArgumentException();
+
             this.classesNamespace = classesNamespace;
             this.maxThreadsCount = maxThreadsCount;
             resetEvents = new ManualResetEvent[maxThreadsCount];
