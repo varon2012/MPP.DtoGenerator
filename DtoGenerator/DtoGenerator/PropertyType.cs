@@ -38,9 +38,13 @@ namespace DtoGenerator
             TypeKey key = new TypeKey(type, format);
 
             if (types.ContainsKey(key))
+            {
                 return types[key];
+            }
             else
+            {
                 throw new KeyNotFoundException();
+            }
         }
     }
 }
