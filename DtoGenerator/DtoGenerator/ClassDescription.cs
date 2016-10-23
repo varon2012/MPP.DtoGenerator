@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DtoGenerator
 {
-    internal class ClassDescription
+    public class ClassDescription
     {
         public string ClassName { get; set; }
         public List<Property> Properties { get; set; } = new List<Property>();

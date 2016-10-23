@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -38,9 +37,9 @@ namespace DtoGenerator
             eventThreadConnection = new int[maxThreadsCount];
         }
 
-        public Dictionary<string, List<StringBuilder>> GenerateClasses(string jsonFile)
+        public Dictionary<string, List<StringBuilder>> GenerateClasses(ClassDescriptionList classDescriptionList)
         {
-            classDescriptionList = JsonConvert.DeserializeObject<ClassDescriptionList>(jsonFile);
+            //classDescriptionList = JsonConvert.DeserializeObject<ClassDescriptionList>(jsonFile);
             for (int i = 0; i < classDescriptionList.classDescriptions.Count(); i++)
             {
                 if (i < maxThreadsCount)
@@ -58,12 +57,12 @@ namespace DtoGenerator
                 ThreadPool.QueueUserWorkItem(new WaitCallback(GetAllUnits), i);
             }
 
-            DisposeEventResources();
+            DisposeResetEventResources();
 
             return resultUnits;
         }
 
-        private void DisposeEventResources ()
+        private void DisposeResetEventResources ()
         {
             WaitHandle.WaitAll(resetEvents);
             foreach (var resetEvent in resetEvents)

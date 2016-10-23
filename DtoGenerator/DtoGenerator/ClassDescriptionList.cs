@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DtoGenerator
 {
-    internal class ClassDescriptionList
+    public class ClassDescriptionList
     {
         public ClassDescription[] classDescriptions { get; set; }
     }
