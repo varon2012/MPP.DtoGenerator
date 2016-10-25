@@ -12,10 +12,11 @@ namespace DtoGeneratorTest
     {
         static void Main(string[] args)
         {
+            DtoGenerator.DtoGenerator dtoGenerator = null;
             try
             {
                 string[] configInformation = GetConfigInformation();
-                DtoGenerator.DtoGenerator dtoGenerator = new DtoGenerator.DtoGenerator(Int32.Parse(configInformation[0]), configInformation[1]);
+                dtoGenerator = new DtoGenerator.DtoGenerator(Int32.Parse(configInformation[0]), configInformation[1]);
                 JsonParser jsonParser = new JsonParser();
                 string jsonFile = GetJSONFile();
                 Dictionary<string, List<StringBuilder>> resultClasses = dtoGenerator.GenerateClasses(jsonParser.Parse(jsonFile));
@@ -26,12 +27,17 @@ namespace DtoGeneratorTest
             {
                 Console.WriteLine("Check your configuration file, please.");
             }
-            catch (ArgumentNullException e)
+            catch (Exception e)
             {
-                Console.WriteLine("There are no such type, which has described in JSON file.");
+                Console.WriteLine(string.Format("{0} caused exception.", e.Source));
+            }
+            finally
+            {
+                if (dtoGenerator != null)
+                dtoGenerator.Dispose();
             }
         }
-
+        
         private static string[] GetConfigInformation()
         {
             return File.ReadAllLines("project.config");
